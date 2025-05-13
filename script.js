@@ -793,11 +793,20 @@ backToPlanButton.addEventListener('click', () => {
 // --- Edit Plan Logic ---
 editPlanButton.addEventListener('click', () => {
     isEditingPlan = !isEditingPlan;
+
+    // Play sound using AudioBuffer
+    if (isEditingPlan && workoutSoundBuffer) {
+        playSound(workoutSoundBuffer);
+    } else if (!isEditingPlan && restSoundBuffer) {
+        playSound(restSoundBuffer);
+    }
+
     editPlanButton.textContent = isEditingPlan ? 'Finish Editing' : 'Edit My Plan';
     editPlanButton.classList.toggle('active-editing', isEditingPlan);
     setView('plan');
     displayPlan();
 });
+
 
 function createExerciseEditRow(exercise = {}, index = -1, dayKey = '') {
     const row = document.createElement('div');
