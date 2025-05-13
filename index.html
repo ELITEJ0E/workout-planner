@@ -1,8 +1,10 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Planner</title>
+    <title>Workout Routine 3000</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <script type="importmap">
       {
@@ -14,22 +16,38 @@
 </head>
 <body>
     <div class="container">
-        <h1>Workout Routine</h1>
+        <h1>🏋🏽🔥Workout Routine 3000💪🏼🎧</h1>
 
         <div id="controls">
             <button id="back-to-plan" style="display: none;">Back to Plan</button>
-            <div class="custom-select-wrapper">
-                <select id="music-select"></select>
+            
+            <!-- Music Player Controls -->
+            <div class="music-controls">
+                <button id="prev-bgm" title="Previous Track">&#9664;</button>
+                <button id="play-pause-bgm" title="Play/Pause BGM">&#9658;</button>
+                <button id="next-bgm" title="Next Track">&#9654;</button>
+                <div class="custom-select-wrapper inline">
+                    <select id="music-select" title="Select Background Music"></select>
+                </div>
+                <label for="upload-bgm" class="upload-button" title="Upload Your Own MP3">Upload MP3</label>
+                <input type="file" id="upload-bgm" accept="audio/mp3" style="display: none;">
             </div>
-            <button id="bgm-toggle">Toggle BGM</button>
-            <div class="custom-select-wrapper">
-                <select id="theme-select">
-                    <option value="default">Default Blue</option>
-                    <option value="green">Green Lush</option>
-                    <option value="purple">Purple Power</option>
-                    <option value="orange">Orange Energy</option>
+
+            <!-- Theme Select -->
+            <div class="custom-select-wrapper inline">
+                <select id="theme-select" title="Select Theme">
+                    <option value="default">💎 Ocean Breeze (Default Blue)</option>
+                    <option value="green">🌿 Green Lush</option>
+                    <option value="purple">🔮 Purple Power</option>
+                    <option value="orange">🔥 Orange Energy</option>
+                    <option value="red">❤️ Crimson Pulse</option>
+                    <option value="yellow">🌞 Sunny Glow</option>
+                    <option value="teal">💧 Teal Tranquility</option>
+                    <option value="white">🤍 Pure Minimal</option>
                 </select>
             </div>
+
+            <!-- Edit Plan Button -->
             <button id="edit-plan-button">Edit My Plan</button>
         </div>
 
@@ -52,14 +70,14 @@
         <div id="plan">
             <!-- Day cards will be generated here by script.js -->
         </div>
-    </div>
 
+    <!-- Edit Day Modal -->
     <div id="edit-day-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-modal-button" id="close-edit-modal-button">&times;</span>
             <h2 id="modal-day-title">Edit Workout Day</h2>
             <input type="hidden" id="editing-day-key">
-            
+
             <div class="form-group">
                 <label for="modal-day-description">Day Description (e.g., Chest & Triceps):</label>
                 <input type="text" id="modal-day-description" class="modal-input">
@@ -76,7 +94,6 @@
             </div>
         </div>
     </div>
-
 
     <script src="script.js" type="module"></script>
 </body>

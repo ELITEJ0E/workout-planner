@@ -50,6 +50,56 @@ body.theme-orange {
     --input-focus-border-color: var(--accent-color);
 }
 
+body.theme-red {
+    --accent-color: #FF9800;
+    --accent-color-hover: #FFA726;
+    --accent-color-darker: #F57C00;
+    --list-item-hover-bg: rgba(255, 152, 0, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-yellow {
+    --accent-color: #FFEB3B;
+    --accent-color-hover: #FFF176;
+    --accent-color-darker: #FBC02D;
+    --list-item-hover-bg: rgba(255, 235, 59, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+
+body.theme-blue {
+    --accent-color: #2196F3;
+    --accent-color-hover: #42A5F5;
+    --accent-color-darker: #1976D2;
+    --list-item-hover-bg: rgba(33, 150, 243, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-red {
+    --accent-color: #F44336;
+    --accent-color-hover: #EF5350;
+    --accent-color-darker: #D32F2F;
+    --list-item-hover-bg: rgba(244, 67, 54, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-teal {
+    --accent-color: #009688;
+    --accent-color-hover: #26A69A;
+    --accent-color-darker: #00796B;
+    --list-item-hover-bg: rgba(0, 150, 136, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-white {
+    --accent-color: #FAFAFA;
+    --accent-color-hover: #a19e9e;
+    --accent-color-darker: #d5d0d0;
+    --list-item-hover-bg: rgba(250, 250, 250, 0.3);
+    --input-focus-border-color: var(--accent-color);
+}
+
+
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
     line-height: 1.6;
@@ -97,7 +147,10 @@ h3 {
 
 #controls button,
 #current-exercise button,
-.day-card .edit-day-button { 
+.day-card .edit-day-button,
+.music-controls button,
+.upload-button
+{ 
     padding: 12px 25px;
     font-size: 1em;
     font-weight: bold;
@@ -111,11 +164,18 @@ h3 {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 5px;
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    min-width: 40px; 
 }
 
 #controls button:hover,
 #current-exercise button:hover,
-.day-card .edit-day-button:hover {
+.day-card .edit-day-button:hover,
+.music-controls button:hover,
+.upload-button:hover
+{
     background-color: var(--accent-color-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -123,7 +183,10 @@ h3 {
 
 #controls button:active,
 #current-exercise button:active,
-.day-card .edit-day-button:active {
+.day-card .edit-day-button:active,
+.music-controls button:active,
+.upload-button:active
+{
     transform: translateY(0px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
@@ -145,9 +208,9 @@ h3 {
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    background-color: var(--accent-color);
-    color: var(--accent-text-color);
-    border: none;
+    background-color: var(--card-bg-color); 
+    color: var(--text-color); 
+    border: none; 
     border-radius: 25px;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -156,14 +219,20 @@ h3 {
 }
 
 .custom-select-wrapper select:hover {
-    background-color: var(--accent-color-hover);
+    background-color: var(--button-muted-hover-bg-color); 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+.custom-select-wrapper select:focus {
+     border: none; 
+     outline: none; 
+     box-shadow: 0 0 0 3px rgba(var(--accent-color-darker), 0.5); 
+}
+
 
 .custom-select-wrapper::after { 
     content: '▼';
     font-size: 0.8em;
-    color: var(--accent-text-color);
+    color: var(--accent-color); 
     position: absolute;
     top: 50%;
     right: 15px;
@@ -185,6 +254,45 @@ h3 {
      background-color: var(--list-item-hover-bg); 
      color: var(--card-hover-text-color); 
 }
+
+/* Music Control specific styling */
+.music-controls button {
+    background-color: var(--button-muted-bg-color);
+    color: var(--text-color);
+    padding: 12px 15px; 
+    min-width: 40px;
+}
+
+.music-controls button:hover {
+    background-color: var(--button-muted-hover-bg-color);
+}
+
+/* Upload button styling */
+.upload-button {
+     background-color: var(--accent-color-darker); 
+     color: var(--text-color);
+     padding: 12px 25px; 
+     display: inline-block; 
+     cursor: pointer;
+     border-radius: 25px;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+     margin: 5px;
+     text-transform: uppercase;
+     letter-spacing: 0.5px;
+     font-size: 1em;
+     font-weight: bold;
+}
+.upload-button:hover {
+    background-color: var(--accent-color);
+     transform: translateY(-2px);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.upload-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 
 #edit-plan-button.active-editing {
     background-color: var(--accent-color-darker);
@@ -394,18 +502,35 @@ h3 {
 .workout-view #plan {
 }
 
-.workout-view #back-to-plan {
+.log-view #plan {
+    display: none !important;
+}
+.log-view #workout-display {
+    display: none !important;
+}
+
+.workout-view #back-to-plan,
+.log-view #back-to-plan {
     display: inline-block !important;
 }
 .plan-view #back-to-plan {
     display: none !important;
 }
-.workout-view #edit-plan-button {
+.workout-view #edit-plan-button,
+.log-view #edit-plan-button {
     display: none !important;
 }
 .plan-view #edit-plan-button {
      display: inline-block !important;
 }
+.workout-view #view-log-button,
+.plan-view #view-log-button {
+     display: inline-block !important;
+}
+.log-view #view-log-button {
+     display: none !important;
+}
+
 
 /* Modal Styles */
 .modal {
@@ -560,90 +685,60 @@ h3 {
     margin-left: 10px;
 }
 
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2em;
-    }
-    h2 {
-        font-size: 1.5em;
-    }
-    #timer-display {
-        font-size: 2.8em;
-    }
-    #current-exercise #exercise-name {
-        font-size: 1.4em;
-    }
-    #plan {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 15px;
-    }
-    .container {
-        padding: 10px;
-    }
-    #controls {
-        flex-direction: column;
-    }
-    #controls > *, .custom-select-wrapper {
-        width: 80%;
-        max-width: 300px;
-        box-sizing: border-box;
-    }
-    .custom-select-wrapper { 
-         display: block; 
-         margin-left: auto;
-         margin-right: auto;
-    }
-    #current-exercise img { 
-        height: 180px;
-        max-width: 180px;
-    }
-    .modal-content {
-        width: 95%;
-        padding: 20px;
-    }
+/* Workout Log Calendar Styles */
+#workout-log {
+    background-color: var(--card-bg-color);
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
 }
 
-@media (max-width: 480px) {
-    #controls button,
-    #current-exercise button,
-    .day-card > button,
-    .custom-select-wrapper select {
-        padding: 10px 20px;
-        font-size: 0.9em;
-    }
-    .custom-select-wrapper select {
-         padding: 10px 35px 10px 15px; 
-    }
-    #current-exercise img {
-        max-width: 150px;
-        height: 150px;
-    }
-    #timer-display {
-        font-size: 2.2em;
-    }
-    .workout-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .workout-buttons button {
-        width: 100%;
-        margin: 0;
-    }
-    .modal-content {
-        padding: 15px;
-    }
-    .modal-button, #add-exercise-to-modal {
-        width: 100%;
-        margin-left: 0;
-        margin-bottom: 10px;
-    }
-    .modal-actions {
-        display: flex;
-        flex-direction: column;
-    }
-    .modal-button.danger {
-        float: none;
-        margin-top: 5px;
-    }
+#log-calendar-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--card-bg-color);
+}
+
+#log-calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--accent-color-darker);
+    color: var(--text-color);
+    padding: 15px;
+}
+
+#log-calendar-controls h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: var(--text-color); 
+}
+
+#log-calendar-controls button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+#log-calendar-controls button:hover {
+    color: var(--accent-color-hover);
+}
+
+#log-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px; 
+    background-color: var(--card-bg-color); 
+    border-top: 1px solid var(--card-bg-color);
+}
+
+#log-calendar-grid > div {
+    background-color: var(--card-bg-color);
 }
