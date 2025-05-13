@@ -1,0 +1,649 @@
+:root {
+    --bg-color: #222831;
+    --text-color: #EEEEEE;
+    --accent-color: #00ADB5;
+    --accent-color-hover: #00C9D4;
+    --accent-color-darker: #007A7F;
+    --accent-text-color: #222831;
+    --card-bg-color: #393E46;
+    --card-hover-text-color: #FFFFFF;
+    --button-muted-bg-color: #4A5568;
+    --button-muted-hover-bg-color: #5A6268;
+    --rest-day-text-color: #AAAAAA;
+    --list-item-bg: rgba(238, 238, 238, 0.05);
+    --list-item-hover-bg: rgba(0, 173, 181, 0.2);
+    --list-item-active-bg: var(--accent-color);
+    --list-item-active-text: var(--accent-text-color);
+    --button-disabled-bg: #555;
+    --button-disabled-text: #aaa;
+    --image-border-color: var(--accent-color);
+    --image-bg-color: #fff;
+    --details-text-color: #CCCCCC;
+    --input-bg-color: #454d58;
+    --input-border-color: #5a6370;
+    --input-focus-border-color: var(--accent-color);
+    --modal-bg: rgba(0,0,0,0.7);
+    --modal-content-bg: #2d333b;
+}
+
+body.theme-green {
+    --accent-color: #4CAF50;
+    --accent-color-hover: #66BB6A;
+    --accent-color-darker: #388E3C;
+    --list-item-hover-bg: rgba(76, 175, 80, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-purple {
+    --accent-color: #9C27B0;
+    --accent-color-hover: #AB47BC;
+    --accent-color-darker: #7B1FA2;
+    --list-item-hover-bg: rgba(156, 39, 176, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body.theme-orange {
+    --accent-color: #FF9800;
+    --accent-color-hover: #FFA726;
+    --accent-color-darker: #F57C00;
+    --list-item-hover-bg: rgba(255, 152, 0, 0.2);
+    --input-focus-border-color: var(--accent-color);
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+h1 {
+    color: var(--accent-color);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
+h2 {
+    color: var(--text-color);
+    font-size: 1.8em;
+    margin-top: 0;
+}
+
+h3 {
+     color: var(--accent-color);
+}
+
+#controls {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#controls button,
+#current-exercise button,
+.day-card .edit-day-button { 
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--accent-text-color);
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 5px;
+}
+
+#controls button:hover,
+#current-exercise button:hover,
+.day-card .edit-day-button:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#controls button:active,
+#current-exercise button:active,
+.day-card .edit-day-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Select Styling */
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+    min-width: 180px; 
+}
+
+.custom-select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 12px 40px 12px 15px; 
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--accent-text-color);
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-transform: none;
+    outline: none;
+}
+
+.custom-select-wrapper select:hover {
+    background-color: var(--accent-color-hover);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.custom-select-wrapper::after { 
+    content: '▼';
+    font-size: 0.8em;
+    color: var(--accent-text-color);
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    pointer-events: none; 
+}
+
+.custom-select-wrapper select option {
+    background-color: var(--input-bg-color); 
+    color: var(--text-color); 
+    padding: 8px 15px; 
+}
+
+.custom-select-wrapper select option:checked {
+    background-color: var(--accent-color-darker);
+    color: var(--accent-text-color);
+}
+.custom-select-wrapper select option:hover {
+     background-color: var(--list-item-hover-bg); 
+     color: var(--card-hover-text-color); 
+}
+
+#edit-plan-button.active-editing {
+    background-color: var(--accent-color-darker);
+    color: var(--text-color);
+}
+
+#back-to-plan {
+    background-color: #6c757d;
+    color: var(--text-color);
+}
+
+#back-to-plan:hover {
+    background-color: #5a6268;
+}
+
+#workout-display {
+    background-color: var(--card-bg-color);
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+#current-exercise #exercise-name {
+    font-size: 1.6em;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+
+#current-exercise img {
+    max-width: 200px;
+    height: 200px;
+    object-fit: contain;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+    border: 3px solid var(--image-border-color);
+    background-color: var(--image-bg-color);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s ease;
+}
+
+#current-exercise img.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#current-exercise img:not([src]),
+#current-exercise img[src=""] {
+    display: none !important; 
+    opacity: 0 !important;
+    transform: scale(0.9) !important;
+}
+
+#current-exercise #exercise-details {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    color: var(--details-text-color);
+}
+
+#timer-display {
+    font-size: 3.5em;
+    font-weight: bold;
+    margin: 20px 0;
+    color: var(--text-color);
+}
+
+.workout-buttons {
+    margin-top: 20px;
+}
+
+#current-exercise button:disabled,
+.day-card > button:disabled,
+#skip-rest:disabled,
+#skip-timer:disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#plan {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#workout-display #current-exercise {
+    transition: opacity 0.5s ease, visibility 0.5s ease, transform 0.5s ease;
+}
+
+.day-card {
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.day-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+.day-card h3 {
+    margin-top: 0;
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color-darker);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.day-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+    flex-grow: 1;
+}
+
+.day-card li {
+    background-color: var(--list-item-bg);
+    color: var(--text-color);
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.95em;
+    cursor: default; 
+    transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease, transform 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.day-card li:hover {
+    background-color: var(--list-item-hover-bg);
+    color: var(--card-hover-text-color);
+    border-left: 3px solid var(--accent-color);
+    transform: translateX(5px) scale(1.01);
+}
+
+.day-card > button.start-day-workout { 
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: auto; 
+    background-color: var(--button-muted-bg-color);
+    color: var(--text-color);
+}
+.day-card > button.start-day-workout:not(:last-child) { 
+    margin-bottom: 10px;
+}
+
+.day-card > button.start-day-workout:hover {
+    background-color: var(--button-muted-hover-bg-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.day-card > button.start-day-workout:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.day-card .edit-day-button {
+    margin-top: 10px; 
+    background-color: var(--accent-color-darker);
+    color: var(--text-color);
+}
+.day-card .edit-day-button:hover {
+    background-color: var(--accent-color);
+}
+
+.rest-day {
+    font-style: italic;
+    color: var(--rest-day-text-color);
+    text-align: center;
+    padding: 20px 0;
+    font-size: 1.1em;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active-exercise {
+    background-color: var(--list-item-active-bg) !important;
+    color: var(--list-item-active-text) !important;
+    font-weight: bold;
+    border-left: 3px solid var(--accent-color-darker) !important;
+}
+
+.plan-view #workout-display #current-exercise {
+}
+
+.workout-view #plan {
+}
+
+.workout-view #back-to-plan {
+    display: inline-block !important;
+}
+.plan-view #back-to-plan {
+    display: none !important;
+}
+.workout-view #edit-plan-button {
+    display: none !important;
+}
+.plan-view #edit-plan-button {
+     display: inline-block !important;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--modal-bg);
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+.modal-content {
+    background-color: var(--modal-content-bg);
+    margin: auto;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 700px; 
+    color: var(--text-color);
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+.close-modal-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal-button:hover,
+.close-modal-button:focus {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.modal-content h2, .modal-content h3 {
+    text-align: left;
+    color: var(--accent-color);
+}
+.modal-content h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    border-bottom: 1px solid var(--accent-color-darker);
+    padding-bottom: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.modal-input, .modal-select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px; 
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    color: var(--text-color);
+    border-radius: 5px;
+    box-sizing: border-box; 
+    transition: border-color 0.3s ease;
+}
+.modal-input:focus, .modal-select:focus {
+    border-color: var(--input-focus-border-color);
+    outline: none;
+}
+
+.exercise-edit-row {
+    background-color: rgba(255,255,255,0.05);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--card-bg-color);
+}
+.exercise-edit-row .form-group {
+    margin-bottom: 10px;
+}
+.exercise-edit-row .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.modal-button {
+    padding: 10px 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.modal-button.primary {
+    background-color: var(--accent-color);
+    color: var(--accent-text-color);
+}
+.modal-button.primary:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-1px);
+}
+
+.modal-button.secondary {
+    background-color: var(--button-muted-bg-color);
+    color: var(--text-color);
+}
+.modal-button.secondary:hover {
+    background-color: var(--button-muted-hover-bg-color);
+    transform: translateY(-1px);
+}
+
+.modal-button.danger {
+    background-color: #e53e3e; 
+    color: var(--text-color);
+    float: right;
+}
+.modal-button.danger:hover {
+    background-color: #c53030;
+    transform: translateY(-1px);
+}
+
+#add-exercise-to-modal {
+    display: block;
+    margin: 15px 0;
+    background-color: var(--accent-color-darker);
+    color: var(--text-color);
+}
+#add-exercise-to-modal:hover {
+    background-color: var(--accent-color);
+}
+
+.modal-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+.modal-actions .modal-button {
+    margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+    h2 {
+        font-size: 1.5em;
+    }
+    #timer-display {
+        font-size: 2.8em;
+    }
+    #current-exercise #exercise-name {
+        font-size: 1.4em;
+    }
+    #plan {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    .container {
+        padding: 10px;
+    }
+    #controls {
+        flex-direction: column;
+    }
+    #controls > *, .custom-select-wrapper {
+        width: 80%;
+        max-width: 300px;
+        box-sizing: border-box;
+    }
+    .custom-select-wrapper { 
+         display: block; 
+         margin-left: auto;
+         margin-right: auto;
+    }
+    #current-exercise img { 
+        height: 180px;
+        max-width: 180px;
+    }
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #controls button,
+    #current-exercise button,
+    .day-card > button,
+    .custom-select-wrapper select {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+    .custom-select-wrapper select {
+         padding: 10px 35px 10px 15px; 
+    }
+    #current-exercise img {
+        max-width: 150px;
+        height: 150px;
+    }
+    #timer-display {
+        font-size: 2.2em;
+    }
+    .workout-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .workout-buttons button {
+        width: 100%;
+        margin: 0;
+    }
+    .modal-content {
+        padding: 15px;
+    }
+    .modal-button, #add-exercise-to-modal {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    .modal-actions {
+        display: flex;
+        flex-direction: column;
+    }
+    .modal-button.danger {
+        float: none;
+        margin-top: 5px;
+    }
+}

@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "canvas-confetti": "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm"
+        }
+      }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Workout Routine</h1>
+
+        <div id="controls">
+            <button id="back-to-plan" style="display: none;">Back to Plan</button>
+            <div class="custom-select-wrapper">
+                <select id="music-select"></select>
+            </div>
+            <button id="bgm-toggle">Toggle BGM</button>
+            <div class="custom-select-wrapper">
+                <select id="theme-select">
+                    <option value="default">Default Blue</option>
+                    <option value="green">Green Lush</option>
+                    <option value="purple">Purple Power</option>
+                    <option value="orange">Orange Energy</option>
+                </select>
+            </div>
+            <button id="edit-plan-button">Edit My Plan</button>
+        </div>
+
+        <div id="workout-display">
+            <h2 id="current-day">Select a day to start</h2>
+            <div id="current-exercise">
+                <h3 id="exercise-name"></h3>
+                <img id="exercise-image" src="" alt="Workout Image">
+                <p id="exercise-details"></p>
+                <div id="timer-display">00:00</div>
+                <div class="workout-buttons">
+                    <button id="start-workout" style="display: none;">Start Workout</button>
+                    <button id="next-exercise" style="display: none;">Next Exercise</button>
+                    <button id="skip-rest" style="display: none;">Skip Rest</button>
+                    <button id="skip-timer" style="display: none;">Skip Timer</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="plan">
+            <!-- Day cards will be generated here by script.js -->
+        </div>
+    </div>
+
+    <div id="edit-day-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal-button" id="close-edit-modal-button">&times;</span>
+            <h2 id="modal-day-title">Edit Workout Day</h2>
+            <input type="hidden" id="editing-day-key">
+            
+            <div class="form-group">
+                <label for="modal-day-description">Day Description (e.g., Chest & Triceps):</label>
+                <input type="text" id="modal-day-description" class="modal-input">
+            </div>
+
+            <h3>Exercises:</h3>
+            <div id="modal-exercises-container">
+                <!-- Exercise edit rows will be added here by JS -->
+            </div>
+            <button id="add-exercise-to-modal" class="modal-button">Add Exercise</button>
+            <div class="modal-actions">
+                <button id="save-day-changes" class="modal-button primary">Save Changes</button>
+                <button id="cancel-day-edit" class="modal-button secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="script.js" type="module"></script>
+</body>
+</html>
