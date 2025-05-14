@@ -118,12 +118,13 @@ body.theme-white {
         }
 
         .player-container {
-            display: flex;
+            display: contents;
             flex-direction: column;
             width: 100%;
             max-width: 600px;
             min-height: 100vh;
             align-items: center;
+            justify-content: center;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -148,17 +149,19 @@ body.theme-white {
         
 
         .media-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            width: 100%;
-            padding-top: 56.25%;
-            position: relative;
-            background-color: #000;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 75%;
+        max-width: 800px;
+        aspect-ratio: 16 / 9; /* cleaner than padding-top */
+        margin: 40px auto; /* centers the container horizontally */
+        background-color: #000;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
         
         #video-placeholder {
             position: absolute;
@@ -225,8 +228,8 @@ body.theme-white {
 
         .title {
             text-align: center;
-            margin-top: 10px;
-            font-size: 20px;
+            margin-top: 5px;
+            font-size: 15px;
             color: var(--text);
             word-break: break-word;
         }
@@ -244,7 +247,7 @@ body.theme-white {
             justify-content: center;
             align-items: center;
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .btn {
@@ -305,7 +308,7 @@ body.theme-white {
         }
 
         .btn.skip-prev svg {
-            transform: scaleX(-1);
+            transform: scaleX(1);
         }
 
         .btn.skip-next svg {
