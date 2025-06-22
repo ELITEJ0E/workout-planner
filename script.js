@@ -124,7 +124,8 @@ const preloadedBgms = [
     { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
-    { name: "5x30", path: '5𝙭30.mp3', buffer: null }
+    { name: "5x30", path: '5𝙭30.mp3', buffer: null },
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
