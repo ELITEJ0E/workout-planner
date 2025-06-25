@@ -1,69 +1,73 @@
 import confetti from 'canvas-confetti';
 
+
+
 const defaultWorkoutPlan = {
     Monday: {
         name: "Chest, Tricep, Shoulder",
         exercises: [
-            { name: "Decline Push Up", sets: 4, reps: 20, image: "decline_pushup.jpg", type: 'reps' },
-            { name: "Normal Push Up", sets: 4, reps: 15, image: "normal_pushup.png", type: 'reps' },
-            { name: "Diamond Push Up", sets: 4, reps: 15, image: "diamond-pushup.gif", type: 'reps' },
-            { name: "Incline Push Up", sets: 3, reps: 20, image: "incline-pushup.gif", type: 'reps' },
-            { name: "Lateral Raises", sets: 4, reps: 15, image: "lateral-raise.gif", type: 'reps' },
-            { name: "Shoulder Press", sets: 3, reps: 15, image: "shoulder-press.gif", type: 'reps' }
+            { name: "Decline Push Up", sets: 4, reps: 20, image: "decline_pushup.jpg", type: 'reps', caloriesPerRep: 0.5 },
+            { name: "Normal Push Up", sets: 4, reps: 15, image: "normal_pushup.png", type: 'reps', caloriesPerRep: 0.4 },
+            { name: "Diamond Push Up", sets: 4, reps: 15, image: "diamond_pushup.png", type: 'reps', caloriesPerRep: 0.6 },
+            { name: "Incline Push Up", sets: 3, reps: 20, image: "incline_pushup.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Lateral Raises", sets: 4, reps: 15, image: "lateral_raises.png", type: 'reps', caloriesPerRep: 0.2 },
+            { name: "Shoulder Press", sets: 3, reps: 15, image: "shoulder_press.png", type: 'reps', caloriesPerRep: 0.3 }
         ]
     },
     Tuesday: {
         name: "Back, Biceps",
         exercises: [
-            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps' },
-            { name: "Bicep Curls", sets: 3, reps: 15, image: "bicep_curls.png", type: 'reps' },
-            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps' },
-            { name: "Dumbbell Rows", sets: 3, reps: '15 each', image: "dumbbell_rows.png", type: 'reps' },
-            { name: "Chin Ups", sets: 3, reps: 10, image: "chin_ups.png", type: 'reps' },
-            { name: "Barbell rows", sets: 3, reps: 15, image: "barbell_rows.png", type: 'reps' },
-            { name: "Shrugs", sets: 3, reps: 30, image: "shrugs.png", type: 'reps' }
+            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps', caloriesPerRep: 1.0 },
+            { name: "Bicep Curls", sets: 3, reps: 15, image: "bicep_curls.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps', caloriesPerRep: 1.0 },
+            { name: "Dumbbell Rows", sets: 3, reps: '15 each', image: "dumbbell_rows.png", type: 'reps', caloriesPerRep: 0.5 },
+            { name: "Chin Ups", sets: 3, reps: 10, image: "chin_ups.png", type: 'reps', caloriesPerRep: 0.9 },
+            { name: "Barbell rows", sets: 3, reps: 15, image: "barbell_rows.png", type: 'reps', caloriesPerRep: 0.7 },
+            { name: "Shrugs", sets: 3, reps: 30, image: "shrugs.png", type: 'reps', caloriesPerRep: 0.1 }
         ]
     },
     Wednesday: {
         name: "Legs, Abs",
         exercises: [
-             { name: "Jumping Jack", sets: 3, duration: 60, image: "jumping_jack.png", type: 'time' },
-             { name: "Hanging Knee Raises", sets: 3, reps: 15, image: "hanging_knee_raises.png", type: 'reps' },
-             { name: "Jumping Squats", sets: 3, reps: 25, image: "jumping_squats.png", type: 'reps' },
-             { name: "Plank", sets: 3, duration: 60, image: "plank.png", type: 'time' },
-             { name: "Russian Twist", sets: 3, reps: 50, image: "russian_twist.png", type: 'reps' },
-             { name: "Calf Raises", sets: 3, reps: 25, image: "calf_raises.png", type: 'reps' },
-             { name: "Crunches", sets: 3, reps: 12, image: "crunches.png", type: 'reps' }
+             { name: "Jumping Jack", sets: 3, duration: 60, image: "jumping_jack.png", type: 'time', caloriesPerSecond: 0.1 },
+             { name: "Hanging Knee Raises", sets: 3, reps: 15, image: "hanging_knee_raises.png", type: 'reps', caloriesPerRep: 0.7 },
+             { name: "Jumping Squats", sets: 3, reps: 25, image: "jumping_squats.png", type: 'reps', caloriesPerRep: 0.8 },
+             { name: "Plank", sets: 3, duration: 60, image: "plank.png", type: 'time', caloriesPerSecond: 0.05 },
+             { name: "Russian Twist", sets: 3, reps: 50, image: "russian_twist.png", type: 'reps', caloriesPerRep: 0.2 },
+             { name: "Calf Raises", sets: 3, reps: 25, image: "calf_raises.png", type: 'reps', caloriesPerRep: 0.2 },
+             { name: "Crunches", sets: 3, reps: 12, image: "crunches.png", type: 'reps', caloriesPerRep: 0.3 }
         ]
     },
     Thursday: { name: "Rest Day", exercises: [] },
     Friday: {
         name: "Arm, Shoulder",
         exercises: [
-            { name: "Pronation", sets: 3, reps: 10, image: "pronation.png", type: 'reps' },
-            { name: "Bicep curls", sets: 3, reps: 15, image: "bicep_curls.png", type: 'reps' },
-            { name: "Lateral Raises", sets: 4, reps: 15, image: "lateral_raises.png", type: 'reps' },
-            { name: "Shoulder Press", sets: 3, reps: 15, image: "shoulder_press.png", type: 'reps' },
-            { name: "Hammer curl", sets: 3, reps: 30, image: "hammer_curl.png", type: 'reps' },
-            { name: "Wrist Curl", sets: 3, reps: 20, image: "wrist_curl.png", type: 'reps' }
+            { name: "Pronation", sets: 3, reps: 10, image: "pronation.png", type: 'reps', caloriesPerRep: 0.1 },
+            { name: "Bicep curls", sets: 3, reps: 15, image: "bicep_curls.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Lateral Raises", sets: 4, reps: 15, image: "lateral_raises.png", type: 'reps', caloriesPerRep: 0.2 },
+            { name: "Shoulder Press", sets: 3, reps: 15, image: "shoulder_press.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Hammer curl", sets: 3, reps: 30, image: "hammer_curl.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Wrist Curl", sets: 3, reps: 20, image: "wrist_curl.png", type: 'reps', caloriesPerRep: 0.1 }
         ]
     },
     Saturday: {
         name: "Chest, Back",
         exercises: [
-            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps' },
-            { name: "Decline Push Up", sets: 4, reps: 20, image: "decline_pushup.png", type: 'reps' },
-            { name: "Pull ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps' },
-            { name: "Wide Push Up", sets: 4, reps: 15, image: "wide_pushup.png", type: 'reps' },
-            { name: "Incline Push Up", sets: 3, reps: 20, image: "incline_pushup.png", type: 'reps' },
-            { name: "Dumbbell Rows", sets: 3, reps: '15 each', image: "dumbbell_rows.png", type: 'reps' },
-            { name: "Barbell Rows", sets: 3, reps: 15, image: "barbell_rows.png", type: 'reps' }
+            { name: "Pull Ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps', caloriesPerRep: 1.0 },
+            { name: "Decline Push Up", sets: 4, reps: 20, image: "decline_pushup.png", type: 'reps', caloriesPerRep: 0.5 },
+            { name: "Pull ups", sets: 3, reps: 10, image: "pullups.png", type: 'reps', caloriesPerRep: 1.0 },
+            { name: "Wide Push Up", sets: 4, reps: 15, image: "wide_pushup.png", type: 'reps', caloriesPerRep: 0.4 },
+            { name: "Incline Push Up", sets: 3, reps: 20, image: "incline_pushup.png", type: 'reps', caloriesPerRep: 0.3 },
+            { name: "Dumbbell Rows", sets: 3, reps: '15 each', image: "dumbbell_rows.png", type: 'reps', caloriesPerRep: 0.5 },
+            { name: "Barbell Rows", sets: 3, reps: 15, image: "barbell_rows.png", type: 'reps', caloriesPerRep: 0.7 }
         ]
     },
     Sunday: { name: "Rest Day", exercises: [] }
 };
 
 let userWorkoutPlan;
+let workoutLog = {}; // Stores workout data by date
+let currentProfileYear = new Date().getFullYear();
 
 const planContainer = document.getElementById('plan');
 const workoutDisplayContainer = document.getElementById('workout-display');
@@ -85,6 +89,18 @@ const musicSelectElement = document.getElementById('music-select');
 const backToPlanButton = document.getElementById('back-to-plan');
 const themeSelectElement = document.getElementById('theme-select');
 const editPlanButton = document.getElementById('edit-plan-button');
+const viewProfileButton = document.getElementById('view-profile-button');
+const profileView = document.getElementById('profile-view');
+const totalWorkoutsDisplay = document.getElementById('total-workouts');
+const totalExercisesCompletedDisplay = document.getElementById('total-exercises-completed');
+const totalCaloriesDisplay = document.getElementById('total-calories');
+const currentYearDisplay = document.getElementById('current-year');
+const progressTrackerGrid = document.getElementById('progress-tracker-grid');
+const prevYearButton = document.getElementById('prev-year');
+const nextYearButton = document.getElementById('next-year');
+const modeToggleButton = document.getElementById('mode-toggle');
+const modeIcon = document.getElementById('mode-icon');
+
 
 // Modal elements
 const editDayModal = document.getElementById('edit-day-modal');
@@ -99,6 +115,7 @@ const editingDayKeyInput = document.getElementById('editing-day-key');
 
 let audioContext;
 let bgmSource;
+let bgmGainNode; // Added gain node for BGM volume control
 let bgmPlaylist = [];
 let currentTrackIndex = -1;
 let isBgmPlaying = false;
@@ -111,7 +128,13 @@ let restTime = 60;
 let timeRemaining;
 let workoutSoundBuffer;
 let restSoundBuffer;
+let profileSoundBuffer;
+let lightModeSoundBuffer; // New sound for light mode toggle
+let darkModeSoundBuffer; // New sound for dark mode toggle
 let isEditingPlan = false;
+let workoutCaloriesBurned = 0; // Track calories for the current workout session
+let workoutExercisesCompleted = []; // Track completed exercises for the current workout session
+let isLightMode = false; // Track light/dark mode state
 
 // Pre-loaded BGMs
 const preloadedBgms = [
@@ -120,22 +143,15 @@ const preloadedBgms = [
     { name: "Motivational Electro", path: 'background_music.mp3', buffer: null },
     { name: "MONTAGEM TOMADA", path: 'MONTAGEM TOMADA SLOWED.mp3', buffer: null },
     { name: "Passo Bem Solto", path: 'PASSO BEM SOLTO (Slowed).mp3', buffer: null },
-    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mp3', buffer: null },
+    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mpm', buffer: null },
     { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
-    { name: "5x30", path: '5𝙭30.mp3', buffer: null },
+    { name: "5x30", path: '5x30.mp3', buffer: null },
     { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
-
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("keydown", e => {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key))) {
-        e.preventDefault();
-    }
-});
 
 
 function initWorkoutPlan() {
@@ -163,11 +179,32 @@ function saveUserPlan() {
     }
 }
 
+function initWorkoutLog() {
+    const storedLog = localStorage.getItem('workoutLog');
+    if (storedLog) {
+        try {
+            workoutLog = JSON.parse(storedLog);
+        } catch (e) {
+            console.error("Failed to parse stored workout log, starting fresh:", e);
+            workoutLog = {};
+        }
+    }
+}
+
+function saveWorkoutLog() {
+    localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+}
+
 async function setupAudio() {
     if (audioContext && audioContext.state !== 'closed') {
         return;
     }
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    bgmGainNode = audioContext.createGain(); // Initialize gain node
+    bgmGainNode.connect(audioContext.destination);
+    // Set initial BGM volume (e.g., 0.5 for half volume)
+    bgmGainNode.gain.value = 0.5; 
+
     // Do not resume context automatically here. Resume on first user interaction with audio controls.
     document.body.addEventListener('click', () => {
          if (audioContext && audioContext.state === 'suspended') {
@@ -254,6 +291,10 @@ async function loadSounds() {
         bgmPlaylist = [...validPreloadedBgms, ...uploadedBgms];
         workoutSoundBuffer = await loadSound('workout_start.mp3');
         restSoundBuffer = await loadSound('rest_start.mp3');
+        profileSoundBuffer = await loadSound('workout_start.mp3'); // Assuming workout_start.mp3 is fine for profile click
+        lightModeSoundBuffer = await loadSound('workout_start.mp3'); // Assign light mode sound
+        darkModeSoundBuffer = await loadSound('rest_start.mp3'); // Assign dark mode sound
+
         let initialTrackIndex = -1;
         const lastTrackName = localStorage.getItem('lastSelectedBGM');
         if (lastTrackName) {
@@ -407,7 +448,7 @@ function playBGM(restart = false) {
         bgmSource = audioContext.createBufferSource();
         bgmSource.buffer = buffer;
         bgmSource.loop = true;
-        bgmSource.connect(audioContext.destination);
+        bgmSource.connect(bgmGainNode); // Connect to gain node
         bgmSource.start(0);
         isBgmPlaying = true;
         playPauseBgmButton.textContent = '❚❚';
@@ -515,7 +556,10 @@ function playSound(buffer) {
 }
 
 function applyTheme(themeName) {
-    document.body.className = '';
+    document.body.className = ''; // Clear existing theme classes
+    if (isLightMode) { // If light mode is active, re-apply it
+        document.body.classList.add('light-mode');
+    }
     if (themeName && themeName !== 'default') {
         document.body.classList.add(`theme-${themeName}`);
     }
@@ -538,29 +582,80 @@ if (themeSelectElement) {
     });
 }
 
+function toggleLightDarkMode() {
+    isLightMode = !isLightMode;
+    if (isLightMode) {
+        document.body.classList.add('light-mode');
+        modeIcon.textContent = '☀️'; // Sun icon for light mode
+        localStorage.setItem('colorMode', 'light');
+        playSound(lightModeSoundBuffer); // Play sound for light mode
+    } else {
+        document.body.classList.remove('light-mode');
+        modeIcon.textContent = '🌙'; // Moon icon for dark mode
+        localStorage.setItem('colorMode', 'dark');
+        playSound(darkModeSoundBuffer); // Play sound for dark mode
+    }
+    // Re-apply the current theme to ensure theme-specific light/dark styles are updated
+    applyTheme(themeSelectElement.value);
+}
+
+function loadColorMode() {
+    const savedMode = localStorage.getItem('colorMode');
+    if (savedMode === 'light') {
+        isLightMode = true;
+        document.body.classList.add('light-mode');
+        modeIcon.textContent = '☀️';
+    } else {
+        isLightMode = false;
+        document.body.classList.remove('light-mode');
+        modeIcon.textContent = '🌙';
+    }
+}
+modeToggleButton.addEventListener('click', () => {
+    setupAudio().then(() => {
+        toggleLightDarkMode();
+    });
+});
+
+
 function setView(viewName) {
     planContainer.style.display = 'none';
     workoutDisplayContainer.style.display = 'none';
+    profileView.style.display = 'none';
     currentExerciseDiv.style.display = 'none';
-    document.body.classList.remove('plan-view', 'workout-view', 'log-view');
+    document.body.classList.remove('plan-view', 'workout-view', 'profile-view');
+
+    // Reset workout view elements
+    currentDayDisplay.textContent = "Select a day to start";
+    timerDisplay.textContent = "00:00";
+    startWorkoutButton.style.display = 'none';
+    nextExerciseButton.style.display = 'none';
+    skipRestButton.style.display = 'none';
+    skipTimerButton.style.display = 'none';
+    exerciseImage.classList.remove('visible');
+    exerciseImage.src = '';
+    exerciseImage.style.display = 'none';
+    exerciseNameDisplay.textContent = "";
+    exerciseDetailsDisplay.textContent = "";
+
+    // General control button visibility
+    backToPlanButton.style.display = 'none';
+    editPlanButton.style.display = 'inline-block';
+    viewProfileButton.style.display = 'inline-block';
+
+
     if (viewName === 'plan') {
         document.body.classList.add('plan-view');
         planContainer.style.display = 'grid';
-        workoutDisplayContainer.style.display = 'block';
-        currentExerciseDiv.style.display = 'none';
-        backToPlanButton.style.display = 'none';
-        editPlanButton.style.display = 'inline-block';
-        currentDayDisplay.textContent = "Select a day to start";
-        timerDisplay.textContent = "00:00";
-        startWorkoutButton.style.display = 'none';
-        nextExerciseButton.style.display = 'none';
-        skipRestButton.style.display = 'none';
-        skipTimerButton.style.display = 'none';
-        exerciseImage.classList.remove('visible');
-        exerciseImage.src = '';
-        exerciseImage.style.display = 'none';
-        exerciseNameDisplay.textContent = "";
-        exerciseDetailsDisplay.textContent = "";
+        workoutDisplayContainer.style.display = 'block'; // Ensure workout-display wrapper is visible
+        currentExerciseDiv.style.display = 'none'; // But exercise details are hidden
+        if (isEditingPlan) {
+            editPlanButton.textContent = 'Finish Editing';
+            editPlanButton.classList.add('active-editing');
+        } else {
+            editPlanButton.textContent = 'Edit My Plan';
+            editPlanButton.classList.remove('active-editing');
+        }
     } else if (viewName === 'workout') {
         document.body.classList.add('workout-view');
         planContainer.style.display = 'none';
@@ -568,6 +663,14 @@ function setView(viewName) {
         currentExerciseDiv.style.display = 'block';
         backToPlanButton.style.display = 'inline-block';
         editPlanButton.style.display = 'none';
+        viewProfileButton.style.display = 'inline-block';
+    } else if (viewName === 'profile') {
+        document.body.classList.add('profile-view');
+        profileView.style.display = 'block';
+        backToPlanButton.style.display = 'inline-block'; // Allow going back from profile to plan
+        editPlanButton.style.display = 'none';
+        viewProfileButton.style.display = 'none';
+        renderProfile();
     }
 }
 
@@ -580,6 +683,8 @@ function selectDay(dayKey) {
     currentExerciseIndex = 0;
     currentSet = 1;
     isResting = false;
+    workoutCaloriesBurned = 0; // Reset calories for new workout
+    workoutExercisesCompleted = []; // Reset completed exercises for new workout
     setView('workout');
     currentDayDisplay.textContent = `${dayKey} - ${userWorkoutPlan[dayKey].name}`;
     displayExercise();
@@ -633,13 +738,10 @@ function startTimer(duration) {
         skipRestButton.style.display = 'inline-block';
         skipRestButton.disabled = false;
         skipTimerButton.style.display = 'none';
-    } else if (exercise.type === 'time') {
+    } else {
         skipTimerButton.style.display = 'inline-block';
         skipTimerButton.disabled = false;
         skipRestButton.style.display = 'none';
-    } else {
-        skipRestButton.style.display = 'none';
-        skipTimerButton.style.display = 'none';
     }
     timerInterval = setInterval(() => {
         timeRemaining--;
@@ -653,6 +755,13 @@ function startTimer(duration) {
                 skipRestButton.style.display = 'none';
                 displayExercise();
             } else {
+                // Calculate calories burned for timed exercises
+                if (exercise.type === 'time' && exercise.caloriesPerSecond) {
+                    workoutCaloriesBurned += (duration - timeRemaining) * exercise.caloriesPerSecond;
+                }
+                // Log individual exercise completion
+                workoutExercisesCompleted.push(exercise.name);
+
                 skipTimerButton.style.display = 'none';
                 handleSetCompletion();
             }
@@ -671,6 +780,20 @@ function handleSetCompletion() {
     const exercise = exercises[currentExerciseIndex];
     exerciseImage.classList.remove('visible');
     exerciseImage.style.display = 'none';
+    
+    // Calculate calories burned for reps-based exercises
+    if (exercise.type === 'reps' && exercise.caloriesPerRep) {
+        const repsValue = parseInt(String(exercise.reps).replace(' each', ''));
+        if (!isNaN(repsValue)) {
+            workoutCaloriesBurned += repsValue * exercise.caloriesPerRep;
+        }
+    }
+    // Log individual exercise completion for reps-based exercises
+    if (exercise.type === 'reps') {
+        workoutExercisesCompleted.push(exercise.name);
+    }
+
+
     if (currentSet < exercise.sets) {
         currentSet++;
         isResting = true;
@@ -713,6 +836,26 @@ function workoutComplete() {
     skipTimerButton.style.display = 'none';
     clearInterval(timerInterval);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+
+    // Log workout completion
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    if (!workoutLog[dateString]) {
+        workoutLog[dateString] = {
+            completedWorkouts: 0,
+            caloriesBurned: 0,
+            exercises: {} // Store exercise counts by name
+        };
+    }
+    workoutLog[dateString].completedWorkouts++;
+    workoutLog[dateString].caloriesBurned += Math.round(workoutCaloriesBurned); // Round calories
+
+    // Aggregate completed exercises
+    workoutExercisesCompleted.forEach(exerciseName => {
+        workoutLog[dateString].exercises[exerciseName] = (workoutLog[dateString].exercises[exerciseName] || 0) + 1;
+    });
+
+    saveWorkoutLog();
 }
 
 startWorkoutButton.addEventListener('click', () => {
@@ -785,21 +928,31 @@ skipTimerButton.addEventListener('click', () => {
     if (isResting || exercise.type !== 'time') return;
     clearInterval(timerInterval);
     timerDisplay.textContent = "Skipped!";
+    // Ensure calories are still calculated for timed exercises if skipped
+    if (exercise.type === 'time' && exercise.caloriesPerSecond) {
+        workoutCaloriesBurned += (exercise.duration - timeRemaining) * exercise.caloriesPerSecond;
+    }
+    // Log individual exercise completion if skipped (still counts as completed)
+    workoutExercisesCompleted.push(exercise.name);
+
     skipTimerButton.style.display = 'none';
     skipTimerButton.disabled = true;
     handleSetCompletion();
 });
 
 backToPlanButton.addEventListener('click', () => {
-    setView('plan');
-    clearInterval(timerInterval);
-    currentWorkoutDayKey = null;
-    currentExerciseIndex = 0;
-    currentSet = 1;
-    isResting = false;
-    exerciseImage.classList.remove('visible');
-    exerciseImage.src = '';
-    exerciseImage.style.display = 'none';
+    setupAudio().then(() => {
+        playSound(restSoundBuffer); // Play restSoundBuffer when Back to Plan is clicked
+        setView('plan');
+        clearInterval(timerInterval);
+        currentWorkoutDayKey = null;
+        currentExerciseIndex = 0;
+        currentSet = 1;
+        isResting = false;
+        exerciseImage.classList.remove('visible');
+        exerciseImage.src = '';
+        exerciseImage.style.display = 'none';
+    });
 });
 
 // --- Edit Plan Logic ---
@@ -853,6 +1006,10 @@ function createExerciseEditRow(exercise = {}, index = -1, dayKey = '') {
         <div class="form-group">
             <label for="ex-image-${uniqueId}">Image Filename (e.g., pullups.png):</label>
             <input type="text" id="ex-image-${uniqueId}" class="modal-input ex-image" value="${exercise.image || ''}">
+        </div>
+        <div class="form-group">
+            <label for="ex-calories-${uniqueId}">Calories per Rep/Second:</label>
+            <input type="number" step="0.1" id="ex-calories-${uniqueId}" class="modal-input ex-calories" value="${exercise.caloriesPerRep || exercise.caloriesPerSecond || 0.1}" min="0">
         </div>
     `;
     const typeSelect = row.querySelector('.ex-type');
@@ -916,8 +1073,10 @@ saveDayChangesButton.addEventListener('click', () => {
         };
         if (exercise.type === 'reps') {
             exercise.reps = row.querySelector('.ex-reps').value.trim() || 10;
+            exercise.caloriesPerRep = parseFloat(row.querySelector('.ex-calories').value) || 0.1;
         } else {
             exercise.duration = parseInt(row.querySelector('.ex-duration').value) || 60;
+            exercise.caloriesPerSecond = parseFloat(row.querySelector('.ex-calories').value) || 0.1;
         }
         newExercises.push(exercise);
     });
@@ -982,14 +1141,148 @@ function displayPlan() {
     }
 }
 
+// --- Profile View Logic ---
+viewProfileButton.addEventListener('click', () => {
+    setupAudio().then(() => {
+        playSound(profileSoundBuffer); // Play sound when View Profile is clicked
+        setView('profile');
+    });
+});
+
+function renderProfile() {
+    let totalWorkouts = 0;
+    let totalExercises = 0;
+    let totalCalories = 0;
+
+    for (const date in workoutLog) {
+        totalWorkouts += workoutLog[date].completedWorkouts;
+        totalCalories += workoutLog[date].caloriesBurned;
+        for (const exerciseName in workoutLog[date].exercises) {
+            totalExercises += workoutLog[date].exercises[exerciseName];
+        }
+    }
+    totalWorkoutsDisplay.textContent = totalWorkouts;
+    totalExercisesCompletedDisplay.textContent = totalExercises;
+    totalCaloriesDisplay.textContent = totalCalories.toFixed(0); // Display as integer
+
+    renderProgressTracker(currentProfileYear);
+}
+
+function renderProgressTracker(year) {
+    currentYearDisplay.textContent = year;
+    progressTrackerGrid.innerHTML = '';
+
+    // Create a 53x7 grid (weeks x days)
+    const weeksInYear = 53;
+    const daysInWeek = 7;
+
+    // Add empty cells for the first day of the year to align with the correct weekday
+    const firstDayOfYear = new Date(year, 0, 1);
+    const firstWeekday = firstDayOfYear.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+    // First, add a row for month labels, spanning the grid. This needs to be handled carefully
+    // as grid-template-columns is dynamic. For simplicity, we'll iterate and add a 'month-label' class
+    // that might need special grid-column spans in CSS if month names were to be precisely aligned.
+    // For now, let's just make 12 month labels at the top.
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // For a 53-column grid, roughly every 4-5 columns is a month. Let's create an array
+    // to map month to its starting column for placement.
+    const monthStarts = [0, 4, 9, 13, 17, 22, 26, 30, 35, 39, 43, 48]; // Approximate column starts for months in a 53-week grid
+    
+    // Create a temporary div for labels to manage their insertion
+    const labelsRow = document.createElement('div');
+    labelsRow.style.gridColumn = `1 / span ${weeksInYear}`; // Span across all columns
+    labelsRow.style.display = 'grid';
+    labelsRow.style.gridTemplateColumns = `repeat(${weeksInYear}, minmax(12px, 1fr))`; // Match main grid columns
+    labelsRow.style.gap = '1px'; // Match main grid gap
+
+    // Add placeholder cells for alignment before the first month label
+    let currentLabelCol = 0;
+    for (let i = 0; i < monthNames.length; i++) {
+        // Add empty cells until the start of the current month
+        while (currentLabelCol < monthStarts[i]) {
+            const emptyLabelCell = document.createElement('div');
+            emptyLabelCell.style.width = '12px'; // Match the width of a day cell
+            emptyLabelCell.style.height = '12px'; // Or adjust as needed for label height
+            labelsRow.appendChild(emptyLabelCell);
+            currentLabelCol++;
+        }
+        const monthLabel = document.createElement('div');
+        monthLabel.classList.add('month-label');
+        monthLabel.textContent = monthNames[i];
+        monthLabel.style.gridColumn = `span 4`; // Span roughly 4 weeks for each month
+        labelsRow.appendChild(monthLabel);
+        currentLabelCol += 4; // Advance column count
+    }
+    progressTrackerGrid.appendChild(labelsRow);
+
+
+    // Fill the grid with day cells
+    let dayCounter = 0;
+    for (let week = 0; week < weeksInYear; week++) {
+        for (let dayOfWeek = 0; dayOfWeek < daysInWeek; dayOfWeek++) {
+            const date = new Date(year, 0, 1 + dayCounter); // Start from Jan 1st
+            const dateString = date.toISOString().split('T')[0];
+            
+            const dayCell = document.createElement('div');
+            dayCell.classList.add('progress-day');
+
+            // Handle days before Jan 1st to align the calendar correctly
+            if (week === 0 && dayOfWeek < firstWeekday) {
+                dayCell.classList.add('empty'); // Style this as an empty cell
+            } else if (date.getFullYear() !== year) { // Stop if we've passed the end of the year
+                dayCell.classList.add('empty');
+            } else {
+                if (workoutLog[dateString]) {
+                    dayCell.classList.add('completed-day');
+                    const logData = workoutLog[dateString];
+                    const workoutCount = logData.completedWorkouts;
+                    if (workoutCount >= 4) dayCell.classList.add('level-4');
+                    else if (workoutCount >= 3) dayCell.classList.add('level-3');
+                    else if (workoutCount >= 2) dayCell.classList.add('level-2');
+                    else if (workoutCount >= 1) dayCell.classList.add('level-1');
+
+                    const tooltip = document.createElement('div');
+                    tooltip.classList.add('tooltip');
+                    let tooltipContent = `${new Date(dateString).toLocaleDateString()}\nWorkouts: ${logData.completedWorkouts}\nCalories: ${logData.caloriesBurned} kcal`;
+                    if (logData.exercises && Object.keys(logData.exercises).length > 0) {
+                        tooltipContent += "\n\nExercises:";
+                        for (const exName in logData.exercises) {
+                            tooltipContent += `\n- ${exName}: ${logData.exercises[exName]} completed`;
+                        }
+                    }
+                    tooltip.textContent = tooltipContent;
+                    dayCell.appendChild(tooltip);
+                }
+            }
+            progressTrackerGrid.appendChild(dayCell);
+            dayCounter++;
+        }
+    }
+}
+
+
+prevYearButton.addEventListener('click', () => {
+    currentProfileYear--;
+    renderProgressTracker(currentProfileYear);
+});
+
+nextYearButton.addEventListener('click', () => {
+    currentProfileYear++;
+    renderProgressTracker(currentProfileYear);
+});
+
+
 // Initial Setup
 initWorkoutPlan();
+initWorkoutLog();
 populateMusicSelector();
 if (themeSelectElement) {
     loadTheme();
 } else {
     applyTheme('default');
 }
+loadColorMode(); // Load color mode on startup
 exerciseImage.src = '';
 exerciseImage.classList.remove('visible');
 exerciseImage.style.display = 'none';

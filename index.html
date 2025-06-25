@@ -39,10 +39,10 @@
             <div class="title" id="title">Song Title</div>
             <div class="artist" id="artist">Artist Name</div>
             <div class="controls">
-                <button class="btn" onclick="muteVolume()" id="mute-btn" aria-label="Mute/Unmute"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.88.75 5 3.37 5 6.71s-2.12 5.96-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77zM3 9v6h4l5 5V4L7 9H3z"/></svg>
+                <button class="btn" onclick="muteVolume()" id="mute-btn" aria-label="Mute/Unmute"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.88.75 5 3.37 5 6.71s-2.12 5.96-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77zM3 9v6h4l5 5V4L7 9H3z"></path></svg>
                 </button>
                 <button class="btn skip-prev" id="prev-btn" aria-label="Previous">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6v12h2V6H6zm3.5 6l8.5-6v12l-8.5-6z"/></svg>
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
                 </button>
                 <button class="btn btn-play" id="play" aria-label="Play/Pause">
                     <svg id="icon-play" width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="icon-pause" width="32" height="32" fill="currentColor" viewBox="0 0 24 24" style="display:none;"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
@@ -135,6 +135,7 @@
 
             videoPlaceholder.style.display = 'block';
 
+            loadPlaylist(); // Load playlist from localStorage
             renderPlaylist();
             updateProgress();
         }
@@ -265,6 +266,7 @@
             if (existingIndex === -1) {
                 const newSong = { videoId: videoId, title: 'Loading title...' };
                 playlist.push(newSong);
+                savePlaylist(); // Save playlist after adding
                 renderPlaylist();
 
                 if (currentIndex === -1) {
@@ -277,6 +279,7 @@
                         const songIndex = playlist.findIndex(item => item.videoId === videoId);
                         if (songIndex !== -1) {
                             playlist[songIndex].title = data.title || 'Unknown Title';
+                            savePlaylist(); // Save playlist after updating title
                             renderPlaylist();
 
                             if (songIndex === currentIndex) {
@@ -291,6 +294,7 @@
                         const songIndex = playlist.findIndex(item => item.videoId === videoId);
                         if (songIndex !== -1) {
                             playlist[songIndex].title = 'Error loading title';
+                            savePlaylist(); // Save playlist even if title load fails
                             renderPlaylist();
                             if (songIndex === currentIndex) {
                                 titleElement.textContent = playlist[currentIndex].title;
@@ -308,6 +312,7 @@
             if (index >= 0 && index < playlist.length) {
                 const wasPlaying = index === currentIndex;
                 playlist.splice(index, 1);
+                savePlaylist(); // Save playlist after removing
 
                 if (wasPlaying) {
                     player.stopVideo();
@@ -326,9 +331,10 @@
                         currentIndex = (index >= playlist.length) ? 0 : index;
                         playSong(currentIndex);
                     } else {
-                        currentIndex = -1;
-                        player.cueVideoById('');
-                        videoPlaceholder.style.display = 'block';
+                        currentIndex = -1; // No song selected
+                        titleElement.textContent = 'Song Title';
+                        artistElement.textContent = 'Artist Name';
+                        document.title = 'YouTube Music Player';
                     }
 
                 } else if (index < currentIndex) {
@@ -336,6 +342,43 @@
                 }
 
                 renderPlaylist();
+            }
+        }
+
+        function savePlaylist() {
+            localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
+            localStorage.setItem('youtubeCurrentIndex', currentIndex);
+        }
+
+        function loadPlaylist() {
+            const storedPlaylist = localStorage.getItem('youtubePlaylist');
+            const storedIndex = localStorage.getItem('youtubeCurrentIndex');
+            if (storedPlaylist) {
+                try {
+                    playlist = JSON.parse(storedPlaylist);
+                    if (!Array.isArray(playlist)) {
+                        playlist = []; // Reset if invalid
+                    }
+                } catch (e) {
+                    console.error("Failed to parse stored playlist, resetting:", e);
+                    playlist = [];
+                }
+            } else {
+                playlist = [];
+            }
+
+            if (playlist.length > 0 && storedIndex !== null) {
+                currentIndex = parseInt(storedIndex, 10);
+                if (isNaN(currentIndex) || currentIndex < 0 || currentIndex >= playlist.length) {
+                    currentIndex = 0; // Default to first song if index is invalid
+                }
+                player.cueVideoById(playlist[currentIndex].videoId);
+                updateSongInfo(playlist[currentIndex].videoId);
+            } else {
+                currentIndex = -1; // No song selected
+                titleElement.textContent = 'Song Title';
+                artistElement.textContent = 'Artist Name';
+                document.title = 'YouTube Music Player';
             }
         }
 
@@ -404,6 +447,7 @@
 
             if (index >= 0 && index < playlist.length) {
                 currentIndex = index;
+                savePlaylist(); // Save current index
                 const videoId = playlist[currentIndex].videoId;
 
                 console.log('Attempting to load video:', videoId);
@@ -441,6 +485,7 @@
                     artistElement.textContent = 'Artist Name';
                     document.title = 'YouTube Music Player';
                     currentIndex = -1;
+                    savePlaylist(); // Save empty state
                     player.cueVideoById('');
                     videoPlaceholder.style.display = 'block';
                 }
@@ -489,6 +534,7 @@
                 artistElement.textContent = 'Artist Name';
                 document.title = 'YouTube Music Player';
                 currentIndex = -1;
+                savePlaylist(); // Save empty state
                 player.cueVideoById('');
                 videoPlaceholder.style.display = 'block';
             }
@@ -511,6 +557,7 @@
                 artistElement.textContent = 'Artist Name';
                 document.title = 'YouTube Music Player';
                 currentIndex = -1;
+                savePlaylist(); // Save empty state
                 player.cueVideoById('');
                 videoPlaceholder.style.display = 'block';
             }
@@ -599,12 +646,14 @@
                 document.getElementById('mute-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9h3l4-4v14l-4-4H3V9zm11 0h.5c.83 0 1.5.67 1.5 1.5v3c0 .83-.67 1.5-1.5 1.5H14V9z"></path></svg>';
             }
         }
+        loadPlaylist(); // Call loadPlaylist here to load on page load
         renderPlaylist();
         updateProgress();
     </script>
 
         <div id="controls">
-            <button id="back-to-plan" style="display: none;">Back to Plan</button>
+            <button id="back-to-plan" style="display: none;"><svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg></button>
+            <button id="view-profile-button">View Profile</button>
             
             <!-- Music Player Controls -->
             <div class="music-controls">
@@ -631,6 +680,11 @@
                     <option value="white">🤍 Pure Minimal</option>
                 </select>
             </div>
+
+            <!-- Dark/Light Mode Toggle -->
+            <button id="mode-toggle" title="Toggle Light/Dark Mode">
+                <span id="mode-icon">🌙</span> <!-- Moon icon for dark mode -->
+            </button>
 
             <!-- Edit Plan Button -->
             <button id="edit-plan-button">Edit My Plan</button>
@@ -680,6 +734,35 @@
         </div>
     </div>
 
+    <!-- Profile View -->
+    <div id="profile-view" class="container" style="display: none;">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">My Workout Progress</h2>
+        <div id="profile-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <p class="text-gray-600">Total Workouts Completed</p>
+                <p id="total-workouts" class="text-2xl font-semibold text-gray-800">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <p class="text-gray-600">Total Exercises Completed</p>
+                <p id="total-exercises-completed" class="text-2xl font-semibold text-gray-800">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <p class="text-gray-600">Total Calories Burned</p>
+                <p id="total-calories" class="text-2xl font-semibold text-gray-800">0</p>
+                <span class="text-gray-600">kcal</span>
+            </div>
+        </div>
+        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center">Workout Log</h3>
+        <div class="progress-tracker-container">
+            <div class="progress-tracker-controls">
+                <button id="prev-year">←</button>
+                <h3 id="current-year"></h3>
+                <button id="next-year">→</button>
+            </div>
+            <div id="progress-tracker-grid" class="progress-tracker-grid"></div>
+        </div>
+    </div>
+
     <footer class="site-footer">
     <p>&copy; 2025 Joel Tan. All rights reserved.</p>
     </footer>
@@ -688,4 +771,3 @@
     
 </body>
 </html>
-
