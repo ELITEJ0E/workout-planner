@@ -279,8 +279,8 @@ body {
     align-items: center;
     width: 75%;
     max-width: 800px;
-    aspect-ratio: 16 / 9;
-    margin: 40px auto;
+    aspect-ratio: 16 / 9; /* cleaner than padding-top */
+    margin: 40px auto; /* centers the container horizontally */
     background-color: #000;
     border-radius: 10px;
     overflow: hidden;
@@ -577,9 +577,9 @@ h3 {
 #current-exercise button,
 .day-card .edit-day-button,
 .music-controls button,
-.upload-button,
-#load-btn,
-#view-profile-button {
+.upload-button,#load-btn,
+#view-profile-button
+{ 
     padding: 12px 25px;
     font-size: 1em;
     font-weight: bold;
@@ -593,10 +593,10 @@ h3 {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 5px;
-    display: inline-flex;
+    display: inline-flex; 
     align-items: center;
     justify-content: center;
-    min-width: 40px;
+    min-width: 40px; 
 }
 
 #controls button:hover,
@@ -604,7 +604,8 @@ h3 {
 .day-card .edit-day-button:hover,
 .music-controls button:hover,
 .upload-button:hover,
-#view-profile-button:hover {
+#view-profile-button:hover
+{
     background-color: var(--accent-color-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -615,7 +616,8 @@ h3 {
 .day-card .edit-day-button:active,
 .music-controls button:active,
 .upload-button:active,
-#view-profile-button:active {
+#view-profile-button:active
+{
     transform: translateY(0px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
@@ -625,7 +627,7 @@ h3 {
     position: relative;
     display: inline-block;
     margin: 5px;
-    min-width: 180px;
+    min-width: 180px; 
 }
 
 .custom-select-wrapper select {
@@ -633,13 +635,13 @@ h3 {
     -webkit-appearance: none;
     -moz-appearance: none;
     width: 100%;
-    padding: 12px 40px 12px 15px;
+    padding: 12px 40px 12px 15px; 
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    background-color: var(--card-bg-color);
-    color: var(--text-color);
-    border: none;
+    background-color: var(--card-bg-color); 
+    color: var(--text-color); 
+    border: none; 
     border-radius: 25px;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -648,48 +650,46 @@ h3 {
 }
 
 .custom-select-wrapper select:hover {
-    background-color: var(--button-muted-hover-bg-color);
+    background-color: var(--button-muted-hover-bg-color); 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
 .custom-select-wrapper select:focus {
-    border: none;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(var(--accent-color-darker), 0.5);
+     border: none; 
+     outline: none; 
+     box-shadow: 0 0 0 3px rgba(var(--accent-color-darker), 0.5); 
 }
 
-.custom-select-wrapper::after {
+.custom-select-wrapper::after { 
     content: '▼';
     font-size: 0.8em;
-    color: var(--accent-color);
+    color: var(--accent-color); 
     position: absolute;
     top: 50%;
     right: 15px;
     transform: translateY(-50%);
-    pointer-events: none;
+    pointer-events: none; 
 }
 
 .custom-select-wrapper select option {
-    background-color: var(--input-bg-color);
-    color: var(--text-color);
-    padding: 8px 15px;
+    background-color: var(--input-bg-color); 
+    color: var(--text-color); 
+    padding: 8px 15px; 
 }
 
 .custom-select-wrapper select option:checked {
     background-color: var(--accent-color-darker);
     color: var(--accent-text-color);
 }
-
 .custom-select-wrapper select option:hover {
-    background-color: var(--list-item-hover-bg);
-    color: var(--card-hover-text-color);
+     background-color: var(--list-item-hover-bg); 
+     color: var(--card-hover-text-color); 
 }
 
 /* Music Control specific styling */
 .music-controls button {
     background-color: var(--button-muted-bg-color);
     color: var(--text-color);
-    padding: 12px 15px;
+    padding: 12px 15px; 
     min-width: 40px;
 }
 
@@ -699,27 +699,25 @@ h3 {
 
 /* Upload button styling */
 .upload-button {
-    background-color: var(--accent-color-darker);
-    color: var(--text-color);
-    padding: 12px 25px;
-    display: inline-block;
-    cursor: pointer;
-    border-radius: 25px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    margin: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 1em;
-    font-weight: bold;
+     background-color: var(--accent-color-darker); 
+     color: var(--text-color);
+     padding: 12px 25px; 
+     display: inline-block; 
+     cursor: pointer;
+     border-radius: 25px;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+     margin: 5px;
+     text-transform: uppercase;
+     letter-spacing: 0.5px;
+     font-size: 1em;
+     font-weight: bold;
 }
-
 .upload-button:hover {
     background-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+     transform: translateY(-2px);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
 .upload-button:active {
     transform: translateY(0px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -775,7 +773,7 @@ h3 {
 
 #current-exercise img:not([src]),
 #current-exercise img[src=""] {
-    display: none !important;
+    display: none !important; 
     opacity: 0 !important;
     transform: scale(0.9) !important;
 }
@@ -812,6 +810,9 @@ h3 {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
     transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#workout-display #current-exercise {
 }
 
 .day-card {
@@ -852,7 +853,7 @@ h3 {
     padding: 10px 15px;
     border-radius: 6px;
     font-size: 0.95em;
-    cursor: default;
+    cursor: default; 
     transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease, transform 0.2s ease;
     border-left: 3px solid transparent;
 }
@@ -883,13 +884,14 @@ h3 {
     border-left: 3px solid var(--accent-color-darker) !important;
 }
 
+/* Specific styling for day start buttons inside day-card */
 .day-card .start-day-workout {
     padding: 12px 25px;
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    background-color: var(--accent-color);
-    color: var(--accent-text-color);
+    background-color: var(--accent-color); /* Use accent color */
+    color: var(--accent-text-color); /* Use accent text color */
     border: none;
     border-radius: 25px;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
@@ -920,7 +922,6 @@ h3 {
 .log-view #plan {
     display: none !important;
 }
-
 .log-view #workout-display {
     display: none !important;
 }
@@ -929,29 +930,25 @@ h3 {
 .log-view #back-to-plan {
     display: inline-block !important;
 }
-
 .plan-view #back-to-plan {
     display: none !important;
 }
-
 .workout-view #edit-plan-button,
 .log-view #edit-plan-button {
     display: none !important;
 }
-
 .plan-view #edit-plan-button {
-    display: inline-block !important;
+     display: inline-block !important;
 }
-
 .workout-view #view-log-button,
 .plan-view #view-log-button {
-    display: inline-block !important;
+     display: inline-block !important;
 }
-
 .log-view #view-log-button {
-    display: none !important;
+     display: none !important;
 }
 
+/* Profile View Styles */
 #profile-view {
     background-color: var(--card-bg-color);
     padding: 25px;
@@ -959,6 +956,7 @@ h3 {
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     text-align: center;
+    max-width: 900px; /* Limit max width for desktop */
 }
 
 #profile-stats {
@@ -967,9 +965,17 @@ h3 {
     padding: 15px;
     background-color: var(--input-bg-color);
     border-radius: 8px;
-    display: inline-block;
-    min-width: 250px;
+    display: grid; /* Change to grid */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
+    gap: 15px; /* Gap between stat cards */
     text-align: center;
+}
+
+#profile-stats > div { /* Apply styles to individual stat cards */
+    background-color: var(--card-bg-color); /* Use card background for each stat */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 #profile-stats p {
@@ -983,6 +989,7 @@ h3 {
     color: var(--accent-color);
 }
 
+/* Progress tracker specific styles */
 .progress-tracker-container {
     max-width: 100%;
     margin: 20px auto;
@@ -990,7 +997,7 @@ h3 {
     overflow: hidden;
     border: 1px solid var(--progress-tracker-border-color);
     background-color: var(--progress-tracker-card-bg-color);
-    color: var(--progress-tracker-text-color);
+    color: var(--progress-tracker-text-color); /* Ensure text is readable */
 }
 
 .progress-tracker-controls {
@@ -1007,7 +1014,7 @@ h3 {
 .progress-tracker-controls h3 {
     margin: 0;
     font-size: 1.5em;
-    color: var(--progress-tracker-text-color);
+    color: var(--progress-tracker-text-color); /* Override general h3 color for controls */
 }
 
 .progress-tracker-controls button {
@@ -1030,9 +1037,10 @@ h3 {
     gap: 1px;
     background-color: var(--progress-tracker-border-color);
     padding: 10px;
-    overflow-x: auto;
+    overflow-x: auto; /* Enable horizontal scrolling */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    min-width: 0; /* Allow the grid to shrink */
 }
 
 .progress-day {
@@ -1042,43 +1050,33 @@ h3 {
     position: relative;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0; /* Prevent items from shrinking */
 }
-
 .progress-day.empty {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05); /* Lighter background for empty cells */
     cursor: default;
 }
-
 body.light-mode .progress-day.empty {
     background-color: rgba(0, 0, 0, 0.02);
 }
+
 
 .progress-day:hover {
     transform: scale(1.1);
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     z-index: 10;
 }
-
 .progress-day.empty:hover {
     transform: none;
     box-shadow: none;
 }
 
-.progress-day.completed-day.level-1 {
-    background-color: var(--level-1-color);
-}
 
-.progress-day.completed-day.level-2 {
-    background-color: var(--level-2-color);
-}
+.progress-day.completed-day.level-1 { background-color: var(--level-1-color); }
+.progress-day.completed-day.level-2 { background-color: var(--level-2-color); }
+.progress-day.completed-day.level-3 { background-color: var(--level-3-color); }
+.progress-day.completed-day.level-4 { background-color: var(--level-4-color); }
 
-.progress-day.completed-day.level-3 {
-    background-color: var(--level-3-color);
-}
-
-.progress-day.completed-day.level-4 {
-    background-color: var(--level-4-color);
-}
 
 .progress-day .tooltip {
     visibility: hidden;
@@ -1120,48 +1118,30 @@ body.light-mode .progress-day.empty {
 }
 
 .month-label {
+    /* grid-column handled in JS for exact placement */
     text-align: center;
     font-size: 0.75rem;
     color: var(--progress-tracker-text-color);
     padding-bottom: 5px;
-    background-color: var(--progress-tracker-card-bg-color);
+    background-color: var(--progress-tracker-card-bg-color); /* Match card background */
 }
-
-.progress-tracker-grid > div:first-child {
+/* Style for the container of month labels */
+.progress-tracker-grid > .month-labels-row {
     display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
-    margin-bottom: 5px;
+    grid-template-columns: subgrid; /* Allow child divs to span columns set by parent */
+    grid-column: 1 / -1; /* Span the entire width of the main grid */
+    margin-bottom: 5px; /* Space between labels and days */
 }
 
-@media (max-width: 640px) {
-    .progress-tracker-grid {
-        grid-template-columns: repeat(53, 10px);
-        gap: 1px;
-        padding: 5px;
-    }
 
-    .progress-day {
-        border-radius: 2px;
-    }
-
-    .tooltip {
-        font-size: 0.75rem;
-        max-width: 150px;
-    }
-
-    .month-label {
-        font-size: 0.65rem;
-    }
-}
-
+/* Old calendar grid (remove if not needed) */
 #log-calendar-grid {
-    display: none;
+    display: none; /* Hide the old calendar grid */
+}
+#log-calendar-controls {
+    display: none; /* Hide old calendar controls */
 }
 
-#log-calendar-controls {
-    display: none;
-}
 
 .site-footer {
     width: 100%;
@@ -1177,23 +1157,64 @@ body.light-mode .progress-day.empty {
 #mode-toggle {
     background-color: var(--button-muted-bg-color);
     color: var(--text-color);
-    font-size: 1.5em;
+    font-size: 1.5em; /* Larger icon */
     padding: 8px 12px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 50px; /* Fixed width */
+    height: 50px; /* Fixed height for a square button */
+    border-radius: 50%; /* Circle shape */
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin-left: auto;
+    margin-left: auto; /* Push to the right */
 }
 
 #mode-toggle:hover {
     background-color: var(--button-muted-hover-bg-color);
 }
-
 #mode-toggle #mode-icon {
-    line-height: 1;
+    line-height: 1; /* Center icon vertically */
+}
+
+/* Add media queries for player-container and profile-view for responsiveness */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .player-container {
+        padding: 10px; /* Adjust padding */
+        max-width: 100%; /* Allow full width */
+    }
+
+    .media-container {
+        width: 90%; /* Adjust video player width */
+        margin: 20px auto; /* Adjust margin */
+    }
+
+    .controls {
+        gap: 10px; /* Reduce gap between controls */
+    }
+
+    .btn {
+        font-size: 20px; /* Smaller button icons */
+    }
+
+    .btn-play {
+        font-size: 30px; /* Smaller play/pause icon */
+    }
+
+    .playlist-container {
+        margin-top: 20px; /* Adjust margin */
+    }
+
+    #playlist li {
+        padding: 10px; /* Adjust playlist item padding */
+    }
+
+    #profile-view {
+        padding: 15px; /* Adjust padding */
+        margin: 10px; /* Add margin to avoid sticking to edges */
+    }
 }
 
 @media screen and (max-width: 600px) {
@@ -1205,20 +1226,16 @@ body.light-mode .progress-day.empty {
     .modal-content {
         padding: 15px;
     }
-
     .modal-content h2, .modal-content h3 {
         font-size: 1.5em;
     }
-
     .modal-input, .modal-select {
         font-size: 0.9em;
     }
-
     .modal-button {
         font-size: 0.8em;
         padding: 8px 15px;
     }
-
     #mode-toggle {
         font-size: 1.2em;
         padding: 6px 10px;
@@ -1226,119 +1243,131 @@ body.light-mode .progress-day.empty {
         height: 40px;
     }
 
-    .container {
-        padding: 10px;
+    /* Further adjustments for very small screens */
+    .player-container {
+        padding: 5px;
     }
 
-    h1 {
-        font-size: 2em;
+    .url-input {
+        flex-direction: column; /* Stack input and button */
+        gap: 5px;
     }
 
-    #controls {
-        flex-direction: column;
+    #youtube-url, #load-btn {
+        width: 100%; /* Full width for input and button */
+    }
+
+    .media-container {
+        width: 100%; /* Full width for video */
+        margin: 15px auto;
+    }
+
+    .controls {
+        flex-wrap: wrap; /* Allow controls to wrap */
         gap: 8px;
     }
 
-    #controls button,
-    .custom-select-wrapper select,
-    .upload-button {
-        width: 100%;
-        margin: 4px 0;
-        box-sizing: border-box;
+    .btn, .btn-loop {
+        min-width: unset; /* Remove min-width constraint */
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    .btn svg, .btn-play svg {
+        width: 20px;
+        height: 20px;
     }
 
     .custom-select-wrapper {
-        min-width: unset;
-        width: 100%;
+        min-width: 150px;
+    }
+    .custom-select-wrapper select {
+        font-size: 0.9em;
+        padding: 10px 30px 10px 12px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    #profile-view {
+        padding: 20px;
     }
 
-    .music-controls {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
+    #profile-stats {
+        padding: 12px;
     }
 
-    .music-controls button {
-        flex-grow: 1;
-        max-width: 30%;
-        margin: 5px;
+    .progress-tracker-container {
+        margin: 15px auto;
     }
 
-    .music-controls .custom-select-wrapper {
-        flex-basis: 100%;
+    .progress-tracker-grid {
+        grid-template-columns: repeat(53, minmax(12px, 1fr)); /* Keep consistent with JS column count */
     }
 
-    #workout-display {
-        padding: 15px;
+    .progress-tracker-controls {
+        padding: 8px;
     }
+}
 
-    #current-exercise #exercise-name {
-        font-size: 1.4em;
-    }
-
-    #current-exercise img {
-        max-width: 150px;
-        height: 150px;
-    }
-
-    #current-exercise #exercise-details {
-        font-size: 1em;
-    }
-
-    #timer-display {
-        font-size: 3em;
-    }
-
-    .workout-buttons button {
-        width: 100%;
-        margin-bottom: 8px;
-    }
-
-    #plan {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .day-card {
-        padding: 15px;
-    }
-
-    .day-card h3 {
-        font-size: 1.2em;
-    }
-
+@media screen and (max-width: 992px) {
     #profile-view {
         padding: 15px;
     }
 
     #profile-stats {
-        grid-template-columns: 1fr;
         padding: 10px;
-        min-width: unset;
-        width: 100%;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Make stat cards more responsive */
     }
 
-    #profile-stats > div {
-        padding: 10px;
-    }
-
-    #profile-stats p {
-        font-size: 1em;
-    }
-
-    #profile-stats p#total-workouts,
-    #profile-stats p#total-exercises-completed,
-    #profile-stats p#total-calories {
-        font-size: 1.8em;
-    }
-
-    .progress-tracker-container {
-        padding: 5px;
+    .progress-tracker-grid {
+        grid-template-columns: repeat(53, minmax(10px, 1fr)); /* Adjusted for smaller screens */
+        gap: 0.8px;
     }
 
     .progress-tracker-controls {
+        flex-direction: row; /* Keep controls in a row for better alignment */
+        gap: 8px;
+        padding: 6px;
+    }
+
+    .progress-tracker-controls h3 {
+        font-size: 1.3em;
+    }
+
+    .progress-tracker-controls button {
+        font-size: 1.3em;
+        padding: 4px;
+    }
+
+    .progress-day .tooltip {
+        max-width: 180px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #profile-view {
+        padding: 12px;
+    }
+
+    #profile-stats {
         padding: 8px;
+        margin: 8px auto;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Further adjust for smaller screens */
+    }
+
+    .progress-tracker-container {
+        margin: 10px auto;
+        padding: 8px;
+    }
+
+    .progress-tracker-grid {
+        grid-template-columns: repeat(53, minmax(8px, 1fr));
+        gap: 0.6px;
+        padding: 6px;
+    }
+
+    .progress-tracker-controls {
+        padding: 5px;
     }
 
     .progress-tracker-controls h3 {
@@ -1346,49 +1375,311 @@ body.light-mode .progress-day.empty {
     }
 
     .progress-tracker-controls button {
-        font-size: 1.2em;
+        font-size: 1.3em;
+        padding: 4px;
     }
 
-    .progress-tracker-grid {
-        grid-template-columns: repeat(53, 8px);
-        padding: 5px;
-        gap: 1px;
-    }
-
-    .progress-day {
-        border-radius: 1px;
-    }
-
-    .tooltip {
-        font-size: 0.65em;
-        padding: 5px;
+    .progress-day .tooltip {
+        max-width: 150px;
+        font-size: 0.8em;
     }
 
     .month-label {
-        font-size: 0.6em;
+        font-size: 0.7rem;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    #profile-view {
+        padding: 10px;
     }
 
-    #edit-day-modal .modal-content {
-        width: 95%;
-        max-height: 80vh;
-        overflow-y: auto;
+    #profile-stats {
+        padding: 6px;
+        margin: 6px auto;
+        grid-template-columns: 1fr; /* Stack stat cards on very small screens */
     }
 
-    .exercise-edit-row {
-        flex-direction: column;
+    .progress-tracker-container {
+        margin: 8px auto;
+        padding: 6px;
     }
 
-    .form-group {
-        width: 100%;
-        margin-bottom: 10px;
+    .progress-tracker-grid {
+        grid-template-columns: repeat(53, minmax(7px, 1fr));
+        gap: 0.5px;
+        padding: 5px;
     }
 
-    .modal-actions {
-        flex-direction: column;
+    .progress-tracker-controls {
+        padding: 4px;
     }
 
-    .modal-actions button {
-        width: 100%;
-        margin-bottom: 8px;
+    .progress-tracker-controls h3 {
+        font-size: 1.1em;
     }
+
+    .progress-tracker-controls button {
+        font-size: 1.2em;
+        padding: 3px;
+    }
+
+    .progress-day .tooltip {
+        max-width: 120px;
+        font-size: 0.75em;
+    }
+
+    .month-label {
+        font-size: 0.65rem;
+    }
+
+    .site-footer {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+
+    #mode-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+        padding: 6px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    #profile-view {
+        padding: 8px;
+    }
+
+    #profile-stats {
+        padding: 5px;
+        margin: 5px auto;
+    }
+
+    .progress-tracker-container {
+        margin: 6px auto;
+        padding: 5px;
+    }
+
+    .progress-tracker-grid {
+        grid-template-columns: repeat(53, minmax(6px, 1fr));
+        gap: 0.4px;
+        padding: 4px;
+    }
+
+    .progress-tracker-controls {
+        padding: 3px;
+    }
+
+    .progress-tracker-controls h3 {
+        font-size: 1em;
+    }
+
+    .progress-tracker-controls button {
+        font-size: 1.1em;
+        padding: 2px;
+    }
+
+    .progress-day .tooltip {
+        max-width: 100px;
+        font-size: 0.7em;
+        padding: 8px;
+    }
+
+    .month-label {
+        font-size: 0.6rem;
+    }
+
+    .site-footer {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+
+    #mode-toggle {
+        width: 35px;
+        height: 35px;
+        font-size: 1em;
+        padding: 5px;
+    }
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: var(--modal-bg); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--modal-content-bg);
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    color: var(--text-color);
+    max-height: 80vh; /* Limit height */
+    overflow-y: auto; /* Enable scrolling for content */
+}
+
+.close-modal-button {
+    color: var(--text-color);
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal-button:hover,
+.close-modal-button:focus {
+    color: var(--accent-color-hover);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 2px solid var(--accent-color-darker);
+    padding-bottom: 10px;
+}
+
+.modal-content h3 {
+    color: var(--text-color);
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.modal-input,
+.modal-select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.modal-input:focus,
+.modal-select:focus {
+    outline: none;
+    border-color: var(--input-focus-border-color);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.3);
+}
+/* Ensure option colors within select for dark mode */
+.modal-select option {
+    background-color: var(--input-bg-color); 
+    color: var(--text-color);
+}
+
+#modal-exercises-container {
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    padding: 15px;
+    max-height: 300px; /* Limit height of exercises container */
+    overflow-y: auto; /* Make it scrollable */
+    margin-bottom: 20px;
+    background-color: var(--card-bg-color);
+}
+
+.exercise-edit-row {
+    background-color: var(--bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--input-border-color);
+}
+.exercise-edit-row:last-child {
+    margin-bottom: 0;
+}
+
+.exercise-edit-row .form-group {
+    margin-bottom: 10px;
+}
+.exercise-edit-row .modal-input,
+.exercise-edit-row .modal-select {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+
+.modal-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-top: 10px;
+}
+
+.modal-button.primary {
+    background-color: var(--accent-color);
+    color: var(--accent-text-color);
+}
+
+.modal-button.primary:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-1px);
+}
+
+.modal-button.secondary {
+    background-color: var(--button-muted-bg-color);
+    color: var(--text-color);
+}
+
+.modal-button.secondary:hover {
+    background-color: var(--button-muted-hover-bg-color);
+    transform: translateY(-1px);
+}
+
+.modal-button.danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-button.danger:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
