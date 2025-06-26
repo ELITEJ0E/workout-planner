@@ -283,9 +283,9 @@
                             renderPlaylist();
 
                             if (songIndex === currentIndex) {
-                                titleElement.textContent = playlist[currentIndex].title;
+                                titleElement.textContent = playlist[songIndex].title;
                                 artistElement.textContent = data.author_name || 'Unknown Artist';
-                                document.title = `${playlist[currentIndex].title} - ${data.author_name || 'Unknown Artist'}`;
+                                document.title = `${playlist[songIndex].title} - ${data.author_name || 'Unknown Artist'}`;
                             }
                         }
                     })
@@ -297,7 +297,7 @@
                             savePlaylist(); // Save playlist even if title load fails
                             renderPlaylist();
                             if (songIndex === currentIndex) {
-                                titleElement.textContent = playlist[currentIndex].title;
+                                titleElement.textContent = playlist[songIndex].title;
                                 artistElement.textContent = 'Unknown Artist';
                                 document.title = 'YouTube Music Player';
                             }

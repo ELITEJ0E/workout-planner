@@ -1,6 +1,24 @@
 import confetti from 'canvas-confetti';
 
+// Disable right-click
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
 
+  // Disable common dev tools keys
+  document.addEventListener('keydown', function (e) {
+    // F12
+    if (e.key === "F12") {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+    if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key === "U") {
+      e.preventDefault();
+    }
+  });
 
 const defaultWorkoutPlan = {
     Monday: {
