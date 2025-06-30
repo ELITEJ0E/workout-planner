@@ -28,22 +28,22 @@
     --calendar-day-bg: #2d333b;
     --calendar-day-hover-bg: #393e46;
     --calendar-border-color: #4A5568;
-    --completed-day-color: #4CAF50; /* Green for completed days */
+    --completed-day-color: var(--accent-color); /* Green for completed days */
     --completed-day-text: #fff;
 
     /* Progress tracker specific */
     --progress-tracker-border-color: #4A5568;
-    --progress-tracker-accent-color-darker: #007A7F;
+    --progress-tracker-accent-color-darker: var(--accent-color-darker);
     --progress-tracker-text-color: #EEEEEE;
-    --progress-tracker-accent-color: #00ADB5;
-    --progress-tracker-accent-color-hover: #00C9D4;
+    --progress-tracker-accent-color: var(--accent-color);
+    --progress-tracker-accent-color-hover: var(--accent-color-hover);
     --progress-tracker-day-bg: #2d333b;
     --progress-tracker-day-hover-bg: #393e46;
     --progress-tracker-card-bg-color: #393E46;
-    --level-1-color: #4CAF50; /* Green */
-    --level-2-color: #388E3C; /* Darker Green */
-    --level-3-color: #2E7D32; /* Even Darker Green */
-    --level-4-color: #1B5E20; /* Darkest Green */
+    --level-1-color: var(--accent-color);
+    --level-2-color: var(--accent-color-darker);
+    --level-3-color: color-mix(in srgb, var(--accent-color-darker) 70%, black); /* A bit darker than dark accent */
+    --level-4-color: color-mix(in srgb, var(--accent-color-darker) 90%, black); /* Even darker */
 }
 
 body.light-mode {
@@ -109,6 +109,10 @@ body.theme-green {
     --progress-tracker-accent-color: #4CAF50;
     --progress-tracker-accent-color-hover: #66BB6A;
     --progress-tracker-accent-color-darker: #388E3C;
+    --level-1-color: #8BC34A; /* Lighter green */
+    --level-2-color: #689F38; /* Medium green */
+    --level-3-color: #33691E; /* Darker green */
+    --level-4-color: #1B5E20; /* Darkest green */
 }
 
 body.theme-purple {
@@ -121,6 +125,10 @@ body.theme-purple {
     --progress-tracker-accent-color: #9C27B0;
     --progress-tracker-accent-color-hover: #AB47BC;
     --progress-tracker-accent-color-darker: #7B1FA2;
+    --level-1-color: #E1BEE7; /* Lighter purple */
+    --level-2-color: #BA68C8; /* Medium purple */
+    --level-3-color: #8E24AA; /* Darker purple */
+    --level-4-color: #4A148C; /* Darkest purple */
 }
 
 body.theme-orange {
@@ -133,6 +141,10 @@ body.theme-orange {
     --progress-tracker-accent-color: #FF9800;
     --progress-tracker-accent-color-hover: #FFA726;
     --progress-tracker-accent-color-darker: #F57C00;
+    --level-1-color: #FFCC80; /* Lighter orange */
+    --level-2-color: #FFB74D; /* Medium orange */
+    --level-3-color: #FB8C00; /* Darker orange */
+    --level-4-color: #E65100; /* Darkest orange */
 }
 
 body.theme-red {
@@ -145,6 +157,10 @@ body.theme-red {
     --progress-tracker-accent-color: #F44336;
     --progress-tracker-accent-color-hover: #EF5350;
     --progress-tracker-accent-color-darker: #D32F2F;
+    --level-1-color: #EF9A9A; /* Lighter red */
+    --level-2-color: #E57373; /* Medium red */
+    --level-3-color: #C62828; /* Darker red */
+    --level-4-color: #B71C1C; /* Darkest red */
 }
 
 body.theme-yellow {
@@ -159,6 +175,10 @@ body.theme-yellow {
     --progress-tracker-accent-color-hover: #FFF176;
     --progress-tracker-accent-color-darker: #FBC02D;
     --progress-tracker-text-color: #333333;
+    --level-1-color: #FFF9C4; /* Lighter yellow */
+    --level-2-color: #FFF59D; /* Medium yellow */
+    --level-3-color: #FFD600; /* Darker yellow */
+    --level-4-color: #FFC107; /* Darkest yellow */
 }
 
 body.theme-blue {
@@ -171,6 +191,10 @@ body.theme-blue {
     --progress-tracker-accent-color: #2196F3;
     --progress-tracker-accent-color-hover: #42A5F5;
     --progress-tracker-accent-color-darker: #1976D2;
+    --level-1-color: #90CAF9; /* Lighter blue */
+    --level-2-color: #64B5F6; /* Medium blue */
+    --level-3-color: #1565C0; /* Darker blue */
+    --level-4-color: #0D47A1; /* Darkest blue */
 }
 
 body.theme-red {
@@ -183,6 +207,10 @@ body.theme-red {
     --progress-tracker-accent-color: #F44336;
     --progress-tracker-accent-color-hover: #EF5350;
     --progress-tracker-accent-color-darker: #D32F2F;
+    --level-1-color: #EF9A9A; /* Lighter red */
+    --level-2-color: #E57373; /* Medium red */
+    --level-3-color: #C62828; /* Darker red */
+    --level-4-color: #B71C1C; /* Darkest red */
 }
 
 body.theme-teal {
@@ -195,6 +223,10 @@ body.theme-teal {
     --progress-tracker-accent-color: #009688;
     --progress-tracker-accent-color-hover: #26A69A;
     --progress-tracker-accent-color-darker: #00796B;
+    --level-1-color: #80CBC4; /* Lighter teal */
+    --level-2-color: #4DB6AC; /* Medium teal */
+    --level-3-color: #00695C; /* Darker teal */
+    --level-4-color: #004D40; /* Darkest teal */
 }
 
 body.theme-white {
@@ -209,6 +241,10 @@ body.theme-white {
     --progress-tracker-accent-color-hover: #a19e9e;
     --progress-tracker-accent-color-darker: #d5d0d0;
     --progress-tracker-text-color: #333333;
+    --level-1-color: #F5F5F5; /* Lighter white */
+    --level-2-color: #E0E0E0; /* Medium white */
+    --level-3-color: #C7C7C7; /* Darker white */
+    --level-4-color: #A9A9A9; /* Darkest white */
 }
 
 :root {
@@ -594,7 +630,6 @@ h3 {
     letter-spacing: 0.5px;
     margin: 5px;
     display: inline-flex; 
-    justify-content: center;
     align-items: center;
     min-width: 40px; 
 }

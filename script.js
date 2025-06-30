@@ -573,7 +573,10 @@ function loadTheme() {
         if (themeSelectElement) themeSelectElement.value = savedTheme;
         applyTheme(savedTheme);
     } else {
-        if (themeSelectElement) applyTheme(themeSelectElement.value);
+        if (themeSelectElement) {
+            themeSelectElement.value = 'green'; // Set default theme to green lush
+            applyTheme('green');
+        }
     }
 }
 
