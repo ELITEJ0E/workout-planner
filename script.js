@@ -140,15 +140,7 @@ let isLightMode = false; // Track light/dark mode state
 const preloadedBgms = [
     { name: "High Energy Phonk", path: 'workout_bgm_2.mp3', buffer: null },
     { name: "Futuristic Workout", path: 'bloody_mary_edit.mp3', buffer: null },
-    { name: "Motivational Electro", path: 'background_music.mp3', buffer: null },
-    { name: "MONTAGEM TOMADA", path: 'MONTAGEM TOMADA SLOWED.mp3', buffer: null },
-    { name: "Passo Bem Solto", path: 'PASSO BEM SOLTO (Slowed).mp3', buffer: null },
-    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mpm', buffer: null },
-    { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
-    { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
-    { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
-    { name: "5x30", path: '5x30.mp3', buffer: null },
-    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
+    { name: "Motivational Electro", path: 'background_music.mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
@@ -1168,107 +1160,73 @@ function renderProgressTracker(year) {
     currentYearDisplay.textContent = year;
     progressTrackerGrid.innerHTML = '';
 
-    // Create a 53x7 grid (weeks x days)
-    const weeksInYear = 53; // Max weeks to display
-    const daysInWeek = 7;
-
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    // Calculate precise starting column for each month based on the first day of the year
-    const monthColStarts = [];
-    const firstDayOfYear = new Date(year, 0, 1);
-    // getDay() returns 0 for Sunday, 1 for Monday, etc. We want Monday to be the start of the week.
-    // If firstDayOfYear is Sunday (0), its offset will be 6 to start on Monday.
-    // If firstDayOfYear is Monday (1), its offset will be 0.
-    const startOffsetDays = (firstDayOfYear.getDay() === 0) ? 6 : firstDayOfYear.getDay() - 1;
-
-    // Calculate month start positions
-    for (let i = 0; i < 12; i++) {
-        const firstDayOfMonth = new Date(year, i, 1);
-        const daysIntoYear = (firstDayOfMonth - firstDayOfYear) / (1000 * 60 * 60 * 24);
-        const colStart = Math.floor((startOffsetDays + daysIntoYear) / daysInWeek);
-        monthColStarts.push(colStart);
-    }
-
-
-    // Create a temporary div for labels to manage their insertion
-    const labelsRow = document.createElement('div');
-    labelsRow.classList.add('month-labels-row'); 
-    labelsRow.style.gridColumn = `1 / span ${weeksInYear}`; 
-    labelsRow.style.display = 'grid';
-    labelsRow.style.gridTemplateColumns = `repeat(${weeksInYear}, minmax(12px, 1fr))`; 
-    labelsRow.style.gap = '1px'; 
-
-    let currentLabelsGridCol = 0;
-    for (let i = 0; i < monthNames.length; i++) {
-        while (currentLabelsGridCol < monthColStarts[i]) {
-            const emptyLabelCell = document.createElement('div');
-            emptyLabelCell.style.width = '12px'; 
-            emptyLabelCell.style.height = '12px'; 
-            labelsRow.appendChild(emptyLabelCell);
-            currentLabelsGridCol++;
-        }
-        const monthLabel = document.createElement('div');
-        monthLabel.classList.add('month-label');
-        monthLabel.textContent = monthNames[i];
-        let span = 4; 
-        if (i < monthNames.length - 1) {
-            span = monthColStarts[i+1] - monthColStarts[i];
-        } else {
-            span = weeksInYear - monthColStarts[i];
-        }
-        monthLabel.style.gridColumn = `span ${span}`; 
-        labelsRow.appendChild(monthLabel);
-        currentLabelsGridCol += span;
-    }
-    progressTrackerGrid.appendChild(labelsRow);
-
-    // Fill the grid with day cells for the *entire year*
-    let currentDate = new Date(year, 0, 1);
-    // Add empty cells for the start offset
-    for (let i = 0; i < startOffsetDays; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.classList.add('progress-day', 'empty');
-        progressTrackerGrid.appendChild(emptyCell);
-    }
-
-    let daysAdded = 0;
-    const yearEnd = new Date(year, 11, 31);
-
-    while (currentDate <= yearEnd) {
-        const dateString = currentDate.toISOString().split('T')[0];
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    
+    // Create month containers instead of individual days
+    monthNames.forEach((monthName, monthIndex) => {
+        const monthContainer = document.createElement('div');
+        monthContainer.classList.add('month-container');
         
-        const dayCell = document.createElement('div');
-        dayCell.classList.add('progress-day');
+        const monthHeader = document.createElement('div');
+        monthHeader.classList.add('month-header');
+        monthHeader.textContent = monthName;
+        monthContainer.appendChild(monthHeader);
 
-        if (workoutLog[dateString]) {
-            dayCell.classList.add('completed-day');
-            const logData = workoutLog[dateString];
-            const workoutCount = logData.completedWorkouts;
-            if (workoutCount >= 4) dayCell.classList.add('level-4');
-            else if (workoutCount >= 3) dayCell.classList.add('level-3');
-            else if (workoutCount >= 2) dayCell.classList.add('level-2');
-            else if (workoutCount >= 1) dayCell.classList.add('level-1');
+        const daysInMonthGrid = document.createElement('div');
+        daysInMonthGrid.classList.add('days-in-month-grid');
+        monthContainer.appendChild(daysInMonthGrid);
 
-            const tooltip = document.createElement('div');
-            tooltip.classList.add('tooltip');
-            let tooltipContent = `${new Date(dateString).toLocaleDateString()}\nWorkouts: ${logData.completedWorkouts}`;
-            
-            tooltip.textContent = tooltipContent;
-            dayCell.appendChild(tooltip);
+        // Add day labels (Mon, Tue, Wed...)
+        dayLabels.forEach(label => {
+            const dayLabelDiv = document.createElement('div');
+            dayLabelDiv.classList.add('day-label');
+            dayLabelDiv.textContent = label;
+            daysInMonthGrid.appendChild(dayLabelDiv);
+        });
+
+        // Get the first day of the month
+        const firstDayOfMonth = new Date(year, monthIndex, 1);
+        // getDay() returns 0 for Sunday, 1 for Monday, etc. We want Monday to be the start of the week (index 0).
+        // So, if getDay() is 0 (Sunday), offset by 6. Otherwise, offset by getDay() - 1.
+        const startOffsetDays = (firstDayOfMonth.getDay() === 0) ? 6 : firstDayOfMonth.getDay() - 1;
+
+        // Add empty cells for the start offset
+        for (let i = 0; i < startOffsetDays; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.classList.add('progress-day', 'empty');
+            daysInMonthGrid.appendChild(emptyCell);
         }
-        progressTrackerGrid.appendChild(dayCell);
-        currentDate.setDate(currentDate.getDate() + 1);
-        daysAdded++;
-    }
 
-    // Fill remaining cells if year has less than 53 weeks * 7 days
-    const totalCells = weeksInYear * daysInWeek;
-    const filledCells = startOffsetDays + daysAdded;
-    for (let i = filledCells; i < totalCells; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.classList.add('progress-day', 'empty');
-        progressTrackerGrid.appendChild(emptyCell);
-    }
+        // Add actual day cells
+        let date = new Date(year, monthIndex, 1);
+        while (date.getMonth() === monthIndex) {
+            const dateString = date.toISOString().split('T')[0];
+            const dayCell = document.createElement('div');
+            dayCell.classList.add('progress-day');
+
+            if (workoutLog[dateString]) {
+                dayCell.classList.add('completed-day');
+                const logData = workoutLog[dateString];
+                const workoutCount = logData.completedWorkouts;
+                if (workoutCount >= 4) dayCell.classList.add('level-4');
+                else if (workoutCount >= 3) dayCell.classList.add('level-3');
+                else if (workoutCount >= 2) dayCell.classList.add('level-2');
+                else if (workoutCount >= 1) dayCell.classList.add('level-1');
+
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                let tooltipContent = `${new Date(dateString).toLocaleDateString()}\nWorkouts: ${logData.completedWorkouts}`;
+                
+                tooltip.textContent = tooltipContent;
+                dayCell.appendChild(tooltip);
+            }
+            daysInMonthGrid.appendChild(dayCell);
+            date.setDate(date.getDate() + 1);
+        }
+        
+        progressTrackerGrid.appendChild(monthContainer);
+    });
 }
 
 

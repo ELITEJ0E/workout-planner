@@ -1033,14 +1033,50 @@ h3 {
 
 .progress-tracker-grid {
     display: grid;
-    grid-template-columns: repeat(53, minmax(12px, 1fr));
-    gap: 1px;
+    grid-template-columns: repeat(4, 1fr); /* 4 months per row by default */
+    gap: 10px; /* Gap between month containers */
     background-color: var(--progress-tracker-border-color);
     padding: 10px;
     overflow-x: auto; /* Enable horizontal scrolling */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     min-width: 0; /* Allow the grid to shrink */
+}
+
+.month-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: var(--progress-tracker-card-bg-color);
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0; /* Prevent months from shrinking too much */
+    min-width: 100px; /* Minimum width for each month container */
+}
+
+.month-header {
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--progress-tracker-border-color);
+    font-size: 0.9em;
+}
+
+.days-in-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 days of the week */
+    gap: 2px;
+}
+
+.day-label {
+    font-size: 0.7em;
+    font-weight: bold;
+    text-align: center;
+    color: var(--text-color); /* Adjust as needed for readability */
+    padding: 3px 0;
+    background-color: var(--card-bg-color); /* Match month container background */
+    border-radius: 3px;
 }
 
 .progress-day {
@@ -1060,7 +1096,6 @@ body.light-mode .progress-day.empty {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-
 .progress-day:hover {
     transform: scale(1.1);
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -1071,12 +1106,10 @@ body.light-mode .progress-day.empty {
     box-shadow: none;
 }
 
-
 .progress-day.completed-day.level-1 { background-color: var(--level-1-color); }
 .progress-day.completed-day.level-2 { background-color: var(--level-2-color); }
 .progress-day.completed-day.level-3 { background-color: var(--level-3-color); }
 .progress-day.completed-day.level-4 { background-color: var(--level-4-color); }
-
 
 .progress-day .tooltip {
     visibility: hidden;
@@ -1125,6 +1158,7 @@ body.light-mode .progress-day.empty {
     padding-bottom: 5px;
     background-color: var(--progress-tracker-card-bg-color); /* Match card background */
 }
+
 /* Style for the container of month labels */
 .progress-tracker-grid > .month-labels-row {
     display: grid;
@@ -1133,7 +1167,6 @@ body.light-mode .progress-day.empty {
     margin-bottom: 5px; /* Space between labels and days */
 }
 
-
 /* Old calendar grid (remove if not needed) */
 #log-calendar-grid {
     display: none; /* Hide the old calendar grid */
@@ -1141,7 +1174,6 @@ body.light-mode .progress-day.empty {
 #log-calendar-controls {
     display: none; /* Hide old calendar controls */
 }
-
 
 .site-footer {
     width: 100%;
@@ -1161,7 +1193,7 @@ body.light-mode .progress-day.empty {
     padding: 8px 12px;
     width: 50px; /* Fixed width */
     height: 50px; /* Fixed height for a square button */
-    border-radius: 50%; /* Circle shape */
+    border-radius: 50%;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -1301,7 +1333,11 @@ body.light-mode .progress-day.empty {
     }
 
     .progress-tracker-grid {
-        grid-template-columns: repeat(53, minmax(12px, 1fr)); /* Keep consistent with JS column count */
+        grid-template-columns: repeat(4, 1fr); /* Default 4x4 layout */
+        gap: 8px;
+    }
+    .month-container {
+        min-width: unset; /* Allow flexibility */
     }
 
     .progress-tracker-controls {
@@ -1320,10 +1356,9 @@ body.light-mode .progress-day.empty {
     }
 
     .progress-tracker-grid {
-        grid-template-columns: repeat(53, minmax(10px, 1fr)); /* Adjusted for smaller screens */
-        gap: 0.8px;
+        grid-template-columns: repeat(3, 1fr); /* 3 months per row for medium screens */
+        gap: 6px;
     }
-
     .progress-tracker-controls {
         flex-direction: row; /* Keep controls in a row for better alignment */
         gap: 8px;
@@ -1361,8 +1396,8 @@ body.light-mode .progress-day.empty {
     }
 
     .progress-tracker-grid {
-        grid-template-columns: repeat(53, minmax(8px, 1fr));
-        gap: 0.6px;
+        grid-template-columns: repeat(2, 1fr); /* 2 months per row for small screens */
+        gap: 5px;
         padding: 6px;
     }
 
@@ -1406,8 +1441,8 @@ body.light-mode .progress-day.empty {
     }
 
     .progress-tracker-grid {
-        grid-template-columns: repeat(53, minmax(7px, 1fr));
-        gap: 0.5px;
+        grid-template-columns: 1fr; /* 1 month per row for extra small screens */
+        gap: 4px;
         padding: 5px;
     }
 
@@ -1432,18 +1467,6 @@ body.light-mode .progress-day.empty {
     .month-label {
         font-size: 0.65rem;
     }
-
-    .site-footer {
-        font-size: 0.9rem;
-        padding: 12px;
-    }
-
-    #mode-toggle {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2em;
-        padding: 6px;
-    }
 }
 
 @media screen and (max-width: 400px) {
@@ -1456,14 +1479,18 @@ body.light-mode .progress-day.empty {
         margin: 5px auto;
     }
 
+    #profile-stats p {
+        font-size: 0.8em;
+    }
+
     .progress-tracker-container {
         margin: 6px auto;
         padding: 5px;
     }
 
     .progress-tracker-grid {
-        grid-template-columns: repeat(53, minmax(6px, 1fr));
-        gap: 0.4px;
+        grid-template-columns: 1fr; /* Stack months on smallest screens */
+        gap: 3px;
         padding: 4px;
     }
 
@@ -1488,18 +1515,6 @@ body.light-mode .progress-day.empty {
 
     .month-label {
         font-size: 0.6rem;
-    }
-
-    .site-footer {
-        font-size: 0.8rem;
-        padding: 10px;
-    }
-
-    #mode-toggle {
-        width: 35px;
-        height: 35px;
-        font-size: 1em;
-        padding: 5px;
     }
 }
 
@@ -1633,7 +1648,6 @@ body.light-mode .progress-day.empty {
     width: 100%;
     margin-bottom: 0;
 }
-
 
 .modal-button {
     padding: 10px 20px;
