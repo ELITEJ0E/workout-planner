@@ -594,8 +594,8 @@ h3 {
     letter-spacing: 0.5px;
     margin: 5px;
     display: inline-flex; 
-    align-items: center;
     justify-content: center;
+    align-items: center;
     min-width: 40px; 
 }
 
@@ -956,7 +956,7 @@ h3 {
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     text-align: center;
-    max-width: 900px; /* Limit max width for desktop */
+    max-width: 1200px; /* Changed from 900px to 1200px */
 }
 
 #profile-stats {
@@ -1110,6 +1110,20 @@ body.light-mode .progress-day.empty {
 .progress-day.completed-day.level-2 { background-color: var(--level-2-color); }
 .progress-day.completed-day.level-3 { background-color: var(--level-3-color); }
 .progress-day.completed-day.level-4 { background-color: var(--level-4-color); }
+
+.progress-day.today {
+    box-shadow: 0 0 0 2px var(--accent-color), 0 0 0 4px rgba(var(--accent-color-darker), 0.5); /* Glowing effect */
+    animation: pulseBorder 1.5s infinite alternate; /* Optional: subtle animation */
+}
+
+@keyframes pulseBorder {
+    from {
+        box-shadow: 0 0 0 2px var(--accent-color), 0 0 0 4px rgba(var(--accent-color-darker), 0.5);
+    }
+    to {
+        box-shadow: 0 0 0 2px var(--accent-color-hover), 0 0 0 6px rgba(var(--accent-color), 0.8);
+    }
+}
 
 .progress-day .tooltip {
     visibility: hidden;

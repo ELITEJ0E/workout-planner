@@ -100,6 +100,7 @@ const prevYearButton = document.getElementById('prev-year');
 const nextYearButton = document.getElementById('next-year');
 const modeToggleButton = document.getElementById('mode-toggle');
 const modeIcon = document.getElementById('mode-icon');
+const clearLogButton = document.getElementById('clear-log-button');
 
 
 // Modal elements
@@ -140,7 +141,15 @@ let isLightMode = false; // Track light/dark mode state
 const preloadedBgms = [
     { name: "High Energy Phonk", path: 'workout_bgm_2.mp3', buffer: null },
     { name: "Futuristic Workout", path: 'bloody_mary_edit.mp3', buffer: null },
-    { name: "Motivational Electro", path: 'background_music.mp3', buffer: null }
+    { name: "Motivational Electro", path: 'background_music.mp3', buffer: null },
+    { name: "MONTAGEM TOMADA", path: 'MONTAGEM TOMADA SLOWED.mp3', buffer: null },
+    { name: "Passo Bem Solto", path: 'PASSO BEM SOLTO (Slowed).mp3', buffer: null },
+    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mpm', buffer: null },
+    { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
+    { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
+    { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
+    { name: "5x30", path: '5x30.mp3', buffer: null },
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
@@ -1161,7 +1170,7 @@ function renderProgressTracker(year) {
     progressTrackerGrid.innerHTML = '';
 
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
     // Create month containers instead of individual days
     monthNames.forEach((monthName, monthIndex) => {
@@ -1177,7 +1186,7 @@ function renderProgressTracker(year) {
         daysInMonthGrid.classList.add('days-in-month-grid');
         monthContainer.appendChild(daysInMonthGrid);
 
-        // Add day labels (Mon, Tue, Wed...)
+        // Add day labels (Sun, Mon, Tue...)
         dayLabels.forEach(label => {
             const dayLabelDiv = document.createElement('div');
             dayLabelDiv.classList.add('day-label');
@@ -1185,11 +1194,11 @@ function renderProgressTracker(year) {
             daysInMonthGrid.appendChild(dayLabelDiv);
         });
 
-        // Get the first day of the month
+        // Determine the day of the week for the 1st of the month
+        // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+        // This is now correctly aligned with 'Sun' as the first label.
         const firstDayOfMonth = new Date(year, monthIndex, 1);
-        // getDay() returns 0 for Sunday, 1 for Monday, etc. We want Monday to be the start of the week (index 0).
-        // So, if getDay() is 0 (Sunday), offset by 6. Otherwise, offset by getDay() - 1.
-        const startOffsetDays = (firstDayOfMonth.getDay() === 0) ? 6 : firstDayOfMonth.getDay() - 1;
+        const startOffsetDays = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday etc.
 
         // Add empty cells for the start offset
         for (let i = 0; i < startOffsetDays; i++) {
@@ -1200,10 +1209,22 @@ function renderProgressTracker(year) {
 
         // Add actual day cells
         let date = new Date(year, monthIndex, 1);
+        const today = new Date();
+        // Set today's date to midnight for consistent comparison
+        today.setHours(0, 0, 0, 0); 
+
         while (date.getMonth() === monthIndex) {
-            const dateString = date.toISOString().split('T')[0];
+            const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             const dayCell = document.createElement('div');
             dayCell.classList.add('progress-day');
+
+            // Set current date to midnight for comparison
+            const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            // Add a class for today's date for special highlighting
+            if (currentDate.getTime() === today.getTime()) {
+                dayCell.classList.add('today');
+            }
 
             if (workoutLog[dateString]) {
                 dayCell.classList.add('completed-day');
@@ -1216,8 +1237,13 @@ function renderProgressTracker(year) {
 
                 const tooltip = document.createElement('div');
                 tooltip.classList.add('tooltip');
-                let tooltipContent = `${new Date(dateString).toLocaleDateString()}\nWorkouts: ${logData.completedWorkouts}`;
-                
+                let tooltipContent = `${new Date(dateString).toLocaleDateString()}\nWorkouts: ${logData.completedWorkouts}\nCalories: ${logData.caloriesBurned} kcal`;
+                if (logData.exercises && Object.keys(logData.exercises).length > 0) {
+                    tooltipContent += "\n\nExercises:";
+                    for (const exName in logData.exercises) {
+                        tooltipContent += `\n- ${exName}: ${logData.exercises[exName]} completed`;
+                    }
+                }
                 tooltip.textContent = tooltipContent;
                 dayCell.appendChild(tooltip);
             }
@@ -1228,6 +1254,16 @@ function renderProgressTracker(year) {
         progressTrackerGrid.appendChild(monthContainer);
     });
 }
+
+// Clear Workout Log button functionality
+clearLogButton.addEventListener('click', () => {
+    if (confirm("Are you sure you want to clear all workout log data? This cannot be undone.")) {
+        workoutLog = {}; // Clear the log object
+        saveWorkoutLog(); // Save the empty log to localStorage
+        renderProfile(); // Re-render the profile to show cleared stats
+        alert("Workout log cleared!");
+    }
+});
 
 
 prevYearButton.addEventListener('click', () => {
