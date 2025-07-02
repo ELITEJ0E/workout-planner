@@ -114,6 +114,19 @@ const cancelDayEditButton = document.getElementById('cancel-day-edit');
 const closeModalButton = document.getElementById('close-edit-modal-button');
 const editingDayKeyInput = document.getElementById('editing-day-key');
 
+// AI Chatbot elements
+const aiChatToggle = document.getElementById('ai-chat-toggle');
+const aiChatbotModal = document.getElementById('ai-chatbot-modal');
+const closeAiModalButton = document.getElementById('close-ai-modal-button');
+const chatHistoryDiv = document.getElementById('chat-history');
+const chatInput = document.getElementById('chat-input');
+const sendChatButton = document.getElementById('send-chat-btn');
+const speakChatButton = document.getElementById('speak-chat-btn');
+
+let conversationHistory = [];
+let speaking = false;
+
+
 let audioContext;
 let bgmSource;
 let bgmGainNode; // Added gain node for BGM volume control
@@ -136,6 +149,7 @@ let isEditingPlan = false;
 let workoutCaloriesBurned = 0; // Track calories for the current workout session
 let workoutExercisesCompleted = []; // Track completed exercises for the current workout session
 let isLightMode = false; // Track light/dark mode state
+let currentSpeechAudio = null; // To hold the Audio object for speech
 
 // Pre-loaded BGMs
 const preloadedBgms = [
@@ -355,12 +369,6 @@ function populateMusicSelector() {
     });
     if (currentTrackIndex !== -1 && bgmPlaylist[currentTrackIndex]) {
         musicSelectElement.value = bgmPlaylist[currentTrackIndex].name;
-    } else if (bgmPlaylist.length > 0) {
-        musicSelectElement.value = bgmPlaylist[0].name;
-        currentTrackIndex = 0;
-    } else {
-         musicSelectElement.value = '';
-        currentTrackIndex = -1;
     }
 }
 
@@ -754,7 +762,7 @@ function startTimer(duration) {
             clearInterval(timerInterval);
             timerDisplay.textContent = "Done!";
             playSound(isResting ? restSoundBuffer : workoutSoundBuffer);
-            if (isResting) {
+            if (isRestButton) {
                 isResting = false;
                 skipRestButton.style.display = 'none';
                 displayExercise();
@@ -928,7 +936,7 @@ skipTimerButton.addEventListener('click', () => {
     if (audioContext && audioContext.state === 'suspended') {
         audioContext.resume();
     }
-    const exercise = userWorkoutPlan[currentWorkoutDayKey].exercises[currentExerciseIndex];
+    const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
     if (isResting || exercise.type !== 'time') return;
     clearInterval(timerInterval);
     timerDisplay.textContent = "Skipped!";
@@ -1279,6 +1287,302 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
+// --- AI Assistant Logic ---
+aiChatToggle.addEventListener('click', () => {
+    aiChatbotModal.style.display = 'flex';
+    chatInput.focus();
+});
+
+closeAiModalButton.addEventListener('click', () => {
+    aiChatbotModal.style.display = 'none';
+    stopSpeaking(); // Stop speech when closing modal
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === aiChatbotModal) {
+        aiChatbotModal.style.display = 'none';
+        stopSpeaking(); // Stop speech when clicking outside modal
+    }
+});
+
+sendChatButton.addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+speakChatButton.addEventListener('click', async () => {
+    if (speaking) {
+        stopSpeaking();
+        speakChatButton.textContent = 'Speak';
+    } else {
+        const lastBotMessage = chatHistoryDiv.lastElementChild;
+        if (lastBotMessage && lastBotMessage.classList.contains('bot-message')) {
+            await speakText(lastBotMessage.textContent);
+            speakChatButton.textContent = 'Stop Speaking';
+        } else {
+            appendMessage("Bot", "There's nothing for me to say yet!", 'bot-message');
+            await speakText("There's nothing for me to say yet!");
+        }
+    }
+});
+
+function appendMessage(sender, message, className) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message', className);
+    // Replace markdown bold with HTML strong tags
+    messageElement.innerHTML = message.replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>');
+    chatHistoryDiv.appendChild(messageElement);
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Auto-scroll to bottom
+}
+
+async function sendMessage() {
+    const userMessage = chatInput.value.trim();
+    if (!userMessage) return;
+
+    appendMessage("You", userMessage, 'user-message');
+    chatInput.value = '';
+    sendChatButton.disabled = true;
+    speakChatButton.disabled = true;
+    stopSpeaking(); // Stop any ongoing speech
+
+    conversationHistory.push({ role: "user", content: userMessage });
+    conversationHistory = conversationHistory.slice(-10); // Keep last 10 messages
+
+    try {
+        const completion = await websim.chat.completions.create({
+            model: "claude-3-sonnet-20240229", // Specify the model
+            messages: [
+                {
+                    role: "system",
+                    content: `You are Nova, a friendly, beautiful, and knowledgeable AI workout assistant. Your responses should be clear, fluent, and helpful. You can answer general questions, conduct research, and assist with workout-related commands (like "start Monday workout", "next exercise", "skip rest") and music control commands (like "play music", "pause music", "next song", "previous song", "what's playing"). 
+                    
+                    Here are the available workout days: ${Object.keys(userWorkoutPlan).join(', ')}.
+                    Here are the exercises in the current plan: ${Object.values(userWorkoutPlan).map(day => day.exercises.map(ex => ex.name)).flat().filter((value, index, self) => self.indexOf(value) === index).join(', ')}.
+                    
+                    If the user asks to start a workout, respond with "Absolutely! Starting your ***[Day Name]*** workout now. Let's get moving!".
+                    If the user asks for the next exercise, respond with "Alright, moving to the next exercise. You're doing great!".
+                    If the user asks to skip rest, respond with "No problem! Skipping the rest period for you. Keep up the momentum!".
+                    If the user asks to skip timer, respond with "Timer skipped! Let's get straight to the next part of your workout!".
+                    If the user asks to play music, respond with "Energizing sounds coming right up! Playing your music now.".
+                    If the user asks to pause music, respond with "Music paused for you. Take a breather if you need!".
+                    If the user asks for the next song, respond with "Skipping to the next track! Hope you enjoy this one.".
+                    If the user asks for the previous song, respond with "Going back to the previous song. Let's find that perfect beat!".
+                    If the user asks "what's playing", respond with the current song title from the music player, e.g., "Currently playing: ***[Song Title]*** by ***[Artist Name]***. A fantastic choice!". If nothing is playing, say "It looks like no music is currently playing. Would you like me to start some?".
+                    
+                    For other queries related to workout, nutrition, general knowledge, or anything else, provide helpful and informative responses. If a command cannot be executed, explain why in a friendly manner. Always aim to be encouraging and supportive!`,
+                },
+                ...conversationHistory,
+            ],
+            tools: [
+                {
+                    type: "function",
+                    function: {
+                        name: "selectDay",
+                        description: "Starts a workout for a specific day.",
+                        parameters: {
+                            type: "object",
+                            properties: {
+                                dayKey: {
+                                    type: "string",
+                                    enum: Object.keys(userWorkoutPlan),
+                                },
+                            },
+                            required: ["dayKey"],
+                        },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "handleSetCompletion",
+                        description: "Moves to the next set or next exercise in the current workout.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "skipRestButton.click",
+                        description: "Skips the current rest period.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "skipTimerButton.click",
+                        description: "Skips the current timed exercise.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "playPauseBGM",
+                        description: "Toggles playback of the background music.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "playNextBGM",
+                        description: "Skips to the next background music track.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "playPreviousBGM",
+                        description: "Skips to the previous background music track.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+                {
+                    type: "function",
+                    function: {
+                        name: "getCurrentSongInfo",
+                        description: "Gets the title and artist of the currently playing YouTube song.",
+                        parameters: { type: "object", properties: {} },
+                    },
+                },
+            ],
+            temperature: 0.7, 
+            max_tokens: 150,   
+        });
+
+        if (completion.tool_calls && completion.tool_calls.length > 0) {
+            for (const toolCall of completion.tool_calls) {
+                const functionName = toolCall.function.name;
+                const args = JSON.parse(toolCall.function.arguments);
+                let toolResponse = '';
+
+                switch (functionName) {
+                    case 'selectDay':
+                        if (userWorkoutPlan[args.dayKey]) {
+                            selectDay(args.dayKey);
+                            toolResponse = `Absolutely! Starting your ***${args.dayKey}*** workout now. Let's get moving!`;
+                        } else {
+                            toolResponse = `I'm sorry, I couldn't find a workout plan for ***${args.dayKey}***. Please check the available days!`;
+                        }
+                        break;
+                    case 'handleSetCompletion':
+                        if (currentWorkoutDayKey) {
+                            handleSetCompletion();
+                            toolResponse = "Alright, moving to the next exercise or set. You're doing great!";
+                        } else {
+                            toolResponse = "There isn't an active workout to move to the next exercise. Please start a workout first!";
+                        }
+                        break;
+                    case 'skipRestButton.click':
+                        if (isResting) {
+                            skipRestButton.click();
+                            toolResponse = "No problem! Skipping the rest period for you. Keep up the momentum!";
+                        } else {
+                            toolResponse = "You're not currently in a rest period, so there's no rest to skip!";
+                        }
+                        break;
+                    case 'skipTimerButton.click':
+                        const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
+                        if (exercise && exercise.type === 'time' && !isResting) {
+                            skipTimerButton.click();
+                            toolResponse = "Timer skipped! Let's get straight to the next part of your workout!";
+                        } else {
+                            toolResponse = "There's no active timer to skip right now, or you're not in a timed exercise.";
+                        }
+                        break;
+                    case 'playPauseBGM':
+                        playPauseBGM();
+                        toolResponse = isBgmPlaying ? "Music paused for you. Take a breather if you need!" : "Energizing sounds coming right up! Playing your music now.";
+                        break;
+                    case 'playNextBGM':
+                        playNextBGM();
+                        toolResponse = "Skipping to the next track! Hope you enjoy this one.";
+                        break;
+                    case 'playPreviousBGM':
+                        playPreviousBGM();
+                        toolResponse = "Going back to the previous song. Let's find that perfect beat!";
+                        break;
+                    case 'getCurrentSongInfo':
+                        const title = titleElement.textContent;
+                        const artist = artistElement.textContent;
+                        if (title && title !== 'Song Title') {
+                            toolResponse = `Currently playing: ***${title}*** by ***${artist}***. A fantastic choice!`;
+                        } else {
+                            toolResponse = "It looks like no music is currently playing. Would you like me to start some?";
+                        }
+                        break;
+                    default:
+                        toolResponse = `I'm not quite sure how to handle that specific command, but I'm always learning!`;
+                }
+                appendMessage("Nova", toolResponse, 'bot-message');
+                await speakText(toolResponse);
+                conversationHistory.push({ role: "tool", tool_call_id: toolCall.id, content: toolResponse });
+            }
+        } else if (completion.content) {
+            appendMessage("Nova", completion.content, 'bot-message');
+            await speakText(completion.content);
+            conversationHistory.push({ role: "assistant", content: completion.content });
+        } else {
+            appendMessage("Nova", "I'm sorry, I couldn't quite understand that. Could you please rephrase?", 'bot-message');
+            await speakText("I'm sorry, I couldn't quite understand that. Could you please rephrase?");
+        }
+    } catch (error) {
+        console.error("AI Assistant error:", error);
+        appendMessage("Nova", "Oops! Something went wrong while processing your request. Please try again. I'm always here to help!", 'bot-message');
+        await speakText("Oops! Something went wrong while processing your request. Please try again. I'm always here to help!");
+    } finally {
+        sendChatButton.disabled = false;
+        speakChatButton.disabled = false;
+    }
+}
+
+async function speakText(text) {
+    if (speaking) {
+        stopSpeaking();
+    }
+    speaking = true;
+    speakChatButton.textContent = 'Stop Speaking';
+    try {
+        const result = await websim.textToSpeech({
+            text: text,
+            voice: "en-female", 
+            model: "aura-latest", // Use the latest model for faster, more fluent speech
+        });
+
+        currentSpeechAudio = new Audio(result.url);
+        currentSpeechAudio.play();
+        currentSpeechAudio.onended = () => {
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+        };
+        currentSpeechAudio.onerror = (e) => {
+            console.error("Text-to-speech audio error:", e);
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+        };
+    } catch (e) {
+        console.error("Error generating speech:", e);
+        speaking = false;
+        speakChatButton.textContent = 'Speak';
+    }
+}
+
+function stopSpeaking() {
+    if (currentSpeechAudio) {
+        currentSpeechAudio.pause();
+        currentSpeechAudio.currentTime = 0; // Reset to beginning
+        currentSpeechAudio = null;
+    }
+    speaking = false;
+    speakChatButton.textContent = 'Speak';
+}
+
 
 // Initial Setup
 initWorkoutPlan();
@@ -1287,7 +1591,7 @@ populateMusicSelector();
 if (themeSelectElement) {
     loadTheme();
 } else {
-    applyTheme('default');
+    applyTheme('green');
 }
 loadColorMode(); // Load color mode on startup
 exerciseImage.src = '';

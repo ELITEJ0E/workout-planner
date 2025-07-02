@@ -688,6 +688,7 @@
 
             <!-- Edit Plan Button -->
             <button id="edit-plan-button">Edit My Plan</button>
+            <button id="ai-chat-toggle">AI Assistant 💬</button>
         </div>
 
         <div id="workout-display">
@@ -762,6 +763,20 @@
             <div id="progress-tracker-grid" class="progress-tracker-grid"></div>
             <div style="text-align: center; padding: 10px;">
                 <button id="clear-log-button" class="modal-button danger" style="background-color: var(--accent-color-darker); color: var(--text-color);">Clear Workout Log</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Modal -->
+    <div id="ai-chatbot-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal-button" id="close-ai-modal-button">&times;</span>
+            <h2>AI Workout Assistant</h2>
+            <div id="chat-history"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Ask me anything about your workout or music!">
+                <button id="send-chat-btn">Send</button>
+                <button id="speak-chat-btn">Speak</button>
             </div>
         </div>
     </div>
