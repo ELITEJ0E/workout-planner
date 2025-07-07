@@ -1229,6 +1229,10 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
+
+const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735';
+const ELEVENLABS_VOICE_ID = 'XrExE9yKIg1WjnnlVkGX'; // Rachel voice ID
+
 aiChatToggle.addEventListener('click', () => {
     aiChatbotModal.style.display = 'flex';
     chatInput.focus();
@@ -1278,7 +1282,7 @@ function toggleVoiceInput() {
         if (!recognition) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false; 
-            recognition.interimResults = true; // Enable interim results for typing effect
+            recognition.interimResults = true;
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
@@ -1287,7 +1291,7 @@ function toggleVoiceInput() {
                 chatInput.placeholder = "Listening...";
                 sendChatButton.disabled = true;
                 speakChatButton.disabled = true;
-                stopSpeaking(); // Stop speaking if AI is talking
+                stopSpeaking();
             };
 
             recognition.onresult = (event) => {
@@ -1300,7 +1304,7 @@ function toggleVoiceInput() {
                         interimTranscript += event.results[i][0].transcript;
                     }
                 }
-                chatInput.value = finalTranscript || interimTranscript; // Show final or interim
+                chatInput.value = finalTranscript || interimTranscript;
             };
 
             recognition.onerror = (event) => {
@@ -1319,7 +1323,7 @@ function toggleVoiceInput() {
                 chatInput.placeholder = "Ask me anything about your workout or music!";
                 sendChatButton.disabled = false;
                 speakChatButton.disabled = false;
-                if (chatInput.value.trim() !== '') { // If there's content, send it
+                if (chatInput.value.trim() !== '') {
                     sendMessage();
                 }
             };
@@ -1554,51 +1558,55 @@ function generateRuleBasedReply(msg) {
     return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to ***start workout Monday***, ***next exercise***, or ***play music***.";
 }
 
-let synth = window.speechSynthesis || null;
-let currentUtterance = null;
-
-/**
- * Speak text using AI-generated TTS powered by websim.textToSpeech,
- * using "en-female" voice and "aura-latest" model for a natural, slightly slower speaking rate.
- * The response is also robust to rate-limiting/fallback to SpeechSynthesis as before.
- * @param {string} text
- */
 async function speakText(text) {
     stopSpeaking();
     speaking = true;
     speakChatButton.textContent = 'Stop Speaking';
 
-    // Use websim.textToSpeech with requested settings (voice: "en-female", model: "aura-latest")
     try {
-        // Prefer AI voice if available
-        const ttsResult = await websim.textToSpeech({
-            text: text,
-            voice: "en-female",
-            model: "aura-latest"
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': ELEVENLABS_API_KEY
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: 'eleven_monolingual_v1',
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.5
+                }
+            })
         });
 
-        if (currentSpeechAudio) {
-            currentSpeechAudio.pause();
-            currentSpeechAudio = null;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        currentSpeechAudio = new Audio(ttsResult.url);
-        currentSpeechAudio.playbackRate = 0.94; // slightly slower than normal
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        currentSpeechAudio = new Audio(audioUrl);
+        currentSpeechAudio.playbackRate = 0.94;
 
         currentSpeechAudio.onended = () => {
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl);
         };
         currentSpeechAudio.onerror = () => {
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl);
         };
 
         await currentSpeechAudio.play();
-        // no-op: will finish onended
     } catch (e) {
-        // fallback to browser TTS if network/AI fails
+        console.error("ElevenLabs TTS error:", e);
+        // Fallback to browser TTS
         if (window.speechSynthesis) {
             let synth = window.speechSynthesis;
             let voices = synth.getVoices();
@@ -1614,7 +1622,6 @@ async function speakText(text) {
                 });
             }
 
-            // Pick the highest-quality en-US female fast voice
             let selectedVoice =
                 voices.find(v => /Google US English/.test(v.name)) ||
                 voices.find(v => /en-US/.test(v.lang) && /female/i.test(v.name)) ||
@@ -1626,7 +1633,7 @@ async function speakText(text) {
             if (selectedVoice) currentUtterance.voice = selectedVoice;
             currentUtterance.lang = selectedVoice?.lang || 'en-US';
 
-            currentUtterance.rate = 0.93; // Slower than before (was 1.35)
+            currentUtterance.rate = 0.93;
             currentUtterance.pitch = 1.07;
 
             currentUtterance.onend = () => {
@@ -1641,7 +1648,6 @@ async function speakText(text) {
             };
             synth.speak(currentUtterance);
         } else {
-            // Fallback: just display in chat
             speaking = false;
             speakChatButton.textContent = 'Speak';
         }
