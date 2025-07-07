@@ -1,7 +1,5 @@
 import confetti from 'canvas-confetti';
 
-
-
 const defaultWorkoutPlan = {
     Monday: {
         name: "Chest, Tricep, Shoulder",
@@ -66,7 +64,7 @@ const defaultWorkoutPlan = {
 };
 
 let userWorkoutPlan;
-let workoutLog = {}; // Stores workout data by date
+let workoutLog = {}; 
 let currentProfileYear = new Date().getFullYear();
 
 const planContainer = document.getElementById('plan');
@@ -102,8 +100,6 @@ const modeToggleButton = document.getElementById('mode-toggle');
 const modeIcon = document.getElementById('mode-icon');
 const clearLogButton = document.getElementById('clear-log-button');
 
-
-// Modal elements
 const editDayModal = document.getElementById('edit-day-modal');
 const modalDayTitle = document.getElementById('modal-day-title');
 const modalDayDescriptionInput = document.getElementById('modal-day-description');
@@ -114,7 +110,6 @@ const cancelDayEditButton = document.getElementById('cancel-day-edit');
 const closeModalButton = document.getElementById('close-edit-modal-button');
 const editingDayKeyInput = document.getElementById('editing-day-key');
 
-// AI Chatbot elements
 const aiChatToggle = document.getElementById('ai-chat-toggle');
 const aiChatbotModal = document.getElementById('ai-chatbot-modal');
 const closeAiModalButton = document.getElementById('close-ai-modal-button');
@@ -122,14 +117,15 @@ const chatHistoryDiv = document.getElementById('chat-history');
 const chatInput = document.getElementById('chat-input');
 const sendChatButton = document.getElementById('send-chat-btn');
 const speakChatButton = document.getElementById('speak-chat-btn');
+const voiceInputButton = document.getElementById('voice-input-btn'); 
 
 let conversationHistory = [];
 let speaking = false;
-
+let recognition; 
 
 let audioContext;
 let bgmSource;
-let bgmGainNode; // Added gain node for BGM volume control
+let bgmGainNode; 
 let bgmPlaylist = [];
 let currentTrackIndex = -1;
 let isBgmPlaying = false;
@@ -143,15 +139,14 @@ let timeRemaining;
 let workoutSoundBuffer;
 let restSoundBuffer;
 let profileSoundBuffer;
-let lightModeSoundBuffer; // New sound for light mode toggle
-let darkModeSoundBuffer; // New sound for dark mode toggle
+let lightModeSoundBuffer; 
+let darkModeSoundBuffer; 
 let isEditingPlan = false;
-let workoutCaloriesBurned = 0; // Track calories for the current workout session
-let workoutExercisesCompleted = []; // Track completed exercises for the current workout session
-let isLightMode = false; // Track light/dark mode state
-let currentSpeechAudio = null; // To hold the Audio object for speech
+let workoutCaloriesBurned = 0; 
+let workoutExercisesCompleted = []; 
+let isLightMode = false; 
+let currentSpeechAudio = null; 
 
-// Pre-loaded BGMs
 const preloadedBgms = [
     { name: "High Energy Phonk", path: 'workout_bgm_2.mp3', buffer: null },
     { name: "Futuristic Workout", path: 'bloody_mary_edit.mp3', buffer: null },
@@ -167,7 +162,6 @@ const preloadedBgms = [
 ];
 
 let uploadedBgms = [];
-
 
 function initWorkoutPlan() {
     const storedPlan = localStorage.getItem('userWorkoutPlan');
@@ -215,12 +209,10 @@ async function setupAudio() {
         return;
     }
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    bgmGainNode = audioContext.createGain(); // Initialize gain node
+    bgmGainNode = audioContext.createGain(); 
     bgmGainNode.connect(audioContext.destination);
-    // Set initial BGM volume (e.g., 0.5 for half volume)
     bgmGainNode.gain.value = 0.5; 
 
-    // Do not resume context automatically here. Resume on first user interaction with audio controls.
     document.body.addEventListener('click', () => {
          if (audioContext && audioContext.state === 'suspended') {
              audioContext.resume();
@@ -256,8 +248,7 @@ async function loadBufferFromUpload(file) {
             fileReader.onload = async (event) => {
                 try {
                     const arrayBuffer = event.target.result;
-                    // Do not resume context here - it will be resumed when play is clicked
-                     if (audioContext && audioContext.state !== 'closed') {
+                    if (audioContext && audioContext.state !== 'closed') {
                         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                         resolve(audioBuffer);
                      } else {
@@ -287,16 +278,10 @@ async function loadSounds() {
              return null;
         }));
         const validPreloadedBgms = loadedPreloaded.filter(bgm => bgm !== null);
-        // Load uploaded BGMs from localStorage if any
         const storedUploaded = localStorage.getItem('uploadedBgms');
         if (storedUploaded) {
             try {
                 uploadedBgms = JSON.parse(storedUploaded);
-                // Note: Buffers for uploaded songs are NOT stored in localStorage.
-                // They must be re-uploaded by the user or re-loaded from saved paths
-                // if saved paths pointed to something persistent (which they don't here).
-                // For this implementation, uploaded songs are only available during the session.
-                // Filter out previous entries, user needs to re-upload for new session.
                 uploadedBgms = []; 
             } catch (e) {
                 console.error("Failed to parse stored uploaded BGMs:", e);
@@ -306,9 +291,9 @@ async function loadSounds() {
         bgmPlaylist = [...validPreloadedBgms, ...uploadedBgms];
         workoutSoundBuffer = await loadSound('workout_start.mp3');
         restSoundBuffer = await loadSound('rest_start.mp3');
-        profileSoundBuffer = await loadSound('workout_start.mp3'); // Assuming workout_start.mp3 is fine for profile click
-        lightModeSoundBuffer = await loadSound('workout_start.mp3'); // Assign light mode sound
-        darkModeSoundBuffer = await loadSound('rest_start.mp3'); // Assign dark mode sound
+        profileSoundBuffer = await loadSound('workout_start.mp3'); 
+        lightModeSoundBuffer = await loadSound('workout_start.mp3'); 
+        darkModeSoundBuffer = await loadSound('rest_start.mp3'); 
 
         let initialTrackIndex = -1;
         const lastTrackName = localStorage.getItem('lastSelectedBGM');
@@ -457,7 +442,7 @@ function playBGM(restart = false) {
         bgmSource = audioContext.createBufferSource();
         bgmSource.buffer = buffer;
         bgmSource.loop = true;
-        bgmSource.connect(bgmGainNode); // Connect to gain node
+        bgmSource.connect(bgmGainNode); 
         bgmSource.start(0);
         isBgmPlaying = true;
         playPauseBgmButton.textContent = '❚❚';
@@ -493,7 +478,7 @@ function pauseBGM() {
     console.log("BGM paused.");
 }
 
-function playPauseBGM() {
+function playPauseBGMHandler() {
      setupAudio().then(() => { 
          if (isBgmPlaying) {
              pauseBGM();
@@ -539,7 +524,7 @@ function playPreviousBGM() {
      });
 }
 
-playPauseBgmButton.addEventListener('click', playPauseBGM);
+playPauseBgmButton.addEventListener('click', playPauseBGMHandler);
 nextBgmButton.addEventListener('click', playNextBGM);
 prevBgmButton.addEventListener('click', playPreviousBGM);
 
@@ -548,7 +533,6 @@ function playSound(buffer) {
         console.warn("Audio context not ready or buffer missing for sound effect.");
         return;
     }
-    // Sound effects should try to resume context if needed
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => {
             const source = audioContext.createBufferSource();
@@ -565,8 +549,8 @@ function playSound(buffer) {
 }
 
 function applyTheme(themeName) {
-    document.body.className = ''; // Clear existing theme classes
-    if (isLightMode) { // If light mode is active, re-apply it
+    document.body.className = ''; 
+    if (isLightMode) { 
         document.body.classList.add('light-mode');
     }
     if (themeName && themeName !== 'default') {
@@ -582,7 +566,7 @@ function loadTheme() {
         applyTheme(savedTheme);
     } else {
         if (themeSelectElement) {
-            themeSelectElement.value = 'green'; // Set default theme to green lush
+            themeSelectElement.value = 'green'; 
             applyTheme('green');
         }
     }
@@ -598,16 +582,15 @@ function toggleLightDarkMode() {
     isLightMode = !isLightMode;
     if (isLightMode) {
         document.body.classList.add('light-mode');
-        modeIcon.textContent = '☀️'; // Sun icon for light mode
+        modeIcon.textContent = '☀️'; 
         localStorage.setItem('colorMode', 'light');
-        playSound(lightModeSoundBuffer); // Play sound for light mode
+        playSound(lightModeSoundBuffer); 
     } else {
         document.body.classList.remove('light-mode');
-        modeIcon.textContent = '🌙'; // Moon icon for dark mode
+        modeIcon.textContent = '🌙'; 
         localStorage.setItem('colorMode', 'dark');
-        playSound(darkModeSoundBuffer); // Play sound for dark mode
+        playSound(darkModeSoundBuffer); 
     }
-    // Re-apply the current theme to ensure theme-specific light/dark styles are updated
     applyTheme(themeSelectElement.value);
 }
 
@@ -623,12 +606,12 @@ function loadColorMode() {
         modeIcon.textContent = '🌙';
     }
 }
+
 modeToggleButton.addEventListener('click', () => {
     setupAudio().then(() => {
         toggleLightDarkMode();
     });
 });
-
 
 function setView(viewName) {
     planContainer.style.display = 'none';
@@ -636,31 +619,13 @@ function setView(viewName) {
     profileView.style.display = 'none';
     currentExerciseDiv.style.display = 'none';
     document.body.classList.remove('plan-view', 'workout-view', 'profile-view');
-
-    // Reset workout view elements
-    currentDayDisplay.textContent = "Select a day to start";
-    timerDisplay.textContent = "00:00";
-    startWorkoutButton.style.display = 'none';
-    nextExerciseButton.style.display = 'none';
-    skipRestButton.style.display = 'none';
-    skipTimerButton.style.display = 'none';
-    exerciseImage.classList.remove('visible');
-    exerciseImage.src = '';
-    exerciseImage.style.display = 'none';
-    exerciseNameDisplay.textContent = "";
-    exerciseDetailsDisplay.textContent = "";
-
-    // General control button visibility
-    backToPlanButton.style.display = 'none';
-    editPlanButton.style.display = 'inline-block';
-    viewProfileButton.style.display = 'inline-block';
-
+    backToPlanButton.style.display = 'none'; 
 
     if (viewName === 'plan') {
         document.body.classList.add('plan-view');
         planContainer.style.display = 'grid';
-        workoutDisplayContainer.style.display = 'block'; // Ensure workout-display wrapper is visible
-        currentExerciseDiv.style.display = 'none'; // But exercise details are hidden
+        workoutDisplayContainer.style.display = 'block'; 
+        currentExerciseDiv.style.display = 'none'; 
         if (isEditingPlan) {
             editPlanButton.textContent = 'Finish Editing';
             editPlanButton.classList.add('active-editing');
@@ -668,6 +633,7 @@ function setView(viewName) {
             editPlanButton.textContent = 'Edit My Plan';
             editPlanButton.classList.remove('active-editing');
         }
+        viewProfileButton.style.display = 'inline-block';
     } else if (viewName === 'workout') {
         document.body.classList.add('workout-view');
         planContainer.style.display = 'none';
@@ -679,7 +645,7 @@ function setView(viewName) {
     } else if (viewName === 'profile') {
         document.body.classList.add('profile-view');
         profileView.style.display = 'block';
-        backToPlanButton.style.display = 'inline-block'; // Allow going back from profile to plan
+        backToPlanButton.style.display = 'inline-block'; 
         editPlanButton.style.display = 'none';
         viewProfileButton.style.display = 'none';
         renderProfile();
@@ -695,8 +661,8 @@ function selectDay(dayKey) {
     currentExerciseIndex = 0;
     currentSet = 1;
     isResting = false;
-    workoutCaloriesBurned = 0; // Reset calories for new workout
-    workoutExercisesCompleted = []; // Reset completed exercises for new workout
+    workoutCaloriesBurned = 0; 
+    workoutExercisesCompleted = []; 
     setView('workout');
     currentDayDisplay.textContent = `${dayKey} - ${userWorkoutPlan[dayKey].name}`;
     displayExercise();
@@ -762,16 +728,14 @@ function startTimer(duration) {
             clearInterval(timerInterval);
             timerDisplay.textContent = "Done!";
             playSound(isResting ? restSoundBuffer : workoutSoundBuffer);
-            if (isRestButton) {
+            if (isResting) { 
                 isResting = false;
                 skipRestButton.style.display = 'none';
                 displayExercise();
             } else {
-                // Calculate calories burned for timed exercises
                 if (exercise.type === 'time' && exercise.caloriesPerSecond) {
                     workoutCaloriesBurned += (duration - timeRemaining) * exercise.caloriesPerSecond;
                 }
-                // Log individual exercise completion
                 workoutExercisesCompleted.push(exercise.name);
 
                 skipTimerButton.style.display = 'none';
@@ -793,14 +757,12 @@ function handleSetCompletion() {
     exerciseImage.classList.remove('visible');
     exerciseImage.style.display = 'none';
     
-    // Calculate calories burned for reps-based exercises
     if (exercise.type === 'reps' && exercise.caloriesPerRep) {
         const repsValue = parseInt(String(exercise.reps).replace(' each', ''));
         if (!isNaN(repsValue)) {
             workoutCaloriesBurned += repsValue * exercise.caloriesPerRep;
         }
     }
-    // Log individual exercise completion for reps-based exercises
     if (exercise.type === 'reps') {
         workoutExercisesCompleted.push(exercise.name);
     }
@@ -849,20 +811,18 @@ function workoutComplete() {
     clearInterval(timerInterval);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
 
-    // Log workout completion
     const today = new Date();
-    const dateString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateString = today.toISOString().split('T')[0]; 
     if (!workoutLog[dateString]) {
         workoutLog[dateString] = {
             completedWorkouts: 0,
             caloriesBurned: 0,
-            exercises: {} // Store exercise counts by name
+            exercises: {} 
         };
     }
     workoutLog[dateString].completedWorkouts++;
-    workoutLog[dateString].caloriesBurned += Math.round(workoutCaloriesBurned); // Round calories
+    workoutLog[dateString].caloriesBurned += Math.round(workoutCaloriesBurned); 
 
-    // Aggregate completed exercises
     workoutExercisesCompleted.forEach(exerciseName => {
         workoutLog[dateString].exercises[exerciseName] = (workoutLog[dateString].exercises[exerciseName] || 0) + 1;
     });
@@ -940,11 +900,9 @@ skipTimerButton.addEventListener('click', () => {
     if (isResting || exercise.type !== 'time') return;
     clearInterval(timerInterval);
     timerDisplay.textContent = "Skipped!";
-    // Ensure calories are still calculated for timed exercises if skipped
     if (exercise.type === 'time' && exercise.caloriesPerSecond) {
         workoutCaloriesBurned += (exercise.duration - timeRemaining) * exercise.caloriesPerSecond;
     }
-    // Log individual exercise completion if skipped (still counts as completed)
     workoutExercisesCompleted.push(exercise.name);
 
     skipTimerButton.style.display = 'none';
@@ -954,7 +912,7 @@ skipTimerButton.addEventListener('click', () => {
 
 backToPlanButton.addEventListener('click', () => {
     setupAudio().then(() => {
-        playSound(restSoundBuffer); // Play restSoundBuffer when Back to Plan is clicked
+        playSound(restSoundBuffer); 
         setView('plan');
         clearInterval(timerInterval);
         currentWorkoutDayKey = null;
@@ -967,11 +925,9 @@ backToPlanButton.addEventListener('click', () => {
     });
 });
 
-// --- Edit Plan Logic ---
 editPlanButton.addEventListener('click', () => {
     isEditingPlan = !isEditingPlan;
 
-    // Play sound using AudioBuffer
     if (isEditingPlan && workoutSoundBuffer) {
         playSound(workoutSoundBuffer);
     } else if (!isEditingPlan && restSoundBuffer) {
@@ -983,7 +939,6 @@ editPlanButton.addEventListener('click', () => {
     setView('plan');
     displayPlan();
 });
-
 
 function createExerciseEditRow(exercise = {}, index = -1, dayKey = '') {
     const row = document.createElement('div');
@@ -1149,10 +1104,9 @@ function displayPlan() {
     }
 }
 
-// --- Profile View Logic ---
 viewProfileButton.addEventListener('click', () => {
     setupAudio().then(() => {
-        playSound(profileSoundBuffer); // Play sound when View Profile is clicked
+        playSound(profileSoundBuffer); 
         setView('profile');
     });
 });
@@ -1171,7 +1125,7 @@ function renderProfile() {
     }
     totalWorkoutsDisplay.textContent = totalWorkouts;
     totalExercisesCompletedDisplay.textContent = totalExercises;
-    totalCaloriesDisplay.textContent = totalCalories.toFixed(0); // Display as integer
+    totalCaloriesDisplay.textContent = totalCalories.toFixed(0); 
 
     renderProgressTracker(currentProfileYear);
 }
@@ -1183,7 +1137,6 @@ function renderProgressTracker(year) {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
-    // Create month containers instead of individual days
     monthNames.forEach((monthName, monthIndex) => {
         const monthContainer = document.createElement('div');
         monthContainer.classList.add('month-container');
@@ -1197,7 +1150,6 @@ function renderProgressTracker(year) {
         daysInMonthGrid.classList.add('days-in-month-grid');
         monthContainer.appendChild(daysInMonthGrid);
 
-        // Add day labels (Sun, Mon, Tue...)
         dayLabels.forEach(label => {
             const dayLabelDiv = document.createElement('div');
             dayLabelDiv.classList.add('day-label');
@@ -1205,23 +1157,17 @@ function renderProgressTracker(year) {
             daysInMonthGrid.appendChild(dayLabelDiv);
         });
 
-        // Determine the day of the week for the 1st of the month
-        // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
-        // This is now correctly aligned with 'Sun' as the first label.
         const firstDayOfMonth = new Date(year, monthIndex, 1);
-        const startOffsetDays = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday etc.
+        const startOffsetDays = firstDayOfMonth.getDay(); 
 
-        // Add empty cells for the start offset
         for (let i = 0; i < startOffsetDays; i++) {
             const emptyCell = document.createElement('div');
             emptyCell.classList.add('progress-day', 'empty');
             daysInMonthGrid.appendChild(emptyCell);
         }
 
-        // Add actual day cells
         let date = new Date(year, monthIndex, 1);
         const today = new Date();
-        // Set today's date to midnight for consistent comparison
         today.setHours(0, 0, 0, 0); 
 
         while (date.getMonth() === monthIndex) {
@@ -1229,10 +1175,8 @@ function renderProgressTracker(year) {
             const dayCell = document.createElement('div');
             dayCell.classList.add('progress-day');
 
-            // Set current date to midnight for comparison
             const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            // Add a class for today's date for special highlighting
             if (currentDate.getTime() === today.getTime()) {
                 dayCell.classList.add('today');
             }
@@ -1266,16 +1210,14 @@ function renderProgressTracker(year) {
     });
 }
 
-// Clear Workout Log button functionality
 clearLogButton.addEventListener('click', () => {
     if (confirm("Are you sure you want to clear all workout log data? This cannot be undone.")) {
-        workoutLog = {}; // Clear the log object
-        saveWorkoutLog(); // Save the empty log to localStorage
-        renderProfile(); // Re-render the profile to show cleared stats
+        workoutLog = {}; 
+        saveWorkoutLog(); 
+        renderProfile(); 
         alert("Workout log cleared!");
     }
 });
-
 
 prevYearButton.addEventListener('click', () => {
     currentProfileYear--;
@@ -1287,7 +1229,6 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
-// --- AI Assistant Logic ---
 aiChatToggle.addEventListener('click', () => {
     aiChatbotModal.style.display = 'flex';
     chatInput.focus();
@@ -1295,13 +1236,15 @@ aiChatToggle.addEventListener('click', () => {
 
 closeAiModalButton.addEventListener('click', () => {
     aiChatbotModal.style.display = 'none';
-    stopSpeaking(); // Stop speech when closing modal
+    stopSpeaking(); 
+    stopVoiceInput(); 
 });
 
 window.addEventListener('click', (event) => {
     if (event.target === aiChatbotModal) {
         aiChatbotModal.style.display = 'none';
-        stopSpeaking(); // Stop speech when clicking outside modal
+        stopSpeaking(); 
+        stopVoiceInput(); 
     }
 });
 
@@ -1322,20 +1265,97 @@ speakChatButton.addEventListener('click', async () => {
             await speakText(lastBotMessage.textContent);
             speakChatButton.textContent = 'Stop Speaking';
         } else {
-            appendMessage("Bot", "There's nothing for me to say yet!", 'bot-message');
+            appendMessage("Nova", "There's nothing for me to say yet!", 'bot-message');
             await speakText("There's nothing for me to say yet!");
         }
     }
 });
 
+voiceInputButton.addEventListener('click', toggleVoiceInput);
+
+function toggleVoiceInput() {
+    if ('webkitSpeechRecognition' in window) {
+        if (!recognition) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false; 
+            recognition.interimResults = true; // Enable interim results for typing effect
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                voiceInputButton.style.backgroundColor = 'var(--accent-color-hover)'; 
+                voiceInputButton.textContent = '🔴';
+                chatInput.placeholder = "Listening...";
+                sendChatButton.disabled = true;
+                speakChatButton.disabled = true;
+                stopSpeaking(); // Stop speaking if AI is talking
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                chatInput.value = finalTranscript || interimTranscript; // Show final or interim
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                chatInput.placeholder = "Error, try again or type...";
+                voiceInputButton.style.backgroundColor = 'var(--accent-color)';
+                voiceInputButton.textContent = '🎤';
+                sendChatButton.disabled = false;
+                speakChatButton.disabled = false;
+                stopVoiceInput();
+            };
+
+            recognition.onend = () => {
+                voiceInputButton.style.backgroundColor = 'var(--accent-color)';
+                voiceInputButton.textContent = '🎤';
+                chatInput.placeholder = "Ask me anything about your workout or music!";
+                sendChatButton.disabled = false;
+                speakChatButton.disabled = false;
+                if (chatInput.value.trim() !== '') { // If there's content, send it
+                    sendMessage();
+                }
+            };
+        }
+
+        if (voiceInputButton.textContent === '🎤') {
+            recognition.start();
+        } else {
+            recognition.stop();
+        }
+    } else {
+        alert("Speech recognition is not supported in this browser. Please use Chrome for this feature.");
+    }
+}
+
+function stopVoiceInput() {
+    if (recognition) {
+        recognition.stop();
+        voiceInputButton.style.backgroundColor = 'var(--accent-color)';
+        voiceInputButton.textContent = '🎤';
+        chatInput.placeholder = "Ask me anything about your workout or music!";
+    }
+}
+
 function appendMessage(sender, message, className) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('chat-message', className);
-    // Replace markdown bold with HTML strong tags
     messageElement.innerHTML = message.replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>');
     chatHistoryDiv.appendChild(messageElement);
-    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Auto-scroll to bottom
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; 
 }
+
+const workoutDayKeywords = {
+    "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday",
+    "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "sunday": "Sunday"
+};
 
 async function sendMessage() {
     const userMessage = chatInput.value.trim();
@@ -1345,246 +1365,302 @@ async function sendMessage() {
     chatInput.value = '';
     sendChatButton.disabled = true;
     speakChatButton.disabled = true;
-    stopSpeaking(); // Stop any ongoing speech
+    stopSpeaking();
+    stopVoiceInput(); 
 
-    conversationHistory.push({ role: "user", content: userMessage });
-    conversationHistory = conversationHistory.slice(-10); // Keep last 10 messages
+    conversationHistory.push({ role: "user", content: userMessage.toLowerCase() });
 
-    try {
-        const completion = await websim.chat.completions.create({
-            model: "claude-3-sonnet-20240229", // Specify the model
-            messages: [
-                {
-                    role: "system",
-                    content: `You are Nova, a friendly, beautiful, and knowledgeable AI workout assistant. Your responses should be clear, fluent, and helpful. You can answer general questions, conduct research, and assist with workout-related commands (like "start Monday workout", "next exercise", "skip rest") and music control commands (like "play music", "pause music", "next song", "previous song", "what's playing"). 
-                    
-                    Here are the available workout days: ${Object.keys(userWorkoutPlan).join(', ')}.
-                    Here are the exercises in the current plan: ${Object.values(userWorkoutPlan).map(day => day.exercises.map(ex => ex.name)).flat().filter((value, index, self) => self.indexOf(value) === index).join(', ')}.
-                    
-                    If the user asks to start a workout, respond with "Absolutely! Starting your ***[Day Name]*** workout now. Let's get moving!".
-                    If the user asks for the next exercise, respond with "Alright, moving to the next exercise. You're doing great!".
-                    If the user asks to skip rest, respond with "No problem! Skipping the rest period for you. Keep up the momentum!".
-                    If the user asks to skip timer, respond with "Timer skipped! Let's get straight to the next part of your workout!".
-                    If the user asks to play music, respond with "Energizing sounds coming right up! Playing your music now.".
-                    If the user asks to pause music, respond with "Music paused for you. Take a breather if you need!".
-                    If the user asks for the next song, respond with "Skipping to the next track! Hope you enjoy this one.".
-                    If the user asks for the previous song, respond with "Going back to the previous song. Let's find that perfect beat!".
-                    If the user asks "what's playing", respond with the current song title from the music player, e.g., "Currently playing: ***[Song Title]*** by ***[Artist Name]***. A fantastic choice!". If nothing is playing, say "It looks like no music is currently playing. Would you like me to start some?".
-                    
-                    For other queries related to workout, nutrition, general knowledge, or anything else, provide helpful and informative responses. If a command cannot be executed, explain why in a friendly manner. Always aim to be encouraging and supportive!`,
-                },
-                ...conversationHistory,
-            ],
-            tools: [
-                {
-                    type: "function",
-                    function: {
-                        name: "selectDay",
-                        description: "Starts a workout for a specific day.",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                dayKey: {
-                                    type: "string",
-                                    enum: Object.keys(userWorkoutPlan),
-                                },
-                            },
-                            required: ["dayKey"],
-                        },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "handleSetCompletion",
-                        description: "Moves to the next set or next exercise in the current workout.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "skipRestButton.click",
-                        description: "Skips the current rest period.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "skipTimerButton.click",
-                        description: "Skips the current timed exercise.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "playPauseBGM",
-                        description: "Toggles playback of the background music.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "playNextBGM",
-                        description: "Skips to the next background music track.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "playPreviousBGM",
-                        description: "Skips to the previous background music track.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "getCurrentSongInfo",
-                        description: "Gets the title and artist of the currently playing YouTube song.",
-                        parameters: { type: "object", properties: {} },
-                    },
-                },
-            ],
-            temperature: 0.7, 
-            max_tokens: 150,   
-        });
+    const reply = generateRuleBasedReply(userMessage.toLowerCase());
 
-        if (completion.tool_calls && completion.tool_calls.length > 0) {
-            for (const toolCall of completion.tool_calls) {
-                const functionName = toolCall.function.name;
-                const args = JSON.parse(toolCall.function.arguments);
-                let toolResponse = '';
+    appendMessage("Nova", reply, 'bot-message');
+    await speakText(reply);
 
-                switch (functionName) {
-                    case 'selectDay':
-                        if (userWorkoutPlan[args.dayKey]) {
-                            selectDay(args.dayKey);
-                            toolResponse = `Absolutely! Starting your ***${args.dayKey}*** workout now. Let's get moving!`;
-                        } else {
-                            toolResponse = `I'm sorry, I couldn't find a workout plan for ***${args.dayKey}***. Please check the available days!`;
-                        }
-                        break;
-                    case 'handleSetCompletion':
-                        if (currentWorkoutDayKey) {
-                            handleSetCompletion();
-                            toolResponse = "Alright, moving to the next exercise or set. You're doing great!";
-                        } else {
-                            toolResponse = "There isn't an active workout to move to the next exercise. Please start a workout first!";
-                        }
-                        break;
-                    case 'skipRestButton.click':
-                        if (isResting) {
-                            skipRestButton.click();
-                            toolResponse = "No problem! Skipping the rest period for you. Keep up the momentum!";
-                        } else {
-                            toolResponse = "You're not currently in a rest period, so there's no rest to skip!";
-                        }
-                        break;
-                    case 'skipTimerButton.click':
-                        const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
-                        if (exercise && exercise.type === 'time' && !isResting) {
-                            skipTimerButton.click();
-                            toolResponse = "Timer skipped! Let's get straight to the next part of your workout!";
-                        } else {
-                            toolResponse = "There's no active timer to skip right now, or you're not in a timed exercise.";
-                        }
-                        break;
-                    case 'playPauseBGM':
-                        playPauseBGM();
-                        toolResponse = isBgmPlaying ? "Music paused for you. Take a breather if you need!" : "Energizing sounds coming right up! Playing your music now.";
-                        break;
-                    case 'playNextBGM':
-                        playNextBGM();
-                        toolResponse = "Skipping to the next track! Hope you enjoy this one.";
-                        break;
-                    case 'playPreviousBGM':
-                        playPreviousBGM();
-                        toolResponse = "Going back to the previous song. Let's find that perfect beat!";
-                        break;
-                    case 'getCurrentSongInfo':
-                        const title = titleElement.textContent;
-                        const artist = artistElement.textContent;
-                        if (title && title !== 'Song Title') {
-                            toolResponse = `Currently playing: ***${title}*** by ***${artist}***. A fantastic choice!`;
-                        } else {
-                            toolResponse = "It looks like no music is currently playing. Would you like me to start some?";
-                        }
-                        break;
-                    default:
-                        toolResponse = `I'm not quite sure how to handle that specific command, but I'm always learning!`;
-                }
-                appendMessage("Nova", toolResponse, 'bot-message');
-                await speakText(toolResponse);
-                conversationHistory.push({ role: "tool", tool_call_id: toolCall.id, content: toolResponse });
-            }
-        } else if (completion.content) {
-            appendMessage("Nova", completion.content, 'bot-message');
-            await speakText(completion.content);
-            conversationHistory.push({ role: "assistant", content: completion.content });
-        } else {
-            appendMessage("Nova", "I'm sorry, I couldn't quite understand that. Could you please rephrase?", 'bot-message');
-            await speakText("I'm sorry, I couldn't quite understand that. Could you please rephrase?");
-        }
-    } catch (error) {
-        console.error("AI Assistant error:", error);
-        appendMessage("Nova", "Oops! Something went wrong while processing your request. Please try again. I'm always here to help!", 'bot-message');
-        await speakText("Oops! Something went wrong while processing your request. Please try again. I'm always here to help!");
-    } finally {
-        sendChatButton.disabled = false;
-        speakChatButton.disabled = false;
-    }
+    sendChatButton.disabled = false;
+    speakChatButton.disabled = false;
 }
 
-async function speakText(text) {
-    if (speaking) {
-        stopSpeaking();
+function generateRuleBasedReply(msg) {
+    if (msg.includes("play music") || msg.includes("play")) {
+        playPauseBGMHandler(); 
+        return "Energizing sounds coming right up! Playing your music now.";
     }
+    if (msg.includes("pause music") || msg.includes("pause")) {
+        playPauseBGMHandler(); 
+        return "Music paused. Take a breather if you need!";
+    }
+    if (msg.includes("next song") || msg.includes("current song")) {
+        playNextBGM();
+        return "Skipping to the next track! Hope you enjoy this one.";
+    }
+    if (msg.includes("previous song") || msg.includes("previous")) {
+        playPreviousBGM();
+        return "Back to the previous song. Let's find that perfect beat!";
+    }
+    if (msg.includes("what's playing") || msg.includes("current song")) {
+        const title = titleElement.textContent;
+        const artist = artistElement.textContent;
+        if (title && title !== "Song Title") return `Currently playing: ***${title}*** by ***${artist}***. A great vibe!`;
+        return "Looks like no music is playing right now. Want me to start something?";
+    }
+
+    if (msg.includes("start workout")) {
+        let foundDay = null;
+        for (const keyword in workoutDayKeywords) {
+            if (msg.includes(keyword)) {
+                foundDay = workoutDayKeywords[keyword];
+                break;
+            }
+        }
+        if (foundDay) {
+            if (userWorkoutPlan[foundDay] && userWorkoutPlan[foundDay].exercises.length > 0) {
+                selectDay(foundDay);
+                return `Absolutely! Starting your ***${foundDay}*** workout now. Let's get moving!`;
+            } else {
+                return `I'm sorry, ***${foundDay}*** seems to be a rest day or has no exercises defined. Would you like to pick another day or ***edit your plan***?`;
+            }
+        } else {
+            return "Which day's workout would you like to start? For example, 'start Monday workout'.";
+        }
+    }
+    if (msg.includes("next exercise") || msg.includes("next set")) {
+        if (currentWorkoutDayKey) {
+            handleSetCompletion(); 
+            return "Alright, moving to the next exercise. You're doing great!";
+        } else {
+            return "There isn't an active workout to move to the next exercise. Please start a workout first!";
+        }
+    }
+    if (msg.includes("skip rest")) {
+        if (isResting) {
+            skipRestButton.click(); 
+            return "No problem! Skipping the rest period for you. Keep up the momentum!";
+        } else {
+            return "You're not currently in a rest period, so there's no rest to skip!";
+        }
+    }
+    if (msg.includes("skip timer")) {
+        const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
+        if (exercise && exercise.type === 'time' && !isResting) {
+            skipTimerButton.click(); 
+            return "Timer skipped! Let's get straight to the next part of your workout!";
+        } else {
+            return "There's no active timer to skip right now, or you're not in a timed exercise.";
+        }
+    }
+    if (msg.includes("view profile") || msg.includes("check progress")) {
+        viewProfileButton.click();
+        return "Alright, let's take a look at your progress! Keep crushing those goals.";
+    }
+    if (msg.includes("edit plan")) {
+        editPlanButton.click();
+        return "Opening the workout plan editor. You can customize your routine here!";
+    }
+    if (msg.includes("what day is it") || msg.includes("what workout today")) {
+        const today = new Date();
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const todayKey = days[today.getDay()];
+        const workoutForToday = userWorkoutPlan[todayKey];
+        if (workoutForToday && workoutForToday.exercises.length > 0) {
+            return `Today is ***${todayKey}***, and your plan is ***${workoutForToday.name}***. Are you ready to tackle it?`;
+        } else {
+            return `Today is ***${todayKey}***, which is a rest day for you. Enjoy your recovery!`;
+        }
+    }
+    if (msg.includes("what exercise is next") && currentWorkoutDayKey) {
+        const exercises = userWorkoutPlan[currentWorkoutDayKey].exercises;
+        if (currentExerciseIndex < exercises.length) {
+            const nextExercise = exercises[currentExerciseIndex];
+            let details = `${nextExercise.sets} sets x ${nextExercise.reps ? nextExercise.reps + ' reps' : nextExercise.duration + ' seconds'}`;
+            return `Up next is ***${nextExercise.name}*** for ${details}. You got this!`;
+        } else {
+            return "You've completed all exercises for today! Great job!";
+        }
+    }
+    if (msg.includes("calories burned") || msg.includes("how many calories have i burned")) {
+        if (workoutCaloriesBurned > 0) {
+            return `So far in this workout, you've burned approximately ***${workoutCaloriesBurned.toFixed(0)} calories***! Amazing effort!`;
+        } else {
+            return "You haven't started a workout yet, so no calories burned to report. Let's get going!";
+        }
+    }
+    if (msg.includes("how to warm up")) {
+        return "A good warm-up should prepare your muscles for activity and increase your heart rate gradually. Try 5-10 minutes of light cardio like jogging in place, jumping jacks, or dynamic stretches such as arm circles and leg swings!";
+    }
+    if (msg.includes("importance of cool down")) {
+        return "Cooling down helps your body recover, gradually bringing your heart rate back to normal and preventing blood pooling. It also improves flexibility and reduces muscle soreness. Always finish with 5-10 minutes of static stretches!";
+    }
+    if (msg.includes("best time to workout")) {
+        return "The best time to work out is when it works best for YOU and your schedule! Consistency is more important than the specific time of day. Find a time you can stick to and that makes you feel energized.";
+    }
+    if (msg.includes("what to eat before workout")) {
+        return "Before a workout, aim for easily digestible carbohydrates to fuel your body, like a banana, oatmeal, or whole-wheat toast. A little protein can also be good, such as a handful of nuts or some Greek yogurt.";
+    }
+    if (msg.includes("how to stay motivated")) {
+        return "Motivation can be tricky! Try setting small, achievable goals, finding a workout buddy, trying new exercises to keep things fresh, rewarding yourself, and remembering why you started your fitness journey!";
+    }
+    if (msg.includes("what is hiit")) {
+        return "HIIT stands for ***High-Intensity Interval Training***. It involves short bursts of intense exercise followed by brief recovery periods. It's super effective for burning calories and improving cardiovascular fitness!";
+    }
+    if (msg.includes("why is stretching important")) {
+        return "Stretching is vital for flexibility, preventing injuries, improving range of motion, and reducing muscle stiffness. Incorporate both dynamic stretches before workouts and static stretches after workouts.";
+    }
+    if (msg.includes("how much water should i drink")) {
+        return "General guidelines suggest about 8 glasses (around 2 liters) of water per day, but this can increase significantly with exercise. Listen to your body and drink when thirsty, and especially before, during, and after workouts!";
+    }
+    if (msg.includes("healthy breakfast ideas")) {
+        return "For a healthy breakfast, consider options like oatmeal with berries, Greek yogurt with fruit and nuts, scrambled eggs with spinach, or a whole-grain toast with avocado. Balanced nutrition is key!";
+    }
+    if (msg.includes("how to improve strength")) {
+        return "To improve strength, focus on resistance training with proper form. Gradually increase the weight or resistance, ensure adequate protein intake, and prioritize rest and recovery to allow your muscles to rebuild stronger.";
+    }
+    if (msg.includes("benefits of strength training")) {
+        return "Strength training offers many benefits! It includes increased muscle mass, stronger bones, improved metabolism, better posture, reduced risk of injury, and enhanced overall functional fitness!";
+    }
+    if (msg.includes("cardio vs strength training")) {
+        return "Both cardio and strength training are important! Cardio improves heart health and endurance, while strength training builds muscle and bone density. A balanced routine includes both for overall fitness!";
+    }
+    if (msg.includes("nutrition tips")) {
+        return "Focus on whole, unprocessed foods like fruits, vegetables, lean proteins, and whole grains. Limit sugary drinks and processed snacks. Listen to your body's hunger cues and stay hydrated!";
+    }
+
+    if (msg.includes("hi") || msg.includes("hello")) return "Hi there! I'm Nova, your AI fitness buddy 💪. Ready to start sweating?";
+    if (msg.includes("how are you")) return "I'm always energized and ready to help! How about you?";
+    if (msg.includes("thank you") || msg.includes("thanks")) return "You're very welcome! Keep up the great work!";
+    if (msg.includes("bye") || msg.includes("goodbye")) return "See you next time! Stay active and healthy!";
+    if (msg.includes("help") || msg.includes("what can you do")) return "I can help you start a workout, control your music, track your progress, give fitness tips, and more! Just ask.";
+    if (msg.includes("who are you")) return "I'm Nova — your friendly, beautiful, and knowledgeable AI workout assistant 🤖💚. Here to support your fitness journey!";
+
+    if (msg.includes("how many calories") || msg.includes("burn calories"))
+        return "The number of calories burned varies greatly by exercise type, intensity, and individual factors. For example, a 30-minute high-intensity interval training (HIIT) session can burn significantly more than a 30-minute walk. Generally, activities that get your heart rate up and involve more muscles will burn more!";
+    if (msg.includes("protein") || msg.includes("post workout nutrition"))
+        return "Protein is crucial for muscle repair and growth after a workout. Aim for a lean protein source like chicken, fish, eggs, or a protein shake, ideally within 30-60 minutes post-exercise. It helps your muscles recover faster and get stronger!";
+    if (msg.includes("hydration") || msg.includes("drink water"))
+        return "Staying hydrated is super important for your workout performance and overall health! Drink water before, during, and after exercise to replenish fluids lost through sweat. Don't wait until you're thirsty!";
+    if (msg.includes("warmup") || msg.includes("warm up"))
+        return "A good warm-up prepares your muscles and cardiovascular system for exercise. It reduces injury risk and improves performance. Start with 5-10 minutes of light cardio like jogging or jumping jacks, followed by dynamic stretches relevant to your workout!";
+    if (msg.includes("cooldown") || msg.includes("cool down"))
+        return "Cooling down after a workout helps your heart rate return to normal gradually and improves flexibility. Finish with 5-10 minutes of light cardio and static stretches, holding each stretch for 20-30 seconds!";
+    if (msg.includes("consistency"))
+        return "Consistency is truly key in fitness! Regular workouts, even short ones, yield better results over time than infrequent, intense sessions. Find a routine you enjoy and stick to it!";
+    if (msg.includes("muscle growth") || msg.includes("build muscle"))
+        return "To build muscle, focus on progressive overload (gradually increasing weight, reps, or sets), adequate protein intake, and sufficient rest. Listen to your body and give muscles time to recover!";
+    if (msg.includes("lose weight") || msg.includes("weight loss"))
+        return "For weight loss, a combination of regular exercise and a balanced diet with a calorie deficit is most effective. Focus on whole foods, limit processed items, and stay active!";
+    if (msg.includes("benefits of exercise"))
+        return "Regular exercise has incredible benefits! It improves mood, boosts energy, helps with weight management, strengthens your heart and bones, and reduces the risk of many chronic diseases. It's a true investment in yourself!";
+    if (msg.includes("rest days"))
+        return "Rest days are vital! They allow your muscles to recover, repair, and grow stronger. They also prevent overtraining and burnout. Don't skip them – think of them as active recovery for your body!";
+
+    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to ***start workout Monday***, ***next exercise***, or ***play music***.";
+}
+
+let synth = window.speechSynthesis || null;
+let currentUtterance = null;
+
+/**
+ * Speak text using AI-generated TTS powered by websim.textToSpeech,
+ * using "en-female" voice and "aura-latest" model for a natural, slightly slower speaking rate.
+ * The response is also robust to rate-limiting/fallback to SpeechSynthesis as before.
+ * @param {string} text
+ */
+async function speakText(text) {
+    stopSpeaking();
     speaking = true;
     speakChatButton.textContent = 'Stop Speaking';
+
+    // Use websim.textToSpeech with requested settings (voice: "en-female", model: "aura-latest")
     try {
-        const result = await websim.textToSpeech({
+        // Prefer AI voice if available
+        const ttsResult = await websim.textToSpeech({
             text: text,
-            voice: "en-female", 
-            model: "aura-latest", // Use the latest model for faster, more fluent speech
+            voice: "en-female",
+            model: "aura-latest"
         });
 
-        currentSpeechAudio = new Audio(result.url);
-        currentSpeechAudio.play();
+        if (currentSpeechAudio) {
+            currentSpeechAudio.pause();
+            currentSpeechAudio = null;
+        }
+        currentSpeechAudio = new Audio(ttsResult.url);
+        currentSpeechAudio.playbackRate = 0.94; // slightly slower than normal
+
         currentSpeechAudio.onended = () => {
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
         };
-        currentSpeechAudio.onerror = (e) => {
-            console.error("Text-to-speech audio error:", e);
+        currentSpeechAudio.onerror = () => {
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
         };
+
+        await currentSpeechAudio.play();
+        // no-op: will finish onended
     } catch (e) {
-        console.error("Error generating speech:", e);
-        speaking = false;
-        speakChatButton.textContent = 'Speak';
+        // fallback to browser TTS if network/AI fails
+        if (window.speechSynthesis) {
+            let synth = window.speechSynthesis;
+            let voices = synth.getVoices();
+            if (!voices.length) {
+                await new Promise(res => {
+                    const timer = setInterval(() => {
+                        voices = synth.getVoices();
+                        if (voices.length > 0) {
+                            clearInterval(timer);
+                            res();
+                        }
+                    }, 20);
+                });
+            }
+
+            // Pick the highest-quality en-US female fast voice
+            let selectedVoice =
+                voices.find(v => /Google US English/.test(v.name)) ||
+                voices.find(v => /en-US/.test(v.lang) && /female/i.test(v.name)) ||
+                voices.find(v => /en-US/.test(v.lang)) ||
+                voices.find(v => v.lang.startsWith('en'));
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+
+            if (selectedVoice) currentUtterance.voice = selectedVoice;
+            currentUtterance.lang = selectedVoice?.lang || 'en-US';
+
+            currentUtterance.rate = 0.93; // Slower than before (was 1.35)
+            currentUtterance.pitch = 1.07;
+
+            currentUtterance.onend = () => {
+                speaking = false;
+                speakChatButton.textContent = 'Speak';
+                currentUtterance = null;
+            };
+            currentUtterance.onerror = () => {
+                speaking = false;
+                speakChatButton.textContent = 'Speak';
+                currentUtterance = null;
+            };
+            synth.speak(currentUtterance);
+        } else {
+            // Fallback: just display in chat
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+        }
     }
 }
 
 function stopSpeaking() {
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+    }
     if (currentSpeechAudio) {
         currentSpeechAudio.pause();
-        currentSpeechAudio.currentTime = 0; // Reset to beginning
         currentSpeechAudio = null;
     }
+    currentUtterance = null;
     speaking = false;
     speakChatButton.textContent = 'Speak';
 }
 
-
-// Initial Setup
 initWorkoutPlan();
 initWorkoutLog();
 populateMusicSelector();
@@ -1593,7 +1669,7 @@ if (themeSelectElement) {
 } else {
     applyTheme('green');
 }
-loadColorMode(); // Load color mode on startup
+loadColorMode(); 
 exerciseImage.src = '';
 exerciseImage.classList.remove('visible');
 exerciseImage.style.display = 'none';

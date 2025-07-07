@@ -615,7 +615,8 @@ h3 {
 .music-controls button,
 .upload-button,#load-btn,
 #view-profile-button,
-#ai-chat-toggle
+#ai-chat-toggle,
+#voice-input-btn
 { 
     padding: 12px 25px;
     font-size: 1em;
@@ -632,7 +633,8 @@ h3 {
     margin: 5px;
     display: inline-flex; 
     align-items: center;
-    min-width: 40px; 
+    min-width: 40px;
+    justify-content: center;
 }
 
 #controls button:hover,
@@ -641,7 +643,8 @@ h3 {
 .music-controls button:hover,
 .upload-button:hover,
 #view-profile-button:hover,
-#ai-chat-toggle:hover
+#ai-chat-toggle:hover,
+#voice-input-btn:hover
 {
     background-color: var(--accent-color-hover);
     transform: translateY(-2px);
@@ -654,7 +657,8 @@ h3 {
 .music-controls button:active,
 .upload-button:active,
 #view-profile-button:active,
-#ai-chat-toggle:active
+#ai-chat-toggle:active,
+#voice-input-btn:active
 {
     transform: translateY(0px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -1822,7 +1826,7 @@ body.light-mode .progress-day.empty {
     border-color: var(--accent-color);
 }
 
-#send-chat-btn, #speak-chat-btn {
+#send-chat-btn, #speak-chat-btn, #voice-input-btn {
     padding: 10px 15px;
     font-size: 0.9em;
     font-weight: bold;
@@ -1834,12 +1838,12 @@ body.light-mode .progress-day.empty {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#send-chat-btn:hover, #speak-chat-btn:hover {
+#send-chat-btn:hover, #speak-chat-btn:hover, #voice-input-btn:hover {
     background-color: var(--accent-color-hover);
     transform: translateY(-1px);
 }
 
-#send-chat-btn:disabled, #speak-chat-btn:disabled {
+#send-chat-btn:disabled, #speak-chat-btn:disabled, #voice-input-btn:disabled {
     background-color: var(--button-disabled-bg);
     color: var(--button-disabled-text);
     cursor: not-allowed;
