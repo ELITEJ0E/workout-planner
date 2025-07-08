@@ -1,5 +1,25 @@
 import confetti from 'canvas-confetti';
 
+// Disable right-click
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+
+  // Disable common dev tools keys
+  document.addEventListener('keydown', function (e) {
+    // F12
+    if (e.key === "F12") {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+    if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key === "U") {
+      e.preventDefault();
+    }
+  });
+
 const defaultWorkoutPlan = {
     Monday: {
         name: "Chest, Tricep, Shoulder",
@@ -392,7 +412,7 @@ uploadBgmInput.addEventListener('change', async (event) => {
                  currentTrackIndex = bgmPlaylist.length - 1;
                  localStorage.setItem('lastSelectedBGM', newTrack.name);
                  if (isBgmPlaying) {
-                    playBGM(true);
+                     playBGM(true);
                  } else {
                     pauseBGM();
                  }
@@ -1229,6 +1249,8 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
+const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735'; // Replace with your actual ElevenLabs API Key
+const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // You can test with official ElevenLabs voices
 
 aiChatToggle.addEventListener('click', () => {
     aiChatbotModal.style.display = 'flex';
@@ -1279,7 +1301,7 @@ function toggleVoiceInput() {
         if (!recognition) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false; 
-            recognition.interimResults = true; // Enable interim results for typing effect
+            recognition.interimResults = true; 
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
@@ -1288,7 +1310,7 @@ function toggleVoiceInput() {
                 chatInput.placeholder = "Listening...";
                 sendChatButton.disabled = true;
                 speakChatButton.disabled = true;
-                stopSpeaking(); // Stop speaking if AI is talking
+                stopSpeaking(); 
             };
 
             recognition.onresult = (event) => {
@@ -1301,7 +1323,7 @@ function toggleVoiceInput() {
                         interimTranscript += event.results[i][0].transcript;
                     }
                 }
-                chatInput.value = finalTranscript || interimTranscript; // Show final or interim
+                chatInput.value = finalTranscript || interimTranscript; 
             };
 
             recognition.onerror = (event) => {
@@ -1320,7 +1342,7 @@ function toggleVoiceInput() {
                 chatInput.placeholder = "Ask me anything about your workout or music!";
                 sendChatButton.disabled = false;
                 speakChatButton.disabled = false;
-                if (chatInput.value.trim() !== '') { // If there's content, send it
+                if (chatInput.value.trim() !== '') { 
                     sendMessage();
                 }
             };
@@ -1552,101 +1574,117 @@ function generateRuleBasedReply(msg) {
     if (msg.includes("rest days"))
         return "Rest days are vital! They allow your muscles to recover, repair, and grow stronger. They also prevent overtraining and burnout. Don't skip them – think of them as active recovery for your body!";
 
-    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to ***start workout Monday***, ***next exercise***, or ***play music***.";
+    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to start workout Monday, next exercise, or play music.";
 }
 
 let synth = window.speechSynthesis || null;
 let currentUtterance = null;
 
-/**
- * Speak text using AI-generated TTS powered by websim.textToSpeech,
- * using "en-female" voice and "aura-latest" model for a natural, slightly slower speaking rate.
- * The response is also robust to rate-limiting/fallback to SpeechSynthesis as before.
- * @param {string} text
- */
 async function speakText(text) {
     stopSpeaking();
     speaking = true;
     speakChatButton.textContent = 'Stop Speaking';
 
-    // Use websim.textToSpeech with requested settings (voice: "en-female", model: "aura-latest")
     try {
-        // Prefer AI voice if available
-        const ttsResult = await websim.textToSpeech({
-            text: text,
-            voice: "en-female",
-            model: "aura-latest"
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': ELEVENLABS_API_KEY,
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: "eleven_monolingual_v1",
+                voice_settings: {
+                    stability: 0.4,
+                    similarity_boost: 0.8
+                }
+            }),
         });
+
+        if (!response.ok) throw new Error("ElevenLabs TTS API failed or returned an error.");
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
 
         if (currentSpeechAudio) {
             currentSpeechAudio.pause();
             currentSpeechAudio = null;
         }
-        currentSpeechAudio = new Audio(ttsResult.url);
-        currentSpeechAudio.playbackRate = 0.94; // slightly slower than normal
+
+        currentSpeechAudio = new Audio(audioUrl);
+        currentSpeechAudio.playbackRate = 0.95;
 
         currentSpeechAudio.onended = () => {
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl); 
         };
-        currentSpeechAudio.onerror = () => {
+
+        currentSpeechAudio.onerror = (e) => {
+            console.error("Audio playback error:", e);
             speaking = false;
             speakChatButton.textContent = 'Speak';
             currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl); 
         };
 
         await currentSpeechAudio.play();
-        // no-op: will finish onended
-    } catch (e) {
-        // fallback to browser TTS if network/AI fails
-        if (window.speechSynthesis) {
-            let synth = window.speechSynthesis;
-            let voices = synth.getVoices();
-            if (!voices.length) {
-                await new Promise(res => {
-                    const timer = setInterval(() => {
-                        voices = synth.getVoices();
-                        if (voices.length > 0) {
-                            clearInterval(timer);
-                            res();
-                        }
-                    }, 20);
-                });
-            }
-
-            // Pick the highest-quality en-US female fast voice
-            let selectedVoice =
-                voices.find(v => /Google US English/.test(v.name)) ||
-                voices.find(v => /en-US/.test(v.lang) && /female/i.test(v.name)) ||
-                voices.find(v => /en-US/.test(v.lang)) ||
-                voices.find(v => v.lang.startsWith('en'));
-
-            currentUtterance = new SpeechSynthesisUtterance(text);
-
-            if (selectedVoice) currentUtterance.voice = selectedVoice;
-            currentUtterance.lang = selectedVoice?.lang || 'en-US';
-
-            currentUtterance.rate = 0.93; // Slower than before (was 1.35)
-            currentUtterance.pitch = 1.07;
-
-            currentUtterance.onend = () => {
-                speaking = false;
-                speakChatButton.textContent = 'Speak';
-                currentUtterance = null;
-            };
-            currentUtterance.onerror = () => {
-                speaking = false;
-                speakChatButton.textContent = 'Speak';
-                currentUtterance = null;
-            };
-            synth.speak(currentUtterance);
-        } else {
-            // Fallback: just display in chat
-            speaking = false;
-            speakChatButton.textContent = 'Speak';
-        }
+    } catch (err) {
+        console.error("ElevenLabs TTS failed:", err);
+        fallbackToBrowserTTS(text);
     }
+}
+
+function fallbackToBrowserTTS(text) {
+    if (window.speechSynthesis) {
+        if (!synth) { 
+            synth = window.speechSynthesis;
+        }
+
+        let voices = synth.getVoices();
+        if (!voices.length) {
+            synth.onvoiceschanged = () => {
+                voices = synth.getVoices();
+                actuallySpeak(voices, text);
+            };
+        } else {
+            actuallySpeak(voices, text);
+        }
+    } else {
+        speaking = false;
+        speakChatButton.textContent = 'Speak';
+    }
+}
+
+function actuallySpeak(voices, text) {
+    let selectedVoice =
+        voices.find(v => /Google US English/.test(v.name)) ||
+        voices.find(v => /en-US/.test(v.lang) && /female/i.test(v.name)) ||
+        voices.find(v => /en-US/.test(v.lang)) ||
+        voices.find(v => v.lang.startsWith('en'));
+
+    currentUtterance = new SpeechSynthesisUtterance(text);
+
+    if (selectedVoice) currentUtterance.voice = selectedVoice;
+    currentUtterance.lang = selectedVoice?.lang || 'en-US';
+
+    currentUtterance.rate = 0.95;
+    currentUtterance.pitch = 1.09;
+
+    currentUtterance.onend = () => {
+        speaking = false;
+        speakChatButton.textContent = 'Speak';
+        currentUtterance = null;
+    };
+    currentUtterance.onerror = () => {
+        speaking = false;
+        speakChatButton.textContent = 'Speak';
+        currentUtterance = null;
+    };
+    synth.speak(currentUtterance);
 }
 
 function stopSpeaking() {
