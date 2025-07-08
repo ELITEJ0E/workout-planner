@@ -1,25 +1,5 @@
 import confetti from 'canvas-confetti';
 
-// Disable right-click
-  document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
-
-  // Disable common dev tools keys
-  document.addEventListener('keydown', function (e) {
-    // F12
-    if (e.key === "F12") {
-      e.preventDefault();
-    }
-    // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
-    if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
-      e.preventDefault();
-    }
-    if (e.ctrlKey && e.key === "U") {
-      e.preventDefault();
-    }
-  });
-
 const defaultWorkoutPlan = {
     Monday: {
         name: "Chest, Tricep, Shoulder",
@@ -166,6 +146,7 @@ let workoutCaloriesBurned = 0;
 let workoutExercisesCompleted = []; 
 let isLightMode = false; 
 let currentSpeechAudio = null; 
+let currentView = 'plan'; 
 
 const preloadedBgms = [
     { name: "High Energy Phonk", path: 'workout_bgm_2.mp3', buffer: null },
@@ -612,6 +593,7 @@ function toggleLightDarkMode() {
         playSound(darkModeSoundBuffer); 
     }
     applyTheme(themeSelectElement.value);
+    setView(currentView); 
 }
 
 function loadColorMode() {
@@ -634,12 +616,16 @@ modeToggleButton.addEventListener('click', () => {
 });
 
 function setView(viewName) {
+    currentView = viewName; 
+
     planContainer.style.display = 'none';
     workoutDisplayContainer.style.display = 'none';
     profileView.style.display = 'none';
     currentExerciseDiv.style.display = 'none';
     document.body.classList.remove('plan-view', 'workout-view', 'profile-view');
     backToPlanButton.style.display = 'none'; 
+    editPlanButton.style.display = 'inline-block'; 
+    viewProfileButton.style.display = 'inline-block'; 
 
     if (viewName === 'plan') {
         document.body.classList.add('plan-view');
@@ -653,21 +639,20 @@ function setView(viewName) {
             editPlanButton.textContent = 'Edit My Plan';
             editPlanButton.classList.remove('active-editing');
         }
-        viewProfileButton.style.display = 'inline-block';
     } else if (viewName === 'workout') {
         document.body.classList.add('workout-view');
         planContainer.style.display = 'none';
         workoutDisplayContainer.style.display = 'block';
         currentExerciseDiv.style.display = 'block';
         backToPlanButton.style.display = 'inline-block';
-        editPlanButton.style.display = 'none';
-        viewProfileButton.style.display = 'inline-block';
+        editPlanButton.style.display = 'none'; 
+        viewProfileButton.style.display = 'inline-block'; 
     } else if (viewName === 'profile') {
         document.body.classList.add('profile-view');
         profileView.style.display = 'block';
         backToPlanButton.style.display = 'inline-block'; 
-        editPlanButton.style.display = 'none';
-        viewProfileButton.style.display = 'none';
+        editPlanButton.style.display = 'none'; 
+        viewProfileButton.style.display = 'none'; 
         renderProfile();
     }
 }
@@ -1249,8 +1234,8 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
-const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735'; // Replace with your actual ElevenLabs API Key
-const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // You can test with official ElevenLabs voices
+const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735'; 
+const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; 
 
 aiChatToggle.addEventListener('click', () => {
     aiChatbotModal.style.display = 'flex';
@@ -1331,8 +1316,8 @@ function toggleVoiceInput() {
                 chatInput.placeholder = "Error, try again or type...";
                 voiceInputButton.style.backgroundColor = 'var(--accent-color)';
                 voiceInputButton.textContent = '🎤';
-                sendChatButton.disabled = false;
-                speakChatButton.disabled = false;
+                sendChatButton.disabled = true;
+                speakChatButton.disabled = true;
                 stopVoiceInput();
             };
 
@@ -1574,7 +1559,7 @@ function generateRuleBasedReply(msg) {
     if (msg.includes("rest days"))
         return "Rest days are vital! They allow your muscles to recover, repair, and grow stronger. They also prevent overtraining and burnout. Don't skip them – think of them as active recovery for your body!";
 
-    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to start workout Monday, next exercise, or play music.";
+    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to ***start workout Monday***, ***next exercise***, or ***play music***.";
 }
 
 let synth = window.speechSynthesis || null;
