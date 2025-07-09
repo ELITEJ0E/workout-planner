@@ -1338,7 +1338,7 @@ function toggleVoiceInput() {
                 console.error("Speech recognition error:", event.error);
                 chatInput.placeholder = "Error, try again or type...";
                 voiceInputButton.style.backgroundColor = 'var(--accent-color)';
-                voiceInputButton.textContent = '🎤';
+                voiceInputButton.textContent = '🎙️';
                 sendChatButton.disabled = true;
                 speakChatButton.disabled = true;
                 stopVoiceInput();
@@ -1346,7 +1346,7 @@ function toggleVoiceInput() {
 
             recognition.onend = () => {
                 voiceInputButton.style.backgroundColor = 'var(--accent-color)';
-                voiceInputButton.textContent = '🎤';
+                voiceInputButton.textContent = '🎙️';
                 chatInput.placeholder = "Ask me anything about your workout or fitness!";
                 sendChatButton.disabled = false;
                 speakChatButton.disabled = false;
@@ -1356,7 +1356,7 @@ function toggleVoiceInput() {
             };
         }
 
-        if (voiceInputButton.textContent === '🎤') {
+        if (voiceInputButton.textContent === '🎙️') {
             recognition.start();
         } else {
             recognition.stop();
@@ -1370,7 +1370,7 @@ function stopVoiceInput() {
     if (recognition) {
         recognition.stop();
         voiceInputButton.style.backgroundColor = 'var(--accent-color)';
-        voiceInputButton.textContent = '🎤';
+        voiceInputButton.textContent = '🎙️';
         chatInput.placeholder = "Ask me anything about your workout or fitness!";
     }
 }
