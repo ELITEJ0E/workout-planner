@@ -247,6 +247,16 @@ body.theme-white {
     --level-4-color: #A9A9A9; /* Darkest white */
 }
 
+body.light-mode.theme-white {
+    --accent-text-color: #333333; /* Make text dark for buttons and other accent elements */
+    --list-item-active-text: #333333; /* Make active list item text dark */
+}
+
+body.light-mode.theme-white .day-card h3 {
+    color: var(--text-color); /* Ensures text is dark (#333333) */
+    border-bottom-color: var(--text-color); /* Ensures border is dark (#333333) */
+}
+
 :root {
     --primary: #1db954;
     --secondary: #191414;
@@ -1714,7 +1724,6 @@ body.light-mode .progress-day.empty {
     border-radius: 20px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    margin-top: 10px;
 }
 
 .modal-button.primary {
