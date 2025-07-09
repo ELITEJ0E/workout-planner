@@ -1,4 +1,6 @@
 import confetti from 'canvas-confetti';
+import { GoogleGenerativeAI } from 'https://cdn.skypack.dev/@google/generative-ai';
+window.GoogleGenerativeAI = GoogleGenerativeAI;
 
 const defaultWorkoutPlan = {
     Monday: {
@@ -1234,12 +1236,33 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
-const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735'; 
-const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; 
+
+// Gemini API variables
+let genAI = null;
+let model = null;
+let userApiKey = localStorage.getItem('geminiApiKey') || '';
+
+
+// Initialize Gemini AI
+function initializeGemini() {
+    if (window.GoogleGenerativeAI && userApiKey) {
+        genAI = new window.GoogleGenerativeAI(userApiKey);
+        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    }
+}
 
 aiChatToggle.addEventListener('click', () => {
+    const GEMINI_API_KEY = 'AIzaSyD7bUXPvX-rpooc_nlLAWl5i9vN9tGXR3Y';
+    userApiKey = GEMINI_API_KEY;
+    initializeGemini(); 
+
     aiChatbotModal.style.display = 'flex';
     chatInput.focus();
+    
+    // Add welcome message if chat is empty
+    if (chatHistoryDiv.children.length === 0) {
+        appendMessage("Nova", "Hi there! I'm Nova, your AI fitness buddy powered by Google Gemini. I can help you with workout plans, nutrition advice, motivation, and answer any fitness-related questions. How can I assist you today?", 'bot-message');
+    }
 });
 
 closeAiModalButton.addEventListener('click', () => {
@@ -1324,7 +1347,7 @@ function toggleVoiceInput() {
             recognition.onend = () => {
                 voiceInputButton.style.backgroundColor = 'var(--accent-color)';
                 voiceInputButton.textContent = '🎤';
-                chatInput.placeholder = "Ask me anything about your workout or music!";
+                chatInput.placeholder = "Ask me anything about your workout or fitness!";
                 sendChatButton.disabled = false;
                 speakChatButton.disabled = false;
                 if (chatInput.value.trim() !== '') { 
@@ -1348,7 +1371,7 @@ function stopVoiceInput() {
         recognition.stop();
         voiceInputButton.style.backgroundColor = 'var(--accent-color)';
         voiceInputButton.textContent = '🎤';
-        chatInput.placeholder = "Ask me anything about your workout or music!";
+        chatInput.placeholder = "Ask me anything about your workout or fitness!";
     }
 }
 
@@ -1360,57 +1383,110 @@ function appendMessage(sender, message, className) {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; 
 }
 
-const workoutDayKeywords = {
-    "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday",
-    "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "sunday": "Sunday"
-};
-
+// Modified sendMessage function to use Gemini API
 async function sendMessage() {
     const userMessage = chatInput.value.trim();
     if (!userMessage) return;
+
+    if (!userApiKey || !model) {
+        alert('Please set up your Gemini API key first.');
+        if (!checkApiKey()) return;
+    }
 
     appendMessage("You", userMessage, 'user-message');
     chatInput.value = '';
     sendChatButton.disabled = true;
     speakChatButton.disabled = true;
+    voiceInputButton.disabled = true;
     stopSpeaking();
     stopVoiceInput(); 
 
-    conversationHistory.push({ role: "user", content: userMessage.toLowerCase() });
+    // Show loading indicator
+    const loadingElement = document.createElement('div');
+    loadingElement.classList.add('chat-message', 'bot-message', 'loading');
+    loadingElement.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    chatHistoryDiv.appendChild(loadingElement);
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
-    const reply = generateRuleBasedReply(userMessage.toLowerCase());
+    try {
+        // Check for workout-specific commands first
+        const workoutAction = checkWorkoutCommands(userMessage.toLowerCase());
+        let response;
+        
+        if (workoutAction) {
+            response = workoutAction;
+        } else {
+            // Use Gemini API for general fitness advice
+            const context = `You are Nova, an AI fitness assistant for a workout planner app. You're knowledgeable, encouraging, and friendly. Focus on providing helpful fitness, nutrition, and wellness advice. Keep responses conversational and motivating. If asked about non-fitness topics, gently redirect to fitness-related discussions.
 
-    appendMessage("Nova", reply, 'bot-message');
-    await speakText(reply);
+Current context: The user is using a workout planner app that can:
+- Start workouts for specific days (Monday through Sunday)
+- Track exercises, sets, and reps
+- Play/pause music
+- Track calories burned
+- View workout progress
+- Edit workout plans
 
-    sendChatButton.disabled = false;
-    speakChatButton.disabled = false;
+You can reference these features when appropriate. Be encouraging and supportive in your responses.`;
+            
+            const fullPrompt = `${context}\n\nUser: ${userMessage}`;
+            
+            const result = await model.generateContent(fullPrompt);
+            const geminiResponse = await result.response;
+            response = geminiResponse.text();
+        }
+
+        // Remove loading indicator
+        chatHistoryDiv.removeChild(loadingElement);
+        
+        // Add AI response
+        appendMessage("Nova", response, 'bot-message');
+        await speakText(response);
+
+    } catch (error) {
+        console.error('Gemini API Error:', error);
+        
+        // Remove loading indicator
+        if (loadingElement.parentNode) {
+            chatHistoryDiv.removeChild(loadingElement);
+        }
+        
+        const errorMessage = "I'm sorry, I encountered an error. Please check your API key and try again. If the problem persists, the service might be temporarily unavailable.";
+        appendMessage("Nova", errorMessage, 'bot-message');
+        await speakText(errorMessage);
+    } finally {
+        sendChatButton.disabled = false;
+        speakChatButton.disabled = false;
+        voiceInputButton.disabled = false;
+    }
 }
 
-function generateRuleBasedReply(msg) {
-    if (msg.includes("play music") || msg.includes("play")) {
-        playPauseBGMHandler(); 
+// Keep workout-specific commands for immediate actions
+function checkWorkoutCommands(msg) {
+    const workoutDayKeywords = {
+        "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday",
+        "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "sunday": "Sunday"
+    };
+
+    // Music controls
+    if (msg.includes("play music") || (msg.includes("play") && !msg.includes("workout"))) {
+        if (typeof playPauseBGMHandler === 'function') playPauseBGMHandler(); 
         return "Energizing sounds coming right up! Playing your music now.";
     }
-    if (msg.includes("pause music") || msg.includes("pause")) {
-        playPauseBGMHandler(); 
+    if (msg.includes("pause music") || (msg.includes("pause") && !msg.includes("workout"))) {
+        if (typeof playPauseBGMHandler === 'function') playPauseBGMHandler(); 
         return "Music paused. Take a breather if you need!";
     }
-    if (msg.includes("next song") || msg.includes("current song")) {
-        playNextBGM();
+    if (msg.includes("next song")) {
+        if (typeof playNextBGM === 'function') playNextBGM();
         return "Skipping to the next track! Hope you enjoy this one.";
     }
-    if (msg.includes("previous song") || msg.includes("previous")) {
-        playPreviousBGM();
+    if (msg.includes("previous song")) {
+        if (typeof playPreviousBGM === 'function') playPreviousBGM();
         return "Back to the previous song. Let's find that perfect beat!";
     }
-    if (msg.includes("what's playing") || msg.includes("current song")) {
-        const title = titleElement.textContent;
-        const artist = artistElement.textContent;
-        if (title && title !== "Song Title") return `Currently playing: ***${title}*** by ***${artist}***. A great vibe!`;
-        return "Looks like no music is playing right now. Want me to start something?";
-    }
 
+    // Workout controls
     if (msg.includes("start workout")) {
         let foundDay = null;
         for (const keyword in workoutDayKeywords) {
@@ -1420,150 +1496,54 @@ function generateRuleBasedReply(msg) {
             }
         }
         if (foundDay) {
-            if (userWorkoutPlan[foundDay] && userWorkoutPlan[foundDay].exercises.length > 0) {
-                selectDay(foundDay);
+            if (typeof userWorkoutPlan !== 'undefined' && userWorkoutPlan[foundDay] && userWorkoutPlan[foundDay].exercises.length > 0) {
+                if (typeof selectDay === 'function') selectDay(foundDay);
                 return `Absolutely! Starting your ***${foundDay}*** workout now. Let's get moving!`;
             } else {
-                return `I'm sorry, ***${foundDay}*** seems to be a rest day or has no exercises defined. Would you like to pick another day or ***edit your plan***?`;
+                return `I'm sorry, ***${foundDay}*** seems to be a rest day or has no exercises defined. Would you like to pick another day or edit your plan?`;
             }
         } else {
             return "Which day's workout would you like to start? For example, 'start Monday workout'.";
         }
     }
+
     if (msg.includes("next exercise") || msg.includes("next set")) {
-        if (currentWorkoutDayKey) {
-            handleSetCompletion(); 
+        if (typeof currentWorkoutDayKey !== 'undefined' && currentWorkoutDayKey) {
+            if (typeof handleSetCompletion === 'function') handleSetCompletion(); 
             return "Alright, moving to the next exercise. You're doing great!";
         } else {
             return "There isn't an active workout to move to the next exercise. Please start a workout first!";
         }
     }
+
     if (msg.includes("skip rest")) {
-        if (isResting) {
-            skipRestButton.click(); 
+        if (typeof isResting !== 'undefined' && isResting) {
+            if (typeof skipRestButton !== 'undefined' && skipRestButton.click) skipRestButton.click(); 
             return "No problem! Skipping the rest period for you. Keep up the momentum!";
         } else {
             return "You're not currently in a rest period, so there's no rest to skip!";
         }
     }
-    if (msg.includes("skip timer")) {
-        const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
-        if (exercise && exercise.type === 'time' && !isResting) {
-            skipTimerButton.click(); 
-            return "Timer skipped! Let's get straight to the next part of your workout!";
-        } else {
-            return "There's no active timer to skip right now, or you're not in a timed exercise.";
-        }
-    }
+
     if (msg.includes("view profile") || msg.includes("check progress")) {
-        viewProfileButton.click();
+        if (typeof viewProfileButton !== 'undefined' && viewProfileButton.click) viewProfileButton.click();
         return "Alright, let's take a look at your progress! Keep crushing those goals.";
     }
+
     if (msg.includes("edit plan")) {
-        editPlanButton.click();
+        if (typeof editPlanButton !== 'undefined' && editPlanButton.click) editPlanButton.click();
         return "Opening the workout plan editor. You can customize your routine here!";
     }
-    if (msg.includes("what day is it") || msg.includes("what workout today")) {
-        const today = new Date();
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const todayKey = days[today.getDay()];
-        const workoutForToday = userWorkoutPlan[todayKey];
-        if (workoutForToday && workoutForToday.exercises.length > 0) {
-            return `Today is ***${todayKey}***, and your plan is ***${workoutForToday.name}***. Are you ready to tackle it?`;
-        } else {
-            return `Today is ***${todayKey}***, which is a rest day for you. Enjoy your recovery!`;
-        }
-    }
-    if (msg.includes("what exercise is next") && currentWorkoutDayKey) {
-        const exercises = userWorkoutPlan[currentWorkoutDayKey].exercises;
-        if (currentExerciseIndex < exercises.length) {
-            const nextExercise = exercises[currentExerciseIndex];
-            let details = `${nextExercise.sets} sets x ${nextExercise.reps ? nextExercise.reps + ' reps' : nextExercise.duration + ' seconds'}`;
-            return `Up next is ***${nextExercise.name}*** for ${details}. You got this!`;
-        } else {
-            return "You've completed all exercises for today! Great job!";
-        }
-    }
-    if (msg.includes("calories burned") || msg.includes("how many calories have i burned")) {
-        if (workoutCaloriesBurned > 0) {
-            return `So far in this workout, you've burned approximately ***${workoutCaloriesBurned.toFixed(0)} calories***! Amazing effort!`;
-        } else {
-            return "You haven't started a workout yet, so no calories burned to report. Let's get going!";
-        }
-    }
-    if (msg.includes("how to warm up")) {
-        return "A good warm-up should prepare your muscles for activity and increase your heart rate gradually. Try 5-10 minutes of light cardio like jogging in place, jumping jacks, or dynamic stretches such as arm circles and leg swings!";
-    }
-    if (msg.includes("importance of cool down")) {
-        return "Cooling down helps your body recover, gradually bringing your heart rate back to normal and preventing blood pooling. It also improves flexibility and reduces muscle soreness. Always finish with 5-10 minutes of static stretches!";
-    }
-    if (msg.includes("best time to workout")) {
-        return "The best time to work out is when it works best for YOU and your schedule! Consistency is more important than the specific time of day. Find a time you can stick to and that makes you feel energized.";
-    }
-    if (msg.includes("what to eat before workout")) {
-        return "Before a workout, aim for easily digestible carbohydrates to fuel your body, like a banana, oatmeal, or whole-wheat toast. A little protein can also be good, such as a handful of nuts or some Greek yogurt.";
-    }
-    if (msg.includes("how to stay motivated")) {
-        return "Motivation can be tricky! Try setting small, achievable goals, finding a workout buddy, trying new exercises to keep things fresh, rewarding yourself, and remembering why you started your fitness journey!";
-    }
-    if (msg.includes("what is hiit")) {
-        return "HIIT stands for ***High-Intensity Interval Training***. It involves short bursts of intense exercise followed by brief recovery periods. It's super effective for burning calories and improving cardiovascular fitness!";
-    }
-    if (msg.includes("why is stretching important")) {
-        return "Stretching is vital for flexibility, preventing injuries, improving range of motion, and reducing muscle stiffness. Incorporate both dynamic stretches before workouts and static stretches after workouts.";
-    }
-    if (msg.includes("how much water should i drink")) {
-        return "General guidelines suggest about 8 glasses (around 2 liters) of water per day, but this can increase significantly with exercise. Listen to your body and drink when thirsty, and especially before, during, and after workouts!";
-    }
-    if (msg.includes("healthy breakfast ideas")) {
-        return "For a healthy breakfast, consider options like oatmeal with berries, Greek yogurt with fruit and nuts, scrambled eggs with spinach, or a whole-grain toast with avocado. Balanced nutrition is key!";
-    }
-    if (msg.includes("how to improve strength")) {
-        return "To improve strength, focus on resistance training with proper form. Gradually increase the weight or resistance, ensure adequate protein intake, and prioritize rest and recovery to allow your muscles to rebuild stronger.";
-    }
-    if (msg.includes("benefits of strength training")) {
-        return "Strength training offers many benefits! It includes increased muscle mass, stronger bones, improved metabolism, better posture, reduced risk of injury, and enhanced overall functional fitness!";
-    }
-    if (msg.includes("cardio vs strength training")) {
-        return "Both cardio and strength training are important! Cardio improves heart health and endurance, while strength training builds muscle and bone density. A balanced routine includes both for overall fitness!";
-    }
-    if (msg.includes("nutrition tips")) {
-        return "Focus on whole, unprocessed foods like fruits, vegetables, lean proteins, and whole grains. Limit sugary drinks and processed snacks. Listen to your body's hunger cues and stay hydrated!";
-    }
 
-    if (msg.includes("hi") || msg.includes("hello")) return "Hi there! I'm Nova, your AI fitness buddy. Ready to start sweating?";
-    if (msg.includes("how are you")) return "I'm always energized and ready to help! How about you?";
-    if (msg.includes("thank you") || msg.includes("thanks")) return "You're very welcome! Keep up the great work!";
-    if (msg.includes("bye") || msg.includes("goodbye")) return "See you next time! Stay active and healthy!";
-    if (msg.includes("help") || msg.includes("what can you do")) return "I can help you start a workout, control your music, track your progress, give fitness tips, and more! Just ask.";
-    if (msg.includes("who are you")) return "I'm Nova — your friendly, beautiful, and knowledgeable AI workout assistant 🤖💚. Here to support your fitness journey!";
-
-    if (msg.includes("how many calories") || msg.includes("burn calories"))
-        return "The number of calories burned varies greatly by exercise type, intensity, and individual factors. For example, a 30-minute high-intensity interval training (HIIT) session can burn significantly more than a 30-minute walk. Generally, activities that get your heart rate up and involve more muscles will burn more!";
-    if (msg.includes("protein") || msg.includes("post workout nutrition"))
-        return "Protein is crucial for muscle repair and growth after a workout. Aim for a lean protein source like chicken, fish, eggs, or a protein shake, ideally within 30-60 minutes post-exercise. It helps your muscles recover faster and get stronger!";
-    if (msg.includes("hydration") || msg.includes("drink water"))
-        return "Staying hydrated is super important for your workout performance and overall health! Drink water before, during, and after exercise to replenish fluids lost through sweat. Don't wait until you're thirsty!";
-    if (msg.includes("warmup") || msg.includes("warm up"))
-        return "A good warm-up prepares your muscles and cardiovascular system for exercise. It reduces injury risk and improves performance. Start with 5-10 minutes of light cardio like jogging or jumping jacks, followed by dynamic stretches relevant to your workout!";
-    if (msg.includes("cooldown") || msg.includes("cool down"))
-        return "Cooling down after a workout helps your heart rate return to normal gradually and improves flexibility. Finish with 5-10 minutes of light cardio and static stretches, holding each stretch for 20-30 seconds!";
-    if (msg.includes("consistency"))
-        return "Consistency is truly key in fitness! Regular workouts, even short ones, yield better results over time than infrequent, intense sessions. Find a routine you enjoy and stick to it!";
-    if (msg.includes("muscle growth") || msg.includes("build muscle"))
-        return "To build muscle, focus on progressive overload (gradually increasing weight, reps, or sets), adequate protein intake, and sufficient rest. Listen to your body and give muscles time to recover!";
-    if (msg.includes("lose weight") || msg.includes("weight loss"))
-        return "For weight loss, a combination of regular exercise and a balanced diet with a calorie deficit is most effective. Focus on whole foods, limit processed items, and stay active!";
-    if (msg.includes("benefits of exercise"))
-        return "Regular exercise has incredible benefits! It improves mood, boosts energy, helps with weight management, strengthens your heart and bones, and reduces the risk of many chronic diseases. It's a true investment in yourself!";
-    if (msg.includes("rest days"))
-        return "Rest days are vital! They allow your muscles to recover, repair, and grow stronger. They also prevent overtraining and burnout. Don't skip them – think of them as active recovery for your body!";
-
-    return "I'm not sure how to respond to that, but I'm always learning! Try asking me about your workout, music, or general fitness tips 🎵. Or ask me to ***start workout Monday***, ***next exercise***, or ***play music***.";
+    // Return null if no workout command was found
+    return null;
 }
 
 let synth = window.speechSynthesis || null;
 let currentUtterance = null;
+
+const ELEVENLABS_API_KEY = 'sk_26f7a33f44b9fdd92a9f99b70b86ceed3fd81528d0f92735'; 
+const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; 
 
 async function speakText(text) {
     stopSpeaking();
@@ -1685,6 +1665,18 @@ function stopSpeaking() {
     speakChatButton.textContent = 'Speak';
 }
 
+// Add API key management functions
+function resetApiKey() {
+    localStorage.removeItem('geminiApiKey');
+    userApiKey = '';
+    genAI = null;
+    model = null;
+    checkApiKey();
+}
+
+// Add this to your HTML or call it from console to reset API key
+window.resetGeminiApiKey = resetApiKey;
+
 initWorkoutPlan();
 initWorkoutLog();
 populateMusicSelector();
@@ -1702,4 +1694,5 @@ setView('plan');
 
 document.addEventListener('DOMContentLoaded', () => {
     setupAudio();
+    checkApiKey();
 });
