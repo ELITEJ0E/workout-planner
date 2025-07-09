@@ -1619,8 +1619,9 @@ async function speakText(text) {
     speaking = true;
     speakChatButton.textContent = 'Stop Speaking';
 
+    // Try ElevenLabs first
     try {
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+        const elevenResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
             method: 'POST',
             headers: {
                 'Accept': 'audio/mpeg',
@@ -1637,38 +1638,33 @@ async function speakText(text) {
             }),
         });
 
-        if (!response.ok) throw new Error("ElevenLabs TTS API failed or returned an error.");
+        if (!elevenResponse.ok) throw new Error("ElevenLabs TTS failed");
 
-        const audioBlob = await response.blob();
+        const audioBlob = await elevenResponse.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
+        return playAudio(audioUrl);
+    } catch (e1) {
+        console.warn("ElevenLabs failed. Trying Coqui TTS...", e1);
 
-        if (currentSpeechAudio) {
-            currentSpeechAudio.pause();
-            currentSpeechAudio = null;
+        // Try Coqui TTS as fallback
+        try {
+            const coquiResponse = await fetch('http://localhost:5002/api/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (!coquiResponse.ok) throw new Error("Coqui TTS failed");
+
+            const audioBlob = await coquiResponse.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            return playAudio(audioUrl);
+        } catch (e2) {
+            console.warn("Coqui TTS failed. Falling back to Web Speech API...", e2);
+            fallbackToBrowserTTS(text);
         }
-
-        currentSpeechAudio = new Audio(audioUrl);
-        currentSpeechAudio.playbackRate = 0.95;
-
-        currentSpeechAudio.onended = () => {
-            speaking = false;
-            speakChatButton.textContent = 'Speak';
-            currentSpeechAudio = null;
-            URL.revokeObjectURL(audioUrl); 
-        };
-
-        currentSpeechAudio.onerror = (e) => {
-            console.error("Audio playback error:", e);
-            speaking = false;
-            speakChatButton.textContent = 'Speak';
-            currentSpeechAudio = null;
-            URL.revokeObjectURL(audioUrl); 
-        };
-
-        await currentSpeechAudio.play();
-    } catch (err) {
-        console.error("ElevenLabs TTS failed:", err);
-        fallbackToBrowserTTS(text);
     }
 }
 
@@ -1734,18 +1730,6 @@ function stopSpeaking() {
     speakChatButton.textContent = 'Speak';
 }
 
-// Add API key management functions
-function resetApiKey() {
-    localStorage.removeItem('geminiApiKey');
-    userApiKey = '';
-    genAI = null;
-    model = null;
-    checkApiKey();
-}
-
-// Add this to your HTML or call it from console to reset API key
-window.resetGeminiApiKey = resetApiKey;
-
 initWorkoutPlan();
 initWorkoutLog();
 populateMusicSelector();
@@ -1763,5 +1747,4 @@ setView('plan');
 
 document.addEventListener('DOMContentLoaded', () => {
     setupAudio();
-    checkApiKey();
 });
