@@ -1261,7 +1261,7 @@ aiChatToggle.addEventListener('click', () => {
     
     // Add welcome message if chat is empty
     if (chatHistoryDiv.children.length === 0) {
-        appendMessage("Nova", "Hi there! I'm Nova, your AI fitness buddy powered by Google Gemini. I can help you with workout plans, nutrition advice, motivation, and answer any fitness-related questions. How can I assist you today?", 'bot-message');
+        appendMessage("Nova", "Hi there! I'm Nova, your AI fitness assistant🤖. I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!", 'bot-message');
     }
 });
 
@@ -1468,7 +1468,7 @@ function checkWorkoutCommands(msg) {
         "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "sunday": "Sunday"
     };
 
-    // Music controls
+    // 🔊 Music
     if (msg.includes("play music") || (msg.includes("play") && !msg.includes("workout"))) {
         if (typeof playPauseBGMHandler === 'function') playPauseBGMHandler(); 
         return "Energizing sounds coming right up! Playing your music now.";
@@ -1486,7 +1486,7 @@ function checkWorkoutCommands(msg) {
         return "Back to the previous song. Let's find that perfect beat!";
     }
 
-    // Workout controls
+    // 🏋️‍♂️ Workout Commands
     if (msg.includes("start workout")) {
         let foundDay = null;
         for (const keyword in workoutDayKeywords) {
@@ -1500,10 +1500,10 @@ function checkWorkoutCommands(msg) {
                 if (typeof selectDay === 'function') selectDay(foundDay);
                 return `Absolutely! Starting your ***${foundDay}*** workout now. Let's get moving!`;
             } else {
-                return `I'm sorry, ***${foundDay}*** seems to be a rest day or has no exercises defined. Would you like to pick another day or edit your plan?`;
+                return `I'm sorry, ***${foundDay}*** seems to be a rest day or has no exercises defined. Want to pick another day or edit your plan?`;
             }
         } else {
-            return "Which day's workout would you like to start? For example, 'start Monday workout'.";
+            return "Which day's workout would you like to start? For example, 'start workout Monday'.";
         }
     }
 
@@ -1525,6 +1525,16 @@ function checkWorkoutCommands(msg) {
         }
     }
 
+    if (msg.includes("skip timer")) {
+        const exercise = userWorkoutPlan[currentWorkoutDayKey]?.exercises[currentExerciseIndex];
+        if (exercise && exercise.type === 'time' && !isResting) {
+            skipTimerButton.click(); 
+            return "Timer skipped! Let's get straight to the next part of your workout!";
+        } else {
+            return "There's no active timer to skip right now, or you're not in a timed exercise.";
+        }
+    }
+
     if (msg.includes("view profile") || msg.includes("check progress")) {
         if (typeof viewProfileButton !== 'undefined' && viewProfileButton.click) viewProfileButton.click();
         return "Alright, let's take a look at your progress! Keep crushing those goals.";
@@ -1535,8 +1545,47 @@ function checkWorkoutCommands(msg) {
         return "Opening the workout plan editor. You can customize your routine here!";
     }
 
-    // Return null if no workout command was found
-    return null;
+    // 🧠 Fitness Knowledge Responses
+    if (msg.includes("how to warm up"))
+        return "A good warm-up includes 5-10 minutes of light cardio like jumping jacks or jogging in place. Add dynamic stretches like arm swings and leg swings!";
+    if (msg.includes("importance of cool down"))
+        return "Cooling down helps lower your heart rate gradually and prevents dizziness. It also improves flexibility and aids recovery!";
+    if (msg.includes("best time to workout"))
+        return "The best time to workout is the time you’ll stick with! Morning, afternoon, or evening — consistency is what matters most.";
+    if (msg.includes("what to eat before workout"))
+        return "A banana, oats, or yogurt 30–60 minutes before exercise fuels your body. Combine carbs and a bit of protein for best performance.";
+    if (msg.includes("how to stay motivated"))
+        return "Set small goals, celebrate progress, switch routines often, and remember your 'why'. You’ve got this!";
+    if (msg.includes("what is hiit"))
+        return "HIIT means High-Intensity Interval Training: short bursts of exercise followed by short rests. Efficient and intense!";
+    if (msg.includes("why is stretching important"))
+        return "Stretching increases flexibility, reduces risk of injury, and relieves muscle tension. Do it before and after workouts!";
+    if (msg.includes("how much water should i drink"))
+        return "About 2–3 liters daily, more if you’re sweating. Drink before, during, and after workouts.";
+    if (msg.includes("healthy breakfast ideas"))
+        return "Try oatmeal, Greek yogurt with fruit, eggs on toast, or a smoothie with banana and spinach!";
+    if (msg.includes("how to improve strength"))
+        return "Progressive overload is key. Add reps, increase resistance, and allow recovery days. Form matters more than speed!";
+    if (msg.includes("benefits of strength training"))
+        return "Strength training boosts metabolism, improves posture, enhances bone density, and helps you burn fat!";
+    if (msg.includes("cardio vs strength training"))
+        return "Cardio boosts endurance and heart health. Strength training builds muscle. Best results? Do both!";
+    if (msg.includes("nutrition tips"))
+        return "Eat lean protein, healthy fats, whole grains, fruits, and veggies. Limit sugar and processed food. Hydrate well!";
+    if (msg.includes("calories burned"))
+        return workoutCaloriesBurned > 0
+            ? `You've burned around ***${workoutCaloriesBurned.toFixed(0)} calories*** so far! Amazing effort!`
+            : "No workout yet today — let's change that!";
+
+    // 🤝 Small Talk
+    if (msg.includes("hi") || msg.includes("hello") || msg.includes("hey")) return "Hi there! I'm Nova, your AI fitness assistant. Ready to get started?";
+    if (msg.includes("how are you")) return "I'm fully charged and ready to help with your fitness journey!";
+    if (msg.includes("thank you") || msg.includes("thanks")) return "You're welcome! Keep pushing forward!";
+    if (msg.includes("bye") || msg.includes("goodbye")) return "Goodbye! Keep moving, stay hydrated, and come back soon!";
+    if (msg.includes("who are you")) return "I'm Nova — your intelligent, friendly, and supportive fitness assistant!";
+    if (msg.includes("help") || msg.includes("what can you do")) return "I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!";
+
+    return null; // fallback to Gemini
 }
 
 let synth = window.speechSynthesis || null;
