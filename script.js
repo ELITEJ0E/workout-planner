@@ -1334,7 +1334,7 @@ function toggleVoiceInput() {
 
             recognition.onstart = () => {
                 voiceInputButton.style.backgroundColor = 'var(--accent-color-hover)'; 
-                voiceInputButton.textContent = '🔴';
+                voiceInputButton.textContent = '🛑';
                 chatInput.placeholder = "Listening...";
                 sendChatButton.disabled = true;
                 speakChatButton.disabled = true;
@@ -1567,7 +1567,7 @@ function checkWorkoutCommands(msg) {
 
     // 🧠 Fitness Knowledge Responses
     if (msg.includes("how to warm up"))
-        return "A good warm-up includes 5-10 minutes of light cardio like jumping jacks or jogging in place. Add dynamic stretches like arm swings and leg swings!";
+        return "A good warm-up includes 5 to 10 minutes of light cardio like jumping jacks or jogging in place. Add dynamic stretches like arm swings and leg swings!";
     if (msg.includes("importance of cool down"))
         return "Cooling down helps lower your heart rate gradually and prevents dizziness. It also improves flexibility and aids recovery!";
     if (msg.includes("best time to workout"))
@@ -1585,7 +1585,7 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("healthy breakfast ideas"))
         return "Try oatmeal, Greek yogurt with fruit, eggs on toast, or a smoothie with banana and spinach!";
     if (msg.includes("how to improve strength"))
-        return "Progressive overload is key. Add reps, increase resistance, and allow recovery days. Form matters more than speed!";
+        return "Progressive overload is key. Add reps, increase resistance, and allow recovery days, Form matters more than speed!";
     if (msg.includes("benefits of strength training"))
         return "Strength training boosts metabolism, improves posture, enhances bone density, and helps you burn fat!";
     if (msg.includes("cardio vs strength training"))
@@ -1595,15 +1595,16 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("calories burned"))
         return workoutCaloriesBurned > 0
             ? `You've burned around ***${workoutCaloriesBurned.toFixed(0)} calories*** so far! Amazing effort!`
-            : "No workout yet today — let's change that!";
+            : "No workout yet today, let's change that!";
 
     // 🤝 Small Talk
     if (msg.includes("hi") || msg.includes("hello") || msg.includes("hey")) return "Hi there! I'm Nova, your AI fitness assistant. Ready to get started?";
     if (msg.includes("how are you")) return "I'm fully charged and ready to help with your fitness journey!";
     if (msg.includes("thank you") || msg.includes("thanks")) return "You're welcome! Keep pushing forward!";
     if (msg.includes("bye") || msg.includes("goodbye")) return "Goodbye! Keep moving, stay hydrated, and come back soon!";
-    if (msg.includes("who are you")) return "I'm Nova — your intelligent, friendly, and supportive fitness assistant!";
+    if (msg.includes("who are you")) return "Hi there! I'm Nova, your friendly AI fitness assistant here to help you crush your fitness goals! I'm built into this awesome workout planner app to guide you through your workouts, track your progress, and offer helpful tips on nutrition and wellness. Ready to get started, or do you have any questions about how I can help you reach your fitness potential?";
     if (msg.includes("help") || msg.includes("what can you do")) return "I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!";
+    if (msg.includes("who is joe")) return "JOE MAMA!!!";
 
     return null; // fallback to Gemini
 }
@@ -1642,30 +1643,34 @@ async function speakText(text) {
 
         const audioBlob = await elevenResponse.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
-        return playAudio(audioUrl);
+        await playAudio(audioUrl, 1.0);
+        return;
     } catch (e1) {
-        console.warn("ElevenLabs failed. Trying Coqui TTS...", e1);
-
-        // Try Coqui TTS as fallback
-        try {
-            const coquiResponse = await fetch('http://localhost:5002/api/tts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text })
-            });
-
-            if (!coquiResponse.ok) throw new Error("Coqui TTS failed");
-
-            const audioBlob = await coquiResponse.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            return playAudio(audioUrl);
-        } catch (e2) {
-            console.warn("Coqui TTS failed. Falling back to Web Speech API...", e2);
-            fallbackToBrowserTTS(text);
-        }
+        console.warn("❌ ElevenLabs failed. Trying Coqui TTS...", e1);
     }
+
+    // Fallback to Coqui TTS
+    try {
+        const coquiResponse = await fetch('http://localhost:5002/api/tts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text })
+        });
+
+        if (!coquiResponse.ok) throw new Error('Coqui TTS API failed');
+
+        const audioBlob = await coquiResponse.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        await playAudio(audioUrl, 1.2);
+        return;
+    } catch (e2) {
+        console.warn("❌ Coqui TTS failed. Falling back to Web Speech API...", e2);
+    }
+
+    // Final fallback: Web Speech API
+    fallbackToBrowserTTS(text);
 }
 
 function fallbackToBrowserTTS(text) {
@@ -1687,6 +1692,37 @@ function fallbackToBrowserTTS(text) {
         speaking = false;
         speakChatButton.textContent = 'Speak';
     }
+}
+
+async function playAudio(audioUrl, rate = 1.0) {
+    if (currentSpeechAudio) {
+        currentSpeechAudio.pause();
+        currentSpeechAudio = null;
+    }
+
+    currentSpeechAudio = new Audio(audioUrl);
+    currentSpeechAudio.playbackRate = rate;
+
+    return new Promise((resolve, reject) => {
+        currentSpeechAudio.onended = () => {
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl);
+            resolve();
+        };
+
+        currentSpeechAudio.onerror = (e) => {
+            console.error("Audio playback error", e);
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl);
+            reject(e);
+        };
+
+        currentSpeechAudio.play().catch(reject);
+    });
 }
 
 function actuallySpeak(voices, text) {
