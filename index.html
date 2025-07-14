@@ -657,15 +657,28 @@
             
             <!-- Music Player Controls -->
             <div class="music-controls">
-                <button id="prev-bgm" title="Previous Track">&#9664;</button>
-                <button id="play-pause-bgm" title="Play/Pause BGM">&#9658;</button>
-                <button id="next-bgm" title="Next Track">&#9654;</button>
+                <button id="prev-bgm" title="Previous Track">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6l-8.5 6z"/>
+                    </svg>
+                </button>
+                <button id="play-pause-bgm" title="Play/Pause BGM">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+                <button id="next-bgm" title="Next Track">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 5v14h-2V5h2zm-3.5 7L4 18V6l8.5 6z"/>
+                    </svg>
+                </button>
                 <div class="custom-select-wrapper inline">
                     <select id="music-select" title="Select Background Music"></select>
                 </div>
                 <label for="upload-bgm" class="upload-button" title="Upload Your Own MP3">Upload MP3</label>
                 <input type="file" id="upload-bgm" accept="audio/mp3" style="display: none;">
             </div>
+                    
 
             <!-- Theme Select -->
             <div class="custom-select-wrapper inline">
