@@ -176,12 +176,12 @@ const preloadedBgms = [
     { name: "Motivational Electro", path: 'background_music.mp3', buffer: null },
     { name: "MONTAGEM TOMADA", path: 'MONTAGEM TOMADA SLOWED.mp3', buffer: null },
     { name: "Passo Bem Solto", path: 'PASSO BEM SOLTO (Slowed).mp3', buffer: null },
-    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mpm', buffer: null },
-    { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
+    { name: "Henry Young - One More Last Time", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
     { name: "5x30", path: '5x30.mp3', buffer: null },
-    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null },
+    { name: "MONTAGEM XONADA", path: 'MONTAGEM XONADA .mp3', buffer: null }
 ];
 
 let uploadedBgms = [];

@@ -44,6 +44,16 @@
     --level-2-color: var(--accent-color-darker);
     --level-3-color: color-mix(in srgb, var(--accent-color-darker) 70%, black); /* A bit darker than dark accent */
     --level-4-color: color-mix(in srgb, var(--accent-color-darker) 90%, black); /* Even darker */
+
+    /* Player specific variables, now linked to accent color */
+    --primary: var(--accent-color); 
+    --secondary: #191414;
+    --text: #ffffff;
+    --text-light: #b3b3b3;
+    /* New variables for youtube player input */
+    --youtube-input-bg: #282828;
+    --youtube-input-text: white;
+    --youtube-input-placeholder: #b3b3b3;
 }
 
 body.light-mode {
@@ -78,7 +88,7 @@ body.light-mode {
     --completed-day-color: #4CAF50;
     --completed-day-text: #fff;
     /* Light mode specific for music player */
-    --primary: #1db954; /* Spotify Green, keep this */
+    --primary: var(--accent-color); /* Linked to accent color */
     --secondary: #FFFFFF; /* White background for player */
     --text: #333333; /* Dark text for player */
     --text-light: #666666; /* Lighter dark text */
@@ -113,6 +123,7 @@ body.theme-green {
     --level-2-color: #689F38; /* Medium green */
     --level-3-color: #33691E; /* Darker green */
     --level-4-color: #1B5E20; /* Darkest green */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-purple {
@@ -129,6 +140,7 @@ body.theme-purple {
     --level-2-color: #BA68C8; /* Medium purple */
     --level-3-color: #8E24AA; /* Darker purple */
     --level-4-color: #4A148C; /* Darkest purple */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-orange {
@@ -145,13 +157,14 @@ body.theme-orange {
     --level-2-color: #FFB74D; /* Medium orange */
     --level-3-color: #FB8C00; /* Darker orange */
     --level-4-color: #E65100; /* Darkest orange */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-red {
-    --accent-color: #FF9800;
-    --accent-color-hover: #FFA726;
-    --accent-color-darker: #F57C00;
-    --list-item-hover-bg: rgba(255, 152, 0, 0.2);
+    --accent-color: #F44336;
+    --accent-color-hover: #EF5350;
+    --accent-color-darker: #D32F2F;
+    --list-item-hover-bg: rgba(244, 67, 54, 0.2);
     --input-focus-border-color: var(--accent-color);
     --completed-day-color: #F44336;
     --progress-tracker-accent-color: #F44336;
@@ -161,6 +174,7 @@ body.theme-red {
     --level-2-color: #E57373; /* Medium red */
     --level-3-color: #C62828; /* Darker red */
     --level-4-color: #B71C1C; /* Darkest red */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-yellow {
@@ -179,38 +193,7 @@ body.theme-yellow {
     --level-2-color: #FFF59D; /* Medium yellow */
     --level-3-color: #FFD600; /* Darker yellow */
     --level-4-color: #FFC107; /* Darkest yellow */
-}
-
-body.theme-blue {
-    --accent-color: #2196F3;
-    --accent-color-hover: #42A5F5;
-    --accent-color-darker: #1976D2;
-    --list-item-hover-bg: rgba(33, 150, 243, 0.2);
-    --input-focus-border-color: var(--accent-color);
-    --completed-day-color: #2196F3;
-    --progress-tracker-accent-color: #2196F3;
-    --progress-tracker-accent-color-hover: #42A5F5;
-    --progress-tracker-accent-color-darker: #1976D2;
-    --level-1-color: #90CAF9; /* Lighter blue */
-    --level-2-color: #64B5F6; /* Medium blue */
-    --level-3-color: #1565C0; /* Darker blue */
-    --level-4-color: #0D47A1; /* Darkest blue */
-}
-
-body.theme-red {
-    --accent-color: #F44336;
-    --accent-color-hover: #EF5350;
-    --accent-color-darker: #D32F2F;
-    --list-item-hover-bg: rgba(244, 67, 54, 0.2);
-    --input-focus-border-color: var(--accent-color);
-    --completed-day-color: #F44336;
-    --progress-tracker-accent-color: #F44336;
-    --progress-tracker-accent-color-hover: #EF5350;
-    --progress-tracker-accent-color-darker: #D32F2F;
-    --level-1-color: #EF9A9A; /* Lighter red */
-    --level-2-color: #E57373; /* Medium red */
-    --level-3-color: #C62828; /* Darker red */
-    --level-4-color: #B71C1C; /* Darkest red */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-teal {
@@ -227,6 +210,7 @@ body.theme-teal {
     --level-2-color: #4DB6AC; /* Medium teal */
     --level-3-color: #00695C; /* Darker teal */
     --level-4-color: #004D40; /* Darkest teal */
+    --primary: var(--accent-color); /* Match accent color */
 }
 
 body.theme-white {
@@ -245,27 +229,13 @@ body.theme-white {
     --level-2-color: #E0E0E0; /* Medium white */
     --level-3-color: #C7C7C7; /* Darker white */
     --level-4-color: #A9A9A9; /* Darkest white */
+    --primary: #a19e9e; /* A contrasting gray for white theme's primary in dark mode */
 }
 
 body.light-mode.theme-white {
     --accent-text-color: #333333; /* Make text dark for buttons and other accent elements */
     --list-item-active-text: #333333; /* Make active list item text dark */
-}
-
-body.light-mode.theme-white .day-card h3 {
-    color: var(--text-color); /* Ensures text is dark (#333333) */
-    border-bottom-color: var(--text-color); /* Ensures border is dark (#333333) */
-}
-
-:root {
-    --primary: #1db954;
-    --secondary: #191414;
-    --text: #ffffff;
-    --text-light: #b3b3b3;
-    /* New variables for youtube player input */
-    --youtube-input-bg: #282828;
-    --youtube-input-text: white;
-    --youtube-input-placeholder: #b3b3b3;
+    --primary: #757575; /* A darker gray for light mode white theme's primary */
 }
 
 body.light-mode {
@@ -481,8 +451,7 @@ body {
     transform: scaleX(1);
 }
 
-.btn.skip-next svg {
-}
+
 
 .playlist-container {
     width: 100%;
@@ -864,8 +833,7 @@ h3 {
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-#workout-display #current-exercise {
-}
+
 
 .day-card {
     background-color: var(--card-bg-color);
@@ -965,11 +933,6 @@ h3 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.plan-view #workout-display #current-exercise {
-}
-
-.workout-view #plan {
-}
 
 .log-view #plan {
     display: none !important;
@@ -1528,6 +1491,7 @@ body.light-mode .progress-day.empty {
     .progress-day .tooltip {
         max-width: 120px;
         font-size: 0.75em;
+        padding: 8px;
     }
 
     .month-label {
