@@ -619,6 +619,12 @@ h3 {
     gap: 10px;
 }
 
+.music-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* optional spacing between controls */
+}
+
 #controls button,
 #current-exercise button,
 .day-card .edit-day-button,
