@@ -3,24 +3,24 @@ import { GoogleGenerativeAI } from 'https://cdn.skypack.dev/@google/generative-a
 window.GoogleGenerativeAI = GoogleGenerativeAI;
 
 // Disable right-click
-  document.addEventListener('contextmenu', function (e) {
+document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
-  });
+});
 
-  // Disable common dev tools keys
-  document.addEventListener('keydown', function (e) {
+// Disable common dev tools keys
+document.addEventListener('keydown', function (e) {
     // F12
     if (e.key === "F12") {
-      e.preventDefault();
+        e.preventDefault();
     }
     // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
     if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
-      e.preventDefault();
+        e.preventDefault();
     }
     if (e.ctrlKey && e.key === "U") {
-      e.preventDefault();
+        e.preventDefault();
     }
-  });
+});
 
 const defaultWorkoutPlan = {
     Monday: {
@@ -49,13 +49,13 @@ const defaultWorkoutPlan = {
     Wednesday: {
         name: "Legs, Abs",
         exercises: [
-             { name: "Jumping Jack", sets: 3, duration: 60, image: "jumping_jack.png", type: 'time', caloriesPerSecond: 0.1 },
-             { name: "Hanging Knee Raises", sets: 3, reps: 15, image: "hanging_knee_raises.png", type: 'reps', caloriesPerRep: 0.7 },
-             { name: "Jumping Squats", sets: 3, reps: 25, image: "jumping_squats.png", type: 'reps', caloriesPerRep: 0.8 },
-             { name: "Plank", sets: 3, duration: 60, image: "plank.png", type: 'time', caloriesPerSecond: 0.05 },
-             { name: "Russian Twist", sets: 3, reps: 50, image: "russian_twist.png", type: 'reps', caloriesPerRep: 0.2 },
-             { name: "Calf Raises", sets: 3, reps: 25, image: "calf_raises.png", type: 'reps', caloriesPerRep: 0.2 },
-             { name: "Crunches", sets: 3, reps: 12, image: "crunches.png", type: 'reps', caloriesPerRep: 0.3 }
+            { name: "Jumping Jack", sets: 3, duration: 60, image: "jumping_jack.png", type: 'time', caloriesPerSecond: 0.1 },
+            { name: "Hanging Knee Raises", sets: 3, reps: 15, image: "hanging_knee_raises.png", type: 'reps', caloriesPerRep: 0.7 },
+            { name: "Jumping Squats", sets: 3, reps: 25, image: "jumping_squats.png", type: 'reps', caloriesPerRep: 0.8 },
+            { name: "Plank", sets: 3, duration: 60, image: "plank.png", type: 'time', caloriesPerSecond: 0.05 },
+            { name: "Russian Twist", sets: 3, reps: 50, image: "russian_twist.png", type: 'reps', caloriesPerRep: 0.2 },
+            { name: "Calf Raises", sets: 3, reps: 25, image: "calf_raises.png", type: 'reps', caloriesPerRep: 0.2 },
+            { name: "Crunches", sets: 3, reps: 12, image: "crunches.png", type: 'reps', caloriesPerRep: 0.3 }
         ]
     },
     Thursday: { name: "Rest Day", exercises: [] },
@@ -181,8 +181,7 @@ const preloadedBgms = [
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
     { name: "5x30", path: '5x30.mp3', buffer: null },
-    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null },
-    { name: "ANDROMEDA - MONTAGEM COMA", path: 'ANDROMEDA - MONTAGEM COMA.mp3', buffer: null }
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
@@ -193,7 +192,7 @@ function initWorkoutPlan() {
         try {
             userWorkoutPlan = JSON.parse(storedPlan);
             if (!userWorkoutPlan || Object.keys(userWorkoutPlan).length === 0 || !userWorkoutPlan.Monday || !userWorkoutPlan.Monday.exercises) {
-                 throw new Error("Stored plan is not valid");
+                throw new Error("Stored plan is not valid");
             }
         } catch (e) {
             console.error("Failed to parse or validate stored workout plan, using default:", e);
@@ -238,9 +237,9 @@ async function setupAudio() {
     bgmGainNode.gain.value = 0.5; 
 
     document.body.addEventListener('click', () => {
-         if (audioContext && audioContext.state === 'suspended') {
-             audioContext.resume();
-         }
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
     }, { once: true }); 
     await loadSounds();
 }
@@ -254,10 +253,10 @@ async function loadSound(filePath) {
         }
         const arrayBuffer = await response.arrayBuffer();
         if (audioContext && audioContext.state !== 'closed') {
-             return await audioContext.decodeAudioData(arrayBuffer);
+            return await audioContext.decodeAudioData(arrayBuffer);
         } else {
-             console.warn("AudioContext not available or closed during decodeAudioData");
-             return null;
+            console.warn("AudioContext not available or closed during decodeAudioData");
+            return null;
         }
     } catch (error) {
         console.error(`Error loading or decoding sound ${filePath}:`, error);
@@ -275,9 +274,9 @@ async function loadBufferFromUpload(file) {
                     if (audioContext && audioContext.state !== 'closed') {
                         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                         resolve(audioBuffer);
-                     } else {
+                    } else {
                         reject("AudioContext not available or closed for upload decoding.");
-                     }
+                    }
                 } catch (e) {
                     reject(e);
                 }
@@ -295,11 +294,11 @@ async function loadBufferFromUpload(file) {
 async function loadSounds() {
     try {
         const loadedPreloaded = await Promise.all(preloadedBgms.map(async bgm => {
-             const buffer = await loadSound(bgm.path);
-             if (buffer) {
+            const buffer = await loadSound(bgm.path);
+            if (buffer) {
                 return { ...bgm, buffer };
-             }
-             return null;
+            }
+            return null;
         }));
         const validPreloadedBgms = loadedPreloaded.filter(bgm => bgm !== null);
         const storedUploaded = localStorage.getItem('uploadedBgms');
@@ -322,10 +321,10 @@ async function loadSounds() {
         let initialTrackIndex = -1;
         const lastTrackName = localStorage.getItem('lastSelectedBGM');
         if (lastTrackName) {
-             initialTrackIndex = bgmPlaylist.findIndex(bgm => bgm.name === lastTrackName);
+            initialTrackIndex = bgmPlaylist.findIndex(bgm => bgm.name === lastTrackName);
         }
         if (initialTrackIndex === -1 && bgmPlaylist.length > 0) {
-             initialTrackIndex = 0;
+            initialTrackIndex = 0;
         }
         currentTrackIndex = initialTrackIndex;
         populateMusicSelector();
@@ -333,10 +332,10 @@ async function loadSounds() {
         isBgmPlaying = false;
         playPauseBgmButton.textContent = '▶'; 
         if (bgmPlaylist.length === 0 || currentTrackIndex === -1 || !bgmPlaylist[currentTrackIndex].buffer) {
-             musicSelectElement.disabled = true;
-             playPauseBgmButton.disabled = true;
-             prevBgmButton.disabled = true;
-             nextBgmButton.disabled = true;
+            musicSelectElement.disabled = true;
+            playPauseBgmButton.disabled = true;
+            prevBgmButton.disabled = true;
+            nextBgmButton.disabled = true;
         } else {
             musicSelectElement.disabled = false;
             playPauseBgmButton.disabled = false;
@@ -345,11 +344,11 @@ async function loadSounds() {
         }
     } catch (error) {
         console.error("Error during initial sound loading and setup:", error);
-         musicSelectElement.disabled = true;
-         playPauseBgmButton.disabled = true;
-         prevBgmButton.disabled = true;
-         nextBgmButton.disabled = true;
-         playPauseBgmButton.textContent = '▶';
+        musicSelectElement.disabled = true;
+        playPauseBgmButton.disabled = true;
+        prevBgmButton.disabled = true;
+        nextBgmButton.disabled = true;
+        playPauseBgmButton.textContent = '▶';
     }
 }
 
@@ -401,31 +400,31 @@ uploadBgmInput.addEventListener('change', async (event) => {
     const file = event.target.files[0];
     if (file && audioContext) {
         if (!file.type.startsWith('audio/')) {
-             alert("Please upload an audio file (MP3).");
-             event.target.value = '';
-             return;
+            alert("Please upload an audio file (MP3).");
+            event.target.value = '';
+            return;
         }
         try {
-             const buffer = await loadBufferFromUpload(file);
-             if (buffer) {
-                 const newTrack = { name: file.name, buffer: buffer, path: null };
-                 uploadedBgms.push(newTrack);
-                 bgmPlaylist.push(newTrack);
-                 populateMusicSelector();
-                 musicSelectElement.value = newTrack.name;
-                 currentTrackIndex = bgmPlaylist.length - 1;
-                 localStorage.setItem('lastSelectedBGM', newTrack.name);
-                 if (isBgmPlaying) {
-                     playBGM(true);
-                 } else {
+            const buffer = await loadBufferFromUpload(file);
+            if (buffer) {
+                const newTrack = { name: file.name, buffer: buffer, path: null };
+                uploadedBgms.push(newTrack);
+                bgmPlaylist.push(newTrack);
+                populateMusicSelector();
+                musicSelectElement.value = newTrack.name;
+                currentTrackIndex = bgmPlaylist.length - 1;
+                localStorage.setItem('lastSelectedBGM', newTrack.name);
+                if (isBgmPlaying) {
+                    playBGM(true);
+                } else {
                     pauseBGM();
-                 }
-             } else {
-                 alert("Could not load or decode audio file. Please ensure it's a valid MP3.");
-             }
+                }
+            } else {
+                alert("Could not load or decode audio file. Please ensure it's a valid MP3.");
+            }
         } catch (e) {
-             console.error("Error loading uploaded file:", e);
-             alert("Could not load or decode audio file. Please ensure it's a valid MP3.");
+            console.error("Error loading uploaded file:", e);
+            alert("Could not load or decode audio file. Please ensure it's a valid MP3.");
         }
     } else if (!audioContext) {
         alert("Audio context not ready. Please try again after interacting with the page.");
@@ -435,10 +434,10 @@ uploadBgmInput.addEventListener('change', async (event) => {
 
 function playBGM(restart = false) {
     if (audioContext && audioContext.state === 'suspended') {
-         audioContext.resume().then(() => {
-             playBGM(restart);
-         }).catch(e => console.error("Failed to resume AudioContext:", e));
-         return; 
+        audioContext.resume().then(() => {
+            playBGM(restart);
+        }).catch(e => console.error("Failed to resume AudioContext:", e));
+        return; 
     }
     
     if (bgmSource) {
@@ -452,10 +451,10 @@ function playBGM(restart = false) {
         isBgmPlaying = false;
         playPauseBgmButton.textContent = '▶';
         if(bgmPlaylist.length === 0 || currentTrackIndex === -1) {
-             musicSelectElement.disabled = true;
-             playPauseBgmButton.disabled = true;
-             prevBgmButton.disabled = true;
-             nextBgmButton.disabled = true;
+            musicSelectElement.disabled = true;
+            playPauseBgmButton.disabled = true;
+            prevBgmButton.disabled = true;
+            nextBgmButton.disabled = true;
         }
         localStorage.removeItem('lastSelectedBGM');
         return;
@@ -473,21 +472,21 @@ function playBGM(restart = false) {
         localStorage.setItem('lastSelectedBGM', bgmPlaylist[currentTrackIndex].name);
         console.log("Playing BGM:", bgmPlaylist[currentTrackIndex].name);
     } catch (error) {
-         console.error("Error starting BGM source:", error);
-         isBgmPlaying = false;
-         playPauseBgmButton.textContent = '▶';
-         bgmSource = null;
-         if (bgmPlaylist.length > 1) {
-             console.log("Trying next track after playback error.");
-             playNextBGM();
-         } else {
+        console.error("Error starting BGM source:", error);
+        isBgmPlaying = false;
+        playPauseBgmButton.textContent = '▶';
+        bgmSource = null;
+        if (bgmPlaylist.length > 1) {
+            console.log("Trying next track after playback error.");
+            playNextBGM();
+        } else {
             console.log("No other tracks to try.");
             musicSelectElement.disabled = true;
             playPauseBgmButton.disabled = true;
             prevBgmButton.disabled = true;
             nextBgmButton.disabled = true;
             localStorage.removeItem('lastSelectedBGM');
-         }
+        }
     }
 }
 
@@ -503,49 +502,49 @@ function pauseBGM() {
 }
 
 function playPauseBGMHandler() {
-     setupAudio().then(() => { 
-         if (isBgmPlaying) {
-             pauseBGM();
-         } else {
-             playBGM(); 
-         }
+    setupAudio().then(() => { 
+        if (isBgmPlaying) {
+            pauseBGM();
+        } else {
+            playBGM(); 
+        }
     });
 }
 
 function playNextBGM() {
-     setupAudio().then(() => {
-         if (bgmPlaylist.length <= 1) {
-             console.log("Not enough tracks to play next.");
-             return;
-         }
-         currentTrackIndex = (currentTrackIndex + 1) % bgmPlaylist.length;
-         musicSelectElement.value = bgmPlaylist[currentTrackIndex].name;
-         if (isBgmPlaying) {
+    setupAudio().then(() => {
+        if (bgmPlaylist.length <= 1) {
+            console.log("Not enough tracks to play next.");
+            return;
+        }
+        currentTrackIndex = (currentTrackIndex + 1) % bgmPlaylist.length;
+        musicSelectElement.value = bgmPlaylist[currentTrackIndex].name;
+        if (isBgmPlaying) {
             playBGM(true);
-         } else {
+        } else {
             pauseBGM(); 
             // No need to call playBGM, just update selection
-         }
-         console.log("Skipping to next track:", bgmPlaylist[currentTrackIndex].name);
-     });
+        }
+        console.log("Skipping to next track:", bgmPlaylist[currentTrackIndex].name);
+    });
 }
 
 function playPreviousBGM() {
-     setupAudio().then(() => {
-         if (bgmPlaylist.length <= 1) {
-              console.log("Not enough tracks to play previous.");
-              return;
-         }
-         currentTrackIndex = (currentTrackIndex - 1 + bgmPlaylist.length) % bgmPlaylist.length;
-         musicSelectElement.value = bgmPlaylist[currentTrackIndex].name;
-         if (isBgmPlaying) {
+    setupAudio().then(() => {
+        if (bgmPlaylist.length <= 1) {
+            console.log("Not enough tracks to play previous.");
+            return;
+        }
+        currentTrackIndex = (currentTrackIndex - 1 + bgmPlaylist.length) % bgmPlaylist.length;
+        musicSelectElement.value = bgmPlaylist[currentTrackIndex].name;
+        if (isBgmPlaying) {
             playBGM(true);
-         } else {
+        } else {
             pauseBGM(); 
             // No need to call playBGM, just update selection
-         }
-         console.log("Skipping to previous track:", bgmPlaylist[currentTrackIndex].name);
-     });
+        }
+        console.log("Skipping to previous track:", bgmPlaylist[currentTrackIndex].name);
+    });
 }
 
 playPauseBgmButton.addEventListener('click', playPauseBGMHandler);
@@ -859,9 +858,9 @@ function workoutComplete() {
 }
 
 startWorkoutButton.addEventListener('click', () => {
-     if (audioContext && audioContext.state === 'suspended') {
-         audioContext.resume();
-     }
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
     if (!currentWorkoutDayKey || !userWorkoutPlan[currentWorkoutDayKey] || !userWorkoutPlan[currentWorkoutDayKey].exercises || userWorkoutPlan[currentWorkoutDayKey].exercises.length === 0) {
         console.warn("Start workout clicked without a valid workout day/exercise selected.");
         return;
@@ -1257,14 +1256,10 @@ nextYearButton.addEventListener('click', () => {
     renderProgressTracker(currentProfileYear);
 });
 
-
-// Gemini API variables
 let genAI = null;
-let model = null;
 let userApiKey = localStorage.getItem('geminiApiKey') || '';
+let model = null;
 
-
-// Initialize Gemini AI
 function initializeGemini() {
     if (window.GoogleGenerativeAI && userApiKey) {
         genAI = new window.GoogleGenerativeAI(userApiKey);
@@ -1280,7 +1275,6 @@ aiChatToggle.addEventListener('click', () => {
     aiChatbotModal.style.display = 'flex';
     chatInput.focus();
     
-    // Add welcome message if chat is empty
     if (chatHistoryDiv.children.length === 0) {
         appendMessage("Nova", "Hi there! I'm Nova, your AI fitness assistant🤖. I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!", 'bot-message');
     }
@@ -1335,7 +1329,7 @@ function toggleVoiceInput() {
 
             recognition.onstart = () => {
                 voiceInputButton.style.backgroundColor = 'var(--accent-color-hover)'; 
-                voiceInputButton.textContent = '🛑';
+                voiceInputButton.textContent = '🔴';
                 chatInput.placeholder = "Listening...";
                 sendChatButton.disabled = true;
                 speakChatButton.disabled = true;
@@ -1404,7 +1398,6 @@ function appendMessage(sender, message, className) {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; 
 }
 
-// Modified sendMessage function to use Gemini API
 async function sendMessage() {
     const userMessage = chatInput.value.trim();
     if (!userMessage) return;
@@ -1422,7 +1415,6 @@ async function sendMessage() {
     stopSpeaking();
     stopVoiceInput(); 
 
-    // Show loading indicator
     const loadingElement = document.createElement('div');
     loadingElement.classList.add('chat-message', 'bot-message', 'loading');
     loadingElement.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
@@ -1430,14 +1422,12 @@ async function sendMessage() {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
     try {
-        // Check for workout-specific commands first
         const workoutAction = checkWorkoutCommands(userMessage.toLowerCase());
         let response;
         
         if (workoutAction) {
             response = workoutAction;
         } else {
-            // Use Gemini API for general fitness advice
             const context = `You are Nova, an AI fitness assistant for a workout planner app. You're knowledgeable, encouraging, and friendly. Focus on providing helpful fitness, nutrition, and wellness advice. Keep responses conversational and motivating. If asked about non-fitness topics, gently redirect to fitness-related discussions.
 
 Current context: The user is using a workout planner app that can:
@@ -1457,17 +1447,14 @@ You can reference these features when appropriate. Be encouraging and supportive
             response = geminiResponse.text();
         }
 
-        // Remove loading indicator
         chatHistoryDiv.removeChild(loadingElement);
         
-        // Add AI response
         appendMessage("Nova", response, 'bot-message');
         await speakText(response);
 
     } catch (error) {
         console.error('Gemini API Error:', error);
         
-        // Remove loading indicator
         if (loadingElement.parentNode) {
             chatHistoryDiv.removeChild(loadingElement);
         }
@@ -1482,14 +1469,12 @@ You can reference these features when appropriate. Be encouraging and supportive
     }
 }
 
-// Keep workout-specific commands for immediate actions
 function checkWorkoutCommands(msg) {
     const workoutDayKeywords = {
         "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday",
         "thursday": "Thursday", "friday": "Friday", "saturday": "Saturday", "sunday": "Sunday"
     };
 
-    // 🔊 Music
     if (msg.includes("play music") || (msg.includes("play") && !msg.includes("workout"))) {
         if (typeof playPauseBGMHandler === 'function') playPauseBGMHandler(); 
         return "Energizing sounds coming right up! Playing your music now.";
@@ -1507,7 +1492,6 @@ function checkWorkoutCommands(msg) {
         return "Back to the previous song. Let's find that perfect beat!";
     }
 
-    // 🏋️‍♂️ Workout Commands
     if (msg.includes("start workout")) {
         let foundDay = null;
         for (const keyword in workoutDayKeywords) {
@@ -1566,9 +1550,8 @@ function checkWorkoutCommands(msg) {
         return "Opening the workout plan editor. You can customize your routine here!";
     }
 
-    // 🧠 Fitness Knowledge Responses
     if (msg.includes("how to warm up"))
-        return "A good warm-up includes 5 to 10 minutes of light cardio like jumping jacks or jogging in place. Add dynamic stretches like arm swings and leg swings!";
+        return "A good warm-up includes 5-10 minutes of light cardio like jumping jacks or jogging in place. Add dynamic stretches like arm swings and leg swings!";
     if (msg.includes("importance of cool down"))
         return "Cooling down helps lower your heart rate gradually and prevents dizziness. It also improves flexibility and aids recovery!";
     if (msg.includes("best time to workout"))
@@ -1586,7 +1569,7 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("healthy breakfast ideas"))
         return "Try oatmeal, Greek yogurt with fruit, eggs on toast, or a smoothie with banana and spinach!";
     if (msg.includes("how to improve strength"))
-        return "Progressive overload is key. Add reps, increase resistance, and allow recovery days, Form matters more than speed!";
+        return "Progressive overload is key. Add reps, increase resistance, and allow recovery days. Form matters more than speed!";
     if (msg.includes("benefits of strength training"))
         return "Strength training boosts metabolism, improves posture, enhances bone density, and helps you burn fat!";
     if (msg.includes("cardio vs strength training"))
@@ -1596,18 +1579,16 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("calories burned"))
         return workoutCaloriesBurned > 0
             ? `You've burned around ***${workoutCaloriesBurned.toFixed(0)} calories*** so far! Amazing effort!`
-            : "No workout yet today, let's change that!";
+            : "No workout yet today — let's change that!";
 
-    // 🤝 Small Talk
     if (msg.includes("hi") || msg.includes("hello") || msg.includes("hey")) return "Hi there! I'm Nova, your AI fitness assistant. Ready to get started?";
     if (msg.includes("how are you")) return "I'm fully charged and ready to help with your fitness journey!";
     if (msg.includes("thank you") || msg.includes("thanks")) return "You're welcome! Keep pushing forward!";
     if (msg.includes("bye") || msg.includes("goodbye")) return "Goodbye! Keep moving, stay hydrated, and come back soon!";
-    if (msg.includes("who are you")) return "Hi there! I'm Nova, your friendly AI fitness assistant here to help you crush your fitness goals! I'm built into this awesome workout planner app to guide you through your workouts, track your progress, and offer helpful tips on nutrition and wellness. Ready to get started, or do you have any questions about how I can help you reach your fitness potential?";
+    if (msg.includes("who are you")) return "I'm Nova — your intelligent, friendly, and supportive fitness assistant!";
     if (msg.includes("help") || msg.includes("what can you do")) return "I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!";
-    if (msg.includes("who is joe")) return "JOE MAMA!!!";
 
-    return null; // fallback to Gemini
+    return null; 
 }
 
 let synth = window.speechSynthesis || null;
@@ -1621,9 +1602,8 @@ async function speakText(text) {
     speaking = true;
     speakChatButton.textContent = 'Stop Speaking';
 
-    // Try ElevenLabs first
     try {
-        const elevenResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
             method: 'POST',
             headers: {
                 'Accept': 'audio/mpeg',
@@ -1640,38 +1620,39 @@ async function speakText(text) {
             }),
         });
 
-        if (!elevenResponse.ok) throw new Error("ElevenLabs TTS failed");
+        if (!response.ok) throw new Error("ElevenLabs TTS API failed or returned an error.");
 
-        const audioBlob = await elevenResponse.blob();
+        const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
-        await playAudio(audioUrl, 1.0);
-        return;
-    } catch (e1) {
-        console.warn("❌ ElevenLabs failed. Trying Coqui TTS...", e1);
+
+        if (currentSpeechAudio) {
+            currentSpeechAudio.pause();
+            currentSpeechAudio = null;
+        }
+
+        currentSpeechAudio = new Audio(audioUrl);
+        currentSpeechAudio.playbackRate = 0.95;
+
+        currentSpeechAudio.onended = () => {
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl); 
+        };
+
+        currentSpeechAudio.onerror = (e) => {
+            console.error("Audio playback error:", e);
+            speaking = false;
+            speakChatButton.textContent = 'Speak';
+            currentSpeechAudio = null;
+            URL.revokeObjectURL(audioUrl); 
+        };
+
+        await currentSpeechAudio.play();
+    } catch (err) {
+        console.error("ElevenLabs TTS failed:", err);
+        fallbackToBrowserTTS(text);
     }
-
-    // Fallback to Coqui TTS
-    try {
-        const coquiResponse = await fetch('http://localhost:5002/api/tts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ text })
-        });
-
-        if (!coquiResponse.ok) throw new Error('Coqui TTS API failed');
-
-        const audioBlob = await coquiResponse.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        await playAudio(audioUrl, 1.2);
-        return;
-    } catch (e2) {
-        console.warn("❌ Coqui TTS failed. Falling back to Web Speech API...", e2);
-    }
-
-    // Final fallback: Web Speech API
-    fallbackToBrowserTTS(text);
 }
 
 function fallbackToBrowserTTS(text) {
@@ -1693,37 +1674,6 @@ function fallbackToBrowserTTS(text) {
         speaking = false;
         speakChatButton.textContent = 'Speak';
     }
-}
-
-async function playAudio(audioUrl, rate = 1.0) {
-    if (currentSpeechAudio) {
-        currentSpeechAudio.pause();
-        currentSpeechAudio = null;
-    }
-
-    currentSpeechAudio = new Audio(audioUrl);
-    currentSpeechAudio.playbackRate = rate;
-
-    return new Promise((resolve, reject) => {
-        currentSpeechAudio.onended = () => {
-            speaking = false;
-            speakChatButton.textContent = 'Speak';
-            currentSpeechAudio = null;
-            URL.revokeObjectURL(audioUrl);
-            resolve();
-        };
-
-        currentSpeechAudio.onerror = (e) => {
-            console.error("Audio playback error", e);
-            speaking = false;
-            speakChatButton.textContent = 'Speak';
-            currentSpeechAudio = null;
-            URL.revokeObjectURL(audioUrl);
-            reject(e);
-        };
-
-        currentSpeechAudio.play().catch(reject);
-    });
 }
 
 function actuallySpeak(voices, text) {
@@ -1766,6 +1716,15 @@ function stopSpeaking() {
     speaking = false;
     speakChatButton.textContent = 'Speak';
 }
+
+function resetApiKey() {
+    localStorage.removeItem('geminiApiKey');
+    userApiKey = '';
+    genAI = null;
+    model = null;
+}
+
+window.resetGeminiApiKey = resetApiKey;
 
 initWorkoutPlan();
 initWorkoutLog();

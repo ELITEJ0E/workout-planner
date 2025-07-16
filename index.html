@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Routine 3000</title>
+    <title>Joe Workout 3000</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 
@@ -48,7 +48,7 @@
                     <svg id="icon-play" width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="icon-pause" width="32" height="32" fill="currentColor" viewBox="0 0 24 24" style="display:none;"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
                 </button>
                 <button class="btn skip-next" id="next-btn" aria-label="Next">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M16 5v14h-2V5h2zm-3.5 7L4 18V6l8.5 6z"/></svg>
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M16 5v14h-2V5h2zm-3.5 7L4 18V6l-8.5 6z"/></svg>
                 </button>
                 <button class="btn btn-loop" id="loop-btn" aria-label="Loop">
                     <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M17 17H7v-2h10v-2l3 3-3 3v-2zM7 7h10v2H7v2L4 8l3-3v2z"/></svg>
@@ -197,6 +197,7 @@
             console.error('YouTube Player Error:', event.data);
             titleElement.textContent = 'Error playing video';
             artistElement.textContent = 'Please try another link.';
+            document.title = 'Joe Workout 3000';
             isPlaying = false;
             playPauseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
             clearInterval(interval);
@@ -223,7 +224,7 @@
                 if (data && data.title) {
                     titleElement.textContent = data.title;
                     artistElement.textContent = data.author_name || 'Unknown Artist';
-                    document.title = `${data.title} - ${data.author_name || 'Unknown Artist'}`;
+                    document.title = 'Joe Workout 3000';
 
                     const playlistItem = playlistElement.querySelector(`li[data-video-id="${videoId}"]`);
                     if (playlistItem) {
@@ -236,13 +237,13 @@
                 } else {
                     titleElement.textContent = 'Unknown Title';
                     artistElement.textContent = 'Unknown Artist';
-                    document.title = 'YouTube Music Player';
+                    document.title = 'Joe Workout 3000';
                 }
             } catch (error) {
                 console.error('Error fetching video info:', error);
                 titleElement.textContent = 'Could not load info';
                 artistElement.textContent = 'Unknown Artist';
-                document.title = 'YouTube Music Player';
+                document.title = 'Joe Workout 3000';
             }
             if (currentIndex !== -1 && playlist[currentIndex].videoId === videoId) {
                 titleElement.textContent = playlist[currentIndex].title;
@@ -285,7 +286,7 @@
                             if (songIndex === currentIndex) {
                                 titleElement.textContent = playlist[currentIndex].title;
                                 artistElement.textContent = data.author_name || 'Unknown Artist';
-                                document.title = `${playlist[currentIndex].title} - ${data.author_name || 'Unknown Artist'}`;
+                                document.title = 'Joe Workout 3000';
                             }
                         }
                     })
@@ -299,7 +300,7 @@
                             if (songIndex === currentIndex) {
                                 titleElement.textContent = playlist[currentIndex].title;
                                 artistElement.textContent = 'Unknown Artist';
-                                document.title = 'YouTube Music Player';
+                                document.title = 'Joe Workout 3000';
                             }
                         }
                     });
@@ -325,7 +326,7 @@
                     updateProgress();
                     titleElement.textContent = 'Song Title';
                     artistElement.textContent = 'Artist Name';
-                    document.title = 'YouTube Music Player';
+                    document.title = 'Joe Workout 3000';
 
                     if (playlist.length > 0) {
                         currentIndex = (index >= playlist.length) ? 0 : index;
@@ -334,7 +335,7 @@
                         currentIndex = -1; // No song selected
                         titleElement.textContent = 'Song Title';
                         artistElement.textContent = 'Artist Name';
-                        document.title = 'YouTube Music Player';
+                        document.title = 'Joe Workout 3000';
                     }
 
                 } else if (index < currentIndex) {
@@ -378,7 +379,7 @@
                 currentIndex = -1; // No song selected
                 titleElement.textContent = 'Song Title';
                 artistElement.textContent = 'Artist Name';
-                document.title = 'YouTube Music Player';
+                document.title = 'Joe Workout 3000';
             }
         }
 
@@ -483,7 +484,7 @@
                     updateProgress();
                     titleElement.textContent = 'Song Title';
                     artistElement.textContent = 'Artist Name';
-                    document.title = 'YouTube Music Player';
+                    document.title = 'Joe Workout 3000';
                     currentIndex = -1;
                     savePlaylist(); // Save empty state
                     player.cueVideoById('');
@@ -532,7 +533,7 @@
                 updateProgress();
                 titleElement.textContent = 'Song Title';
                 artistElement.textContent = 'Artist Name';
-                document.title = 'YouTube Music Player';
+                document.title = 'Joe Workout 3000';
                 currentIndex = -1;
                 savePlaylist(); // Save empty state
                 player.cueVideoById('');
@@ -555,7 +556,7 @@
                 updateProgress();
                 titleElement.textContent = 'Song Title';
                 artistElement.textContent = 'Artist Name';
-                document.title = 'YouTube Music Player';
+                document.title = 'Joe Workout 3000';
                 currentIndex = -1;
                 savePlaylist(); // Save empty state
                 player.cueVideoById('');
@@ -657,28 +658,15 @@
             
             <!-- Music Player Controls -->
             <div class="music-controls">
-                <button id="prev-bgm" title="Previous Track">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6l-8.5 6z"/>
-                    </svg>
-                </button>
-                <button id="play-pause-bgm" title="Play/Pause BGM">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </button>
-                <button id="next-bgm" title="Next Track">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 5v14h-2V5h2zm-3.5 7L4 18V6l8.5 6z"/>
-                    </svg>
-                </button>
+                <button id="prev-bgm" title="Previous Track">&#9664;</button>
+                <button id="play-pause-bgm" title="Play/Pause BGM">&#9658;</button>
+                <button id="next-bgm" title="Next Track">&#9654;</button>
                 <div class="custom-select-wrapper inline">
                     <select id="music-select" title="Select Background Music"></select>
                 </div>
                 <label for="upload-bgm" class="upload-button" title="Upload Your Own MP3">Upload MP3</label>
                 <input type="file" id="upload-bgm" accept="audio/mp3" style="display: none;">
             </div>
-                    
 
             <!-- Theme Select -->
             <div class="custom-select-wrapper inline">
