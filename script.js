@@ -176,12 +176,12 @@ const preloadedBgms = [
     { name: "Motivational Electro", path: 'background_music.mp3', buffer: null },
     { name: "MONTAGEM TOMADA", path: 'MONTAGEM TOMADA SLOWED.mp3', buffer: null },
     { name: "Passo Bem Solto", path: 'PASSO BEM SOLTO (Slowed).mp3', buffer: null },
-    { name: "Henry Young - One More Last Time", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
+    { name: "LE SSERAFIM (르세라핌) HOT", path: 'LE SSERAFIM (르세라핌) HOT.mpm', buffer: null },
+    { name: "Henry Young - One More Last Time (feat. Ashley Alisha)", path: 'Henry Young - One More Last Time (feat. Ashley Alisha).mp3', buffer: null },
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
     { name: "5x30", path: '5x30.mp3', buffer: null },
-    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null },
-    { name: "MONTAGEM XONADA", path: 'MONTAGEM XONADA .mp3', buffer: null }
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
@@ -718,12 +718,10 @@ function displayExercise() {
         exerciseImage.src = exercise.image;
         exerciseImage.alt = exercise.name;
         exerciseImage.classList.add('visible');
-        exerciseImage.style.display = 'block';
     } else {
         exerciseImage.src = '';
         exerciseImage.alt = '';
         exerciseImage.classList.remove('visible');
-        exerciseImage.style.display = 'none';
     }
     timerDisplay.textContent = exercise.type === 'time' ? formatTime(exercise.duration) : 'Ready';
     startWorkoutButton.textContent = exercise.type === 'time' ? 'Start Timer' : 'Start Set';
@@ -782,7 +780,6 @@ function handleSetCompletion() {
     const exercises = userWorkoutPlan[currentWorkoutDayKey].exercises;
     const exercise = exercises[currentExerciseIndex];
     exerciseImage.classList.remove('visible');
-    exerciseImage.style.display = 'none';
     
     if (exercise.type === 'reps' && exercise.caloriesPerRep) {
         const repsValue = parseInt(String(exercise.reps).replace(' each', ''));
@@ -829,7 +826,6 @@ function workoutComplete() {
     exerciseNameDisplay.textContent = "Congratulations!";
     exerciseDetailsDisplay.textContent = "";
     exerciseImage.classList.remove('visible');
-    exerciseImage.style.display = 'none';
     timerDisplay.textContent = "🎉";
     startWorkoutButton.style.display = 'none';
     nextExerciseButton.style.display = 'none';
@@ -948,7 +944,6 @@ backToPlanButton.addEventListener('click', () => {
         isResting = false;
         exerciseImage.classList.remove('visible');
         exerciseImage.src = '';
-        exerciseImage.style.display = 'none';
     });
 });
 
@@ -1555,17 +1550,17 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("importance of cool down"))
         return "Cooling down helps lower your heart rate gradually and prevents dizziness. It also improves flexibility and aids recovery!";
     if (msg.includes("best time to workout"))
-        return "The best time to workout is the time you’ll stick with! Morning, afternoon, or evening — consistency is what matters most.";
+        return "The best time to workout is the time you'll stick with! Morning, afternoon, or evening - consistency is what matters most.";
     if (msg.includes("what to eat before workout"))
-        return "A banana, oats, or yogurt 30–60 minutes before exercise fuels your body. Combine carbs and a bit of protein for best performance.";
+        return "A banana, oats, or yogurt 30-60 minutes before exercise fuels your body. Combine carbs and a bit of protein for best performance.";
     if (msg.includes("how to stay motivated"))
-        return "Set small goals, celebrate progress, switch routines often, and remember your 'why'. You’ve got this!";
+        return "Set small goals, celebrate progress, switch routines often, and remember your 'why'. You've got this!";
     if (msg.includes("what is hiit"))
         return "HIIT means High-Intensity Interval Training: short bursts of exercise followed by short rests. Efficient and intense!";
     if (msg.includes("why is stretching important"))
         return "Stretching increases flexibility, reduces risk of injury, and relieves muscle tension. Do it before and after workouts!";
     if (msg.includes("how much water should i drink"))
-        return "About 2–3 liters daily, more if you’re sweating. Drink before, during, and after workouts.";
+        return "About 2-3 liters daily, more if you're sweating. Drink before, during, and after workouts.";
     if (msg.includes("healthy breakfast ideas"))
         return "Try oatmeal, Greek yogurt with fruit, eggs on toast, or a smoothie with banana and spinach!";
     if (msg.includes("how to improve strength"))
@@ -1579,13 +1574,13 @@ function checkWorkoutCommands(msg) {
     if (msg.includes("calories burned"))
         return workoutCaloriesBurned > 0
             ? `You've burned around ***${workoutCaloriesBurned.toFixed(0)} calories*** so far! Amazing effort!`
-            : "No workout yet today — let's change that!";
+            : "No workout yet today - let's change that!";
 
     if (msg.includes("hi") || msg.includes("hello") || msg.includes("hey")) return "Hi there! I'm Nova, your AI fitness assistant. Ready to get started?";
     if (msg.includes("how are you")) return "I'm fully charged and ready to help with your fitness journey!";
     if (msg.includes("thank you") || msg.includes("thanks")) return "You're welcome! Keep pushing forward!";
     if (msg.includes("bye") || msg.includes("goodbye")) return "Goodbye! Keep moving, stay hydrated, and come back soon!";
-    if (msg.includes("who are you")) return "I'm Nova — your intelligent, friendly, and supportive fitness assistant!";
+    if (msg.includes("who are you")) return "I'm Nova - your intelligent, friendly, and supportive fitness assistant!";
     if (msg.includes("help") || msg.includes("what can you do")) return "I can start Workout Commands, Control Music, share Fitness Knowledge, and keep you on track! Just ask away!";
 
     return null; 
@@ -1737,10 +1732,45 @@ if (themeSelectElement) {
 loadColorMode(); 
 exerciseImage.src = '';
 exerciseImage.classList.remove('visible');
-exerciseImage.style.display = 'none';
 displayPlan();
 setView('plan');
 
 document.addEventListener('DOMContentLoaded', () => {
     setupAudio();
 });
+
+// New function to handle YouTube player readiness and initial visibility
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('video-placeholder', {
+        width: '100%',
+        height: '100%',
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'playsinline': 1,
+            'enablejsapi': 1,
+            'disablekb': 1,
+            'iv_load_policy': 3,
+            'modestbranding': 1,
+            'rel': 0,
+            'fs': 0
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+    // Set video placeholder to display: none immediately after player is created
+    // This ensures video plays in background without being visible
+    videoPlaceholder.style.display = 'none'; 
+}
+
+// Ensure global functions are available
+if (typeof YT === 'undefined' || !YT.Player) {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;

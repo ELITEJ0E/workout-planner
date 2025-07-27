@@ -451,7 +451,8 @@ body {
     transform: scaleX(1);
 }
 
-
+.btn.skip-next svg {
+}
 
 .playlist-container {
     width: 100%;
@@ -833,7 +834,8 @@ h3 {
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-
+#workout-display #current-exercise {
+}
 
 .day-card {
     background-color: var(--card-bg-color);
@@ -933,6 +935,11 @@ h3 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.plan-view #workout-display #current-exercise {
+}
+
+.workout-view #plan {
+}
 
 .log-view #plan {
     display: none !important;
