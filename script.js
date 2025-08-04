@@ -181,7 +181,8 @@ const preloadedBgms = [
     { name: "LUNA BALA (SLOWED)", path: 'Yb Wasgood, Ariis - LUNA BALA (SLOWED).mp3', buffer: null },
     { name: "Los Voltaje", path: 'LOS VOLTAJE.mp3', buffer: null },
     { name: "5x30", path: '5x30.mp3', buffer: null },
-    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null }
+    { name: "Amor Na Praia (Slowed)", path: 'Amor Na Praia (Slowed).mp3', buffer: null },
+    { name: "Montagem Xonada", path: 'MONTAGEM XONADA .mp3', buffer: null }
 ];
 
 let uploadedBgms = [];
