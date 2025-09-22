@@ -26,7 +26,8 @@
 
         <div class="player-container">
             <div class="url-input">
-                <input type="text" id="youtube-url" placeholder="Paste YouTube music/video URL">
+                <input type="text" id="youtube-url" placeholder="Paste YouTube URL or search (music mode)">
+                <div id="ytmusic-suggestions" class="suggestions" aria-hidden="true"></div>
                 <button id="load-btn">Load</button>
             </div>
             <div class="media-container">
@@ -55,7 +56,21 @@
                 </button>
             </div>
             <div class="playlist-container">
-                <div class="playlist-title">Playlist</div>
+                <div class="playlist-header">
+                    <div class="playlist-title">Playlist</div>
+                    <div class="playlist-manager">
+                        <!-- custom playlist dropdown using shared custom-select-wrapper -->
+                        <div class="custom-select-wrapper">
+                            <div id="playlist-select" class="custom-playlist-select" role="listbox" aria-label="Select playlist" tabindex="0">
+                                <div class="selected-value" id="playlist-selected-display">Loading...</div>
+                                <div class="playlist-options" id="playlist-options" hidden></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="playlist-manager playlist-actions" aria-hidden="false" style="margin-top:8px;">
+                    <!-- Buttons removed from markup per request; functions remain available in JS -->
+                </div>
                 <ul id="playlist">
                     <!-- Playlist items will be added here -->
                 </ul>

@@ -459,12 +459,20 @@ body {
     margin-top: 30px;
     color: var(--text);
 }
-
+/* New: align playlist header and center inline select next to title */
+.playlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
 .playlist-title {
     font-size: 20px;
-    margin-bottom: 15px;
-    text-align: center;
-    color: var(--text);
+    margin: 0; /* ensure vertical alignment */
+}
+/* Slightly reduce width of the select so it sits neatly beside the title */
+.custom-playlist-select {
+    width: 220px;
 }
 
 #playlist {
@@ -1849,3 +1857,108 @@ body.light-mode .progress-day.empty {
   0%, 80%, 100% { opacity: 0.3; }
   40% { opacity: 1; }
 }
+
+/* New styles for YouTube Music suggestions and mode select */
+#youtube-mode {
+    padding: 10px;
+    border-radius: 6px;
+    margin-right: 8px;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--input-border-color);
+}
+#ytmusic-suggestions {
+    position: absolute;
+    background: var(--card-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    max-width: 520px;
+    width: calc(100% - 140px);
+    z-index: 50;
+    display: none;
+    max-height: 220px;
+    overflow-y: auto;
+}
+#ytmusic-suggestions .suggestion {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+#ytmusic-suggestions .suggestion:hover {
+    background: var(--list-item-hover-bg);
+}
+/* Small adjustments for create playlist button */
+#create-ytmusic-playlist {
+    margin-left: 8px;
+    padding: 10px 16px;
+    border-radius: 20px;
+}
+
+.playlist-manager {
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+/* Custom playlist dropdown styles */
+.custom-playlist-select {
+    position: relative;
+    width: 240px;
+    background: var(--card-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    cursor: pointer;
+    user-select: none;
+}
+.custom-playlist-select .selected-value {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.custom-playlist-select .playlist-options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    background: var(--card-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+}
+.custom-playlist-select .option {
+    padding: 10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+}
+.custom-playlist-select .option:hover {
+    background: var(--list-item-hover-bg);
+}
+.custom-playlist-select .option .label { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.custom-playlist-select .option .delete-x {
+    color: var(--text-light);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+.custom-playlist-select .option .delete-x:hover { color: #ff6b6b; background: rgba(255,0,0,0.05); }
+.custom-playlist-select .create-option {
+    padding: 10px 12px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+    font-weight: 600;
+    color: var(--accent-color);
+}
+.custom-playlist-select[aria-expanded="true"] .playlist-options { display:block; }
+.custom-playlist-select .caret { margin-left: 8px; color: var(--text-light); }

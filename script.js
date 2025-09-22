@@ -187,6 +187,59 @@ const preloadedBgms = [
 
 let uploadedBgms = [];
 
+const youtubeModeSelect = document.getElementById('youtube-mode');
+const ytmusicSuggestions = document.getElementById('ytmusic-suggestions');
+
+// Lightweight in-memory / localStorage "WebsimSocket" fallback for YT Music playlists
+const YTMUSIC_PLAYLISTS_KEY = 'ytmusic_playlists';
+const YTMUSIC_PLAYLIST_TRACKS_KEY = 'ytmusic_playlist_tracks';
+
+function loadYtMusicPlaylists() {
+    try {
+        return JSON.parse(localStorage.getItem(YTMUSIC_PLAYLISTS_KEY)) || [];
+    } catch (e) { return []; }
+}
+function saveYtMusicPlaylists(list) {
+    localStorage.setItem(YTMUSIC_PLAYLISTS_KEY, JSON.stringify(list));
+}
+function loadYtMusicTracks() {
+    try {
+        return JSON.parse(localStorage.getItem(YTMUSIC_PLAYLIST_TRACKS_KEY)) || {};
+    } catch (e) { return {}; }
+}
+function saveYtMusicTracks(obj) {
+    localStorage.setItem(YTMUSIC_PLAYLIST_TRACKS_KEY, JSON.stringify(obj));
+}
+
+// Replace single-playlist storage with multi-playlist management
+
+// NEW: keys for multilist
+const ALL_PLAYLISTS_KEY = 'youtube_playlists_all';
+let allPlaylists = {}; // { id: { id, name, items: [...] } }
+let currentPlaylistId = null;
+
+function loadAllPlaylists() {
+    try {
+        allPlaylists = JSON.parse(localStorage.getItem(ALL_PLAYLISTS_KEY)) || {};
+    } catch (e) { allPlaylists = {}; }
+    // ensure at least one default playlist
+    if (!Object.keys(allPlaylists).length) {
+        const id = 'pl_' + Date.now();
+        allPlaylists[id] = { id, name: 'Default', items: [] };
+        currentPlaylistId = id;
+        saveAllPlaylists();
+    } else if (!currentPlaylistId) {
+        // try to restore previously selected playlist
+        const saved = localStorage.getItem('youtube_current_playlist_id');
+        if (saved && allPlaylists[saved]) currentPlaylistId = saved;
+        else currentPlaylistId = Object.keys(allPlaylists)[0];
+    }
+}
+
+function saveAllPlaylists() {
+    localStorage.setItem(ALL_PLAYLISTS_KEY, JSON.stringify(allPlaylists));
+}
+
 function initWorkoutPlan() {
     const storedPlan = localStorage.getItem('userWorkoutPlan');
     if (storedPlan) {
@@ -1775,3 +1828,423 @@ if (typeof YT === 'undefined' || !YT.Player) {
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
 window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
+// Mock search for YouTube Music tracks (replace with real API calls if available)
+async function searchYouTubeMusicMock(query) {
+    if (!query || query.trim().length < 2) return [];
+    // Mocked results: map query into 5 sample items with fake IDs
+    return Array.from({length:5}).map((_,i) => {
+        const id = btoa(query + i).substr(0,11).replace(/[^a-zA-Z0-9]/g,'A');
+        return {
+            videoId: id,
+            title: `${query} — Track ${i+1}`,
+            artist: `Artist ${i+1}`,
+            album: `Album ${Math.max(1,i)}`,
+            duration: 180 + i*10
+        };
+    });
+}
+
+// Debounced suggestion fetch + render
+let suggestionDebounce = null;
+document.getElementById('youtube-url').addEventListener('input', async (e) => {
+    const mode = youtubeModeSelect ? youtubeModeSelect.value : 'video';
+    const q = e.target.value.trim();
+    if (mode !== 'music') {
+        ytmusicSuggestions.style.display = 'none';
+        ytmusicSuggestions.setAttribute('aria-hidden','true');
+        return;
+    }
+    clearTimeout(suggestionDebounce);
+    suggestionDebounce = setTimeout(async () => {
+        const results = await searchYouTubeMusicMock(q);
+        ytmusicSuggestions.innerHTML = '';
+        if (results.length === 0) {
+            ytmusicSuggestions.style.display = 'none';
+            ytmusicSuggestions.setAttribute('aria-hidden','true');
+            return;
+        }
+        results.forEach(track => {
+            const div = document.createElement('div');
+            div.className = 'suggestion';
+            div.tabIndex = 0;
+            div.innerHTML = `<strong>${track.title}</strong><div style="font-size:0.9em;color:var(--text-light)">${track.artist} · ${track.album} · ${formatTime(track.duration)}</div>`;
+            div.addEventListener('click', () => {
+                // populate input with track id (so load will treat it as a music item)
+                document.getElementById('youtube-url').value = `ytmusic:${track.videoId}`;
+                ytmusicSuggestions.style.display = 'none';
+                ytmusicSuggestions.setAttribute('aria-hidden','true');
+                handleLoadButtonClick(); // auto-load selection
+            });
+            ytmusicSuggestions.appendChild(div);
+        });
+        ytmusicSuggestions.style.display = 'block';
+        ytmusicSuggestions.setAttribute('aria-hidden','false');
+    }, 300);
+});
+
+// Enhanced extractVideoId to accept our ytmusic: prefixed ids when in music mode
+function extractVideoId(url) {
+    if (!url) return null;
+    if (url.startsWith('ytmusic:')) return url.split(':')[1];
+    const regExp = /(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|shorts\/)?([\w-]{11})(?:\S+)?/i;
+    const match = url.match(regExp);
+    return (match && match[1] && match[1].length === 11) ? match[1] : null;
+}
+
+async function handleLoadButtonClick() {
+    const mode = youtubeModeSelect ? youtubeModeSelect.value : 'video';
+    const url = youtubeUrlInput.value.trim();
+    if (mode === 'music') {
+        // If input is an id or ytmusic:prefixed, add to playlist as temporary single-play item
+        const videoId = extractVideoId(url) || null;
+        if (videoId) {
+            // Add to playlist UI (existing playlist logic uses addSongToPlaylist) — reuse that
+            addSongToPlaylist(videoId);
+            youtubeUrlInput.value = '';
+            ytmusicSuggestions.style.display = 'none';
+            ytmusicSuggestions.setAttribute('aria-hidden','true');
+            return;
+        }
+        // Otherwise perform search and show suggestions (already handled via input)
+        const results = await searchYouTubeMusicMock(url);
+        if (results.length > 0) {
+            // auto-fill first result
+            addSongToPlaylist(results[0].videoId);
+            youtubeUrlInput.value = '';
+            ytmusicSuggestions.style.display = 'none';
+            ytmusicSuggestions.setAttribute('aria-hidden','true');
+            return;
+        } else {
+            alert('No music results found for that query.');
+            return;
+        }
+    } else {
+        // fallback to current behaviour for normal YouTube video
+        const videoId = extractVideoId(url);
+        if (videoId) {
+            addSongToPlaylist(videoId);
+            youtubeUrlInput.value = '';
+        } else {
+            alert('Invalid YouTube URL');
+        }
+    }
+}
+
+// Create YouTube Music Playlist UI + logic (localStorage-backed)
+// NOTE: creation now uses the "+ New Playlist" button (new-playlist) below the selector — see playlist manager handlers
+// Create YouTube Music Playlist UI + logic (localStorage-backed)
+// NOTE: creation now uses the "+ New Playlist" button (new-playlist) below the selector — see playlist manager handlers
+
+// Helper to add track to YTMusic playlist (called from album add UI or elsewhere)
+async function addTrackToYtMusicPlaylist(playlistId, track) {
+    const tracksObj = loadYtMusicTracks();
+    if (!tracksObj[playlistId]) tracksObj[playlistId] = [];
+    tracksObj[playlistId].push({
+        playlist_id: playlistId,
+        videoId: track.videoId,
+        trackTitle: track.title || track.trackTitle || '',
+        artist: track.artist || '',
+        album: track.album || '',
+        duration: track.duration || 0,
+        created_at: new Date().toISOString()
+    });
+    saveYtMusicTracks(tracksObj);
+}
+
+
+
+// NEW: UI helpers for playlist selection CRUD
+const playlistSelectEl = document.getElementById('playlist-select');
+const playlistOptionsEl = document.getElementById('playlist-options');
+const playlistSelectedDisplay = document.getElementById('playlist-selected-display');
+const newPlaylistBtn = document.getElementById('new-playlist');
+const renamePlaylistBtn = document.getElementById('rename-playlist');
+
+function populatePlaylistSelector() {
+    // ensure allPlaylists exists
+    if (!allPlaylists || typeof allPlaylists !== 'object') allPlaylists = {};
+    // clear options
+    playlistOptionsEl.innerHTML = '';
+    // for predictable ordering use Object.values
+    Object.values(allPlaylists).forEach(pl => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.dataset.playlistId = pl.id;
+        option.tabIndex = 0;
+        option.innerHTML = `<div class="label">${escapeHtml(pl.name)}</div>
+                            <div style="display:flex;gap:6px;align-items:center">
+                              <button class="rename-btn" title="Rename playlist" aria-label="Rename ${escapeHtml(pl.name)}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.29a1.003 
+      1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.83z"/>
+    </svg></button>
+                              <button class="delete-x" title="Delete playlist" aria-label="Delete ${escapeHtml(pl.name)}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M3 6h18v2H3V6zm2 3h14l-1.1 12.11A2 2 0 0 1 15.9 23H8.1a2 2 0 0 1-1.99-1.89L5 9zm5-6h4v2h-4V3z"/>
+    </svg></button>
+                            </div>`;
+        // click the main area to switch
+        option.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-x')) return;
+            if (e.target.classList.contains('rename-btn')) return;
+            switchPlaylist(pl.id);
+            closePlaylistDropdown();
+        });
+        // delete handler
+        option.querySelector('.delete-x').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!confirm(`Are you sure you want to delete this playlist?`)) return;
+            delete allPlaylists[pl.id];
+            // if deleted current, pick fallback
+            if (currentPlaylistId === pl.id) {
+                const keys = Object.keys(allPlaylists);
+                currentPlaylistId = keys.length ? keys[0] : null;
+                if (!currentPlaylistId) {
+                    const id = 'pl_' + Date.now();
+                    allPlaylists[id] = { id, name: 'Default', items: [] };
+                    currentPlaylistId = id;
+                }
+            }
+            saveAllPlaylists();
+            populatePlaylistSelector();
+            // reflect selected display and switch if needed
+            if (currentPlaylistId) switchPlaylist(currentPlaylistId);
+        });
+        // rename handler
+        option.querySelector('.rename-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newName = prompt('Rename playlist:', pl.name);
+            if (!newName) return;
+            allPlaylists[pl.id].name = newName.trim();
+            saveAllPlaylists();
+            populatePlaylistSelector();
+            // update display if renaming current
+            if (currentPlaylistId === pl.id) playlistSelectedDisplay.textContent = allPlaylists[pl.id].name;
+        });
+        playlistOptionsEl.appendChild(option);
+    });
+    // create pseudo-option at bottom
+    const createOpt = document.createElement('div');
+    createOpt.className = 'create-option';
+    createOpt.textContent = '+ Create Playlist';
+    createOpt.tabIndex = 0;
+    createOpt.addEventListener('click', () => {
+        promptCreatePlaylist();
+    });
+    playlistOptionsEl.appendChild(createOpt);
+    // update selected display
+    if (currentPlaylistId && allPlaylists[currentPlaylistId]) {
+        playlistSelectedDisplay.textContent = allPlaylists[currentPlaylistId].name;
+    } else {
+        playlistSelectedDisplay.textContent = 'No playlist';
+    }
+}
+
+// dropdown open/close and helpers
+function openPlaylistDropdown() {
+    playlistSelectEl.setAttribute('aria-expanded','true');
+    playlistOptionsEl.hidden = false;
+}
+function closePlaylistDropdown() {
+    playlistSelectEl.setAttribute('aria-expanded','false');
+    playlistOptionsEl.hidden = true;
+}
+playlistSelectEl.addEventListener('click', (e) => {
+    const expanded = playlistSelectEl.getAttribute('aria-expanded') === 'true';
+    if (expanded) closePlaylistDropdown();
+    else openPlaylistDropdown();
+});
+document.addEventListener('click', (e) => {
+    if (!playlistSelectEl.contains(e.target)) closePlaylistDropdown();
+});
+playlistOptionsEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePlaylistDropdown();
+});
+
+// helper to prompt create playlist (used by "+ Create Playlist" and New Playlist button)
+function promptCreatePlaylist() {
+    const name = prompt('New playlist name:', 'New Playlist');
+    if (!name) return;
+    const id = 'pl_' + Date.now();
+    allPlaylists[id] = { id, name: name.trim(), items: [] };
+    currentPlaylistId = id;
+    saveAllPlaylists();
+    populatePlaylistSelector();
+    switchPlaylist(currentPlaylistId);
+    closePlaylistDropdown();
+}
+
+// wire the existing new-playlist button to same prompt
+if (newPlaylistBtn) {
+    newPlaylistBtn.addEventListener('click', () => {
+        promptCreatePlaylist();
+    });
+} else {
+    // Button removed from DOM; keep functions available — no-op guard to avoid errors
+}
+
+// helper escapeHtml used in populate to prevent injection
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+    });
+}
+
+// Ensure initial load uses new populate function and dropdown wiring
+loadAllPlaylists();
+populatePlaylistSelector();
+switchPlaylist(currentPlaylistId);
+
+// Add switchPlaylist implementation so selection works
+function switchPlaylist(playlistId) {
+    if (!playlistId || !allPlaylists[playlistId]) return;
+    // persist any unsaved changes from the currently loaded playlist to storage
+    if (currentPlaylistId && allPlaylists[currentPlaylistId]) {
+        allPlaylists[currentPlaylistId].items = playlist ? playlist.slice() : (allPlaylists[currentPlaylistId].items || []);
+        saveAllPlaylists();
+    }
+    currentPlaylistId = playlistId;
+     // ensure currentIndex resets when switching playlists
+     currentIndex = -1;
+     // update visible selected label
+     playlistSelectedDisplay.textContent = allPlaylists[playlistId].name;
+     // persist selection
+     localStorage.setItem('youtube_current_playlist_id', playlistId);
+     // load playlist items into the UI
+     playlist = allPlaylists[playlistId].items ? allPlaylists[playlistId].items.slice() : [];
+     // ensure renderPlaylist uses currentPlaylistId
+     renderPlaylist();
+}
+
+// override/ensure renderPlaylist renders the currently selected playlist (uses existing CSS classes)
+function renderPlaylist() {
+    // use the global playlist array which is set in switchPlaylist()
+    playlistElement.innerHTML = '';
+    playlist = (currentPlaylistId && allPlaylists[currentPlaylistId] && Array.isArray(allPlaylists[currentPlaylistId].items))
+        ? allPlaylists[currentPlaylistId].items.slice()
+        : [];
+    playlist.forEach((song, index) => {
+        const listItem = document.createElement('li');
+        listItem.dataset.videoId = song.videoId;
+        listItem.dataset.actualIndex = index;
+        if (index === currentIndex) listItem.classList.add('active');
+
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = song.title || 'Loading title...';
+        listItem.appendChild(titleSpan);
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'x';
+        removeButton.classList.add('remove-btn');
+        removeButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const actualIndexToRemove = parseInt(e.target.parentElement.dataset.actualIndex, 10);
+            // remove from underlying allPlaylists for the current playlist
+            if (currentPlaylistId && allPlaylists[currentPlaylistId]) {
+                allPlaylists[currentPlaylistId].items.splice(actualIndexToRemove, 1);
+                saveAllPlaylists();
+                // adjust currentIndex if needed
+                if (actualIndexToRemove === currentIndex) {
+                    player.stopVideo && player.stopVideo();
+                    isPlaying = false;
+                    playPauseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+                    clearInterval(interval);
+                    progressSlider.value = 0;
+                    currentTime = 0;
+                    duration = 0;
+                    updateProgress();
+                    titleElement.textContent = 'Song Title';
+                    artistElement.textContent = 'Artist Name';
+                    document.title = 'Joe Workout 3000';
+                    currentIndex = -1;
+                } else if (actualIndexToRemove < currentIndex) {
+                    currentIndex--;
+                }
+                // refresh UI
+                playlist = allPlaylists[currentPlaylistId].items.slice();
+                renderPlaylist();
+            }
+        });
+        listItem.appendChild(removeButton);
+
+        listItem.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) return;
+            const idx = parseInt(listItem.dataset.actualIndex, 10);
+            if (idx !== currentIndex) {
+                playSong(idx);
+            } else {
+                playPause();
+            }
+        });
+
+        playlistElement.appendChild(listItem);
+    });
+
+    // visually indicate selected playlist in the selector by adding a data attribute (no new CSS required;
+    // this keeps selection clear via the native select UI and highlights the active song in the list)
+    if (playlistSelectEl && currentPlaylistId) {
+        playlistSelectEl.value = currentPlaylistId;
+    }
+    highlightCurrentSongInPlaylist();
+}
+
+function addSongToPlaylist(videoId) {
+    // Ensure we operate on the currently selected playlist stored in allPlaylists
+    if (!currentPlaylistId || !allPlaylists[currentPlaylistId]) {
+        console.warn('No current playlist selected; creating temporary one.');
+        const id = 'pl_' + Date.now();
+        allPlaylists[id] = { id, name: 'Default', items: [] };
+        currentPlaylistId = id;
+        saveAllPlaylists();
+        populatePlaylistSelector();
+    }
+
+    const items = allPlaylists[currentPlaylistId].items || [];
+    const existingIndex = items.findIndex(item => item.videoId === videoId);
+    if (existingIndex === -1) {
+        const newSong = { videoId: videoId, title: 'Loading title...' };
+        items.push(newSong);
+        allPlaylists[currentPlaylistId].items = items;
+        // persist immediately so the added track is saved across reloads
+        saveAllPlaylists();
+        // refresh the UI from stored playlists
+        playlist = items.slice();
+        renderPlaylist();
+        // auto-play first song if nothing is playing
+        if (currentIndex === -1) {
+            playSong(0);
+        }
+        // fetch title metadata and update stored playlist item & UI
+        fetch(`https://noembed.com/embed?url=https://youtu.be/${videoId}`)
+            .then(response => response.json())
+            .then(data => {
+                const idx = (allPlaylists[currentPlaylistId].items || []).findIndex(i => i.videoId === videoId);
+                if (idx !== -1) {
+                    allPlaylists[currentPlaylistId].items[idx].title = data.title || 'Unknown Title';
+                    // ensure updated title persists
+                    saveAllPlaylists();
+                    playlist = allPlaylists[currentPlaylistId].items.slice();
+                    renderPlaylist();
+                    if (idx === currentIndex) {
+                        titleElement.textContent = allPlaylists[currentPlaylistId].items[currentIndex].title;
+                        artistElement.textContent = data.author_name || 'Unknown Artist';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching video info for playlist:', err);
+                // still save and render with fallback title
+                const idx = (allPlaylists[currentPlaylistId].items || []).findIndex(i => i.videoId === videoId);
+                if (idx !== -1) {
+                    allPlaylists[currentPlaylistId].items[idx].title = 'Error loading title';
+                    // persist fallback title so it's not lost
+                    saveAllPlaylists();
+                    playlist = allPlaylists[currentPlaylistId].items.slice();
+                    renderPlaylist();
+                }
+            });
+    } else {
+        // play existing
+        playSong(existingIndex);
+    }
+}
