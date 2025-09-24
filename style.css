@@ -1962,3 +1962,91 @@ body.light-mode .progress-day.empty {
 }
 .custom-playlist-select[aria-expanded="true"] .playlist-options { display:block; }
 .custom-playlist-select .caret { margin-left: 8px; color: var(--text-light); }
+
+.volume-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    padding: 8px 6px;
+    border-radius: 20px;
+    user-select: none;
+    justify-content: center; /* center the control content */
+    width: 100%; /* allow centering within parent */
+    margin: 12px 0; /* spacing above/below */
+}
+#volume-slider {
+    width: 140px;
+    height: 6px;
+    appearance: none;
+    background: linear-gradient(to right, var(--primary) 100%, #333 0%); /* themed fill (JS will update percentage) */
+    border-radius: 6px;
+    outline: none;
+    opacity: 1;
+    transform: scaleX(1);
+    transition: opacity 180ms ease, transform 180ms ease, background 160ms ease;
+}
+/* webkit thumb uses theme color */
+#volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+    border: none;
+}
+/* firefox thumb */
+#volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+    border: none;
+}
+/* IE/Edge thumb */
+#volume-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+    border: none;
+}
+.volume-percent {
+    min-width: 42px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.95em;
+}
+
+#mute-toggle,
+.volume-control .mute-icon {
+    background: transparent;
+    border: none;
+    padding: 6px;
+    width: 40px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.12s ease, transform 0.08s ease;
+}
+#mute-toggle:hover,
+.volume-control .mute-icon:hover {
+    color: var(--primary);
+    transform: none;
+}
+#mute-toggle[aria-pressed="true"],
+.volume-control .mute-icon[aria-pressed="true"] {
+    color: var(--primary);
+    transform: none;
+}

@@ -2248,3 +2248,108 @@ function addSongToPlaylist(videoId) {
         playSong(existingIndex);
     }
 }
+
+// New: Volume control elements and logic
+function initVolumeControls() {
+    const muteToggle = document.getElementById('mute-toggle'); // now a button
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumePercent = document.getElementById('volume-percent');
+    const volumeControl = document.getElementById('volume-control');
+
+    // restore saved volume & mute
+    let savedVol = parseInt(localStorage.getItem('yt_volume'), 10);
+    if (isNaN(savedVol)) savedVol = 100;
+    let savedMuted = localStorage.getItem('yt_muted') === 'true';
+
+    volumeSlider.value = savedVol;
+    volumePercent.textContent = `${savedVol}`;
+    // set aria-pressed state for icon button
+    muteToggle.setAttribute('aria-pressed', savedMuted ? 'true' : 'false');
+    updateMuteIcon(savedMuted);
+
+    function applyVolume(v) {
+        const vol = Math.max(0, Math.min(100, Math.round(v)));
+        volumeSlider.value = vol;
+        volumePercent.textContent = `${vol}`;
+        localStorage.setItem('yt_volume', vol);
+        if (player && typeof player.setVolume === 'function') {
+            try { player.setVolume(vol); } catch (e) { console.warn('setVolume failed', e); }
+            // if user sets volume >0 and was muted via toggle, keep toggle state as is
+        }
+    }
+
+    function applyMute(muted) {
+        muteToggle.setAttribute('aria-pressed', muted ? 'true' : 'false');
+        updateMuteIcon(muted);
+        localStorage.setItem('yt_muted', muted);
+        if (!player) return;
+        try {
+            if (muted) player.mute();
+            else player.unMute();
+        } catch (e) { console.warn('mute/unMute failed', e); }
+    }
+
+    function updateMuteIcon(isMuted) {
+        const svg = document.getElementById('mute-icon-svg');
+        if (!svg) return;
+        if (isMuted) {
+            // muted: use the simpler speaker / muted path (keeps visual distinction)
+            svg.innerHTML = '<path d="M3 9h3l4-4v14l-4-4H3V9zm11 0h.5c.83 0 1.5.67 1.5 1.5v3c0 .83-.67 1.5-1.5 1.5H14V9z"></path>';
+        } else {
+            // unmuted: use the provided fuller speaker + waves SVG
+            svg.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.88.75 5 3.37 5 6.71s-2.12 5.96-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77zM3 9v6h4l5 5V4L7 9H3z"></path>';
+        }
+    }
+
+    // wire interactions
+    volumeSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        applyVolume(val);
+        // if changing volume > 0 while muted via toggle, unmute for immediate feedback
+        if (muteToggle.getAttribute('aria-pressed') === 'true' && parseInt(volumeSlider.value, 10) > 0) {
+            applyMute(false);
+        }
+    });
+
+    muteToggle.addEventListener('click', (e) => {
+        const isMutedNow = muteToggle.getAttribute('aria-pressed') === 'true';
+        applyMute(!isMutedNow);
+        // when unmuting, ensure volume applied
+        if (isMutedNow === true || isMutedNow === 'true') {
+            const val = parseInt(volumeSlider.value, 10) || 100;
+            applyVolume(val);
+        }
+    });
+
+    // mouse wheel to change volume smoothly
+    volumeControl.addEventListener('wheel', (ev) => {
+        ev.preventDefault();
+        const delta = -Math.sign(ev.deltaY) * 2; // change step
+        const newVal = Math.max(0, Math.min(100, parseInt(volumeSlider.value, 10) + delta));
+        applyVolume(newVal);
+        // if muted via toggle and newVal > 0, unmute
+        if (muteToggle.getAttribute('aria-pressed') === 'true' && newVal > 0) applyMute(false);
+    }, { passive: false });
+
+    // sync with player occasionally (if player reports mute/state elsewhere)
+    // attempt immediate sync if player exists
+    if (player && typeof player.isMuted === 'function' && typeof player.getVolume === 'function') {
+        try {
+            const playerMuted = player.isMuted();
+            const playerVol = player.getVolume();
+            if (typeof playerVol === 'number') {
+                volumeSlider.value = playerVol;
+                volumePercent.textContent = `${playerVol}`;
+                localStorage.setItem('yt_volume', playerVol);
+            }
+            muteToggle.setAttribute('aria-pressed', playerMuted);
+            localStorage.setItem('yt_muted', playerMuted);
+        } catch (e) { /* ignore */ }
+    }
+}
+
+// ensure initVolumeControls runs after DOM load and safe to call before/after player ready
+document.addEventListener('DOMContentLoaded', () => {
+    // small delay to ensure elements exist when script is executed inlined
+    setTimeout(() => { if (document.getElementById('volume-control')) initVolumeControls(); }, 10);
+});
